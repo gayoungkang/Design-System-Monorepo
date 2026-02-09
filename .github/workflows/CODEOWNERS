@@ -1,0 +1,6 @@
+# UI 패키지 변경은 반드시 디자인시스템 담당자가 리뷰
+/packages/ui/ @gayoungkang
+
+# 스크립트/릴리즈 변경도 담당자 리뷰 권장
+/scripts/ @gayoungkang
+/.changeset/ @gayoungkang

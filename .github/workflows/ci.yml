@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI_CACHE_BUSTER: v6
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.11.0 --activate
+          yarn --version
+
+      - name: Sanitize Yarn legacy env
+        run: |
+          unset cacheVersion || true
+          unset CACHEVERSION || true
+          unset YARN_CACHE_VERSION || true
+          unset yarn_cacheVersion || true
+          unset YARN_CACHE_FOLDER || true
+
+      - name: Patch .yarnrc.yml for CI (remove legacy keys)
+        run: |
+          if [ -f .yarnrc.yml ]; then
+            cp .yarnrc.yml .yarnrc.yml.ci
+            sed -i '/^[[:space:]]*cacheVersion:[[:space:]]*/d' .yarnrc.yml.ci
+            mv .yarnrc.yml.ci .yarnrc.yml
+          fi
+
+      - name: Cache Yarn packages (Berry)
+        uses: actions/cache@v4
+        with:
+          path: |
+            .yarn/cache
+          key: ${{ runner.os }}-yarn-${{ env.CI_CACHE_BUSTER }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Force npm registry (Yarn Berry)
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          yarn config set npmRegistryServer https://registry.npmjs.org
+          yarn config set npmAlwaysAuth false
+          if [ -n "$YARN_NPM_AUTH_TOKEN" ]; then
+            yarn config set npmAlwaysAuth true
+            yarn config set npmAuthToken "$YARN_NPM_AUTH_TOKEN"
+          fi
+
+      - name: Install dependencies
+        run: |
+          rm -rf node_modules
+          rm -rf .yarn/unplugged .yarn/install-state.gz .pnp.cjs .pnp.data.json
+          yarn cache clean --all || true
+          yarn install --immutable --mode=skip-build
+
+      - name: Build icon assets (types + sprite)
+        run: yarn icons:build
+
+      - name: UI tests (Vitest)
+        run: yarn workspace @acme/ui test:run
+
+      - name: Build @acme/ui (for API Extractor)
+        run: yarn workspace @acme/ui build
+
+      - name: Ensure API Extractor folders
+        run: mkdir -p packages/ui/etc
+
+      - name: Patch API Extractor entrypoint to dist d.ts
+        working-directory: packages/ui
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+
+          const file = path.resolve(process.cwd(), "api-extractor.json");
+          const json = JSON.parse(fs.readFileSync(file, "utf8"));
+
+          // API Extractor must analyze a .d.ts entrypoint (not src/*.ts)
+          json.mainEntryPointFilePath = "<projectFolder>/dist/index.d.ts";
+
+          fs.writeFileSync(file, JSON.stringify(json, null, 2) + "\n");
+          console.log("Patched api-extractor.json mainEntryPointFilePath:", json.mainEntryPointFilePath);
+          NODE
+
+      - name: Debug API Extractor inputs
+        run: |
+          ls -la packages/ui/dist || true
+          test -f packages/ui/dist/index.d.ts && echo "index.d.ts exists" || (echo "index.d.ts missing" && exit 1)
+          grep -nE 'src/|\.ts"|\.ts;' packages/ui/dist/index.d.ts | head -n 50 || true
+
+      - name: API stability (API Extractor)
+        run: yarn workspace @acme/ui api:check
+
+      - name: Build (apps/web)
+        run: yarn build
+
+      - name: Bundle budget check
+        run: yarn build:check
