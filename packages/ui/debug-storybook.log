@@ -1,36 +1,34 @@
-[17:08:33.245] [INFO] storybook v10.1.5
-[17:08:33.365] [ERROR] [38;2;241;97;97mSB_CORE-SERVER_0007 (MainFileEvaluationError): Storybook couldn't evaluate your [33m.storybook/main.ts[39m file.
+[17:54:44.580] [INFO] storybook v10.1.5
+[17:54:45.411] [DEBUG] Getting package.json info for /Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/packages/ui/package.json...
+[17:54:45.412] [WARN] You are currently using Storybook [1m10.1.5[22m but you have packages which are incompatible with it:
 
-Original error:
-[37mError: Transform failed with 1 error:
-<stdin>:14:29: ERROR: Expected ":" but found ","
-    at failureErrorWithLog (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:1467:15)
-    at /Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:736:50
-    at responseCallbacks.<computed> (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:603:9)
-    at handleIncomingPacket (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:658:12)
-    at Socket.readFromStdout (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:581:7)
-    at Socket.emit (node:events:524:28)
-    at addChunk (node:internal/streams/readable:561:12)
-    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-    at Readable.push (node:internal/streams/readable:392:5)
-    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)[39m[39m
-    at loadMainConfig (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/_node-chunks/chunk-RZ3SV46Y.js:11701:11)
-    at async buildDevStandalone (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/core-server/index.js:7523:16)
+- @storybook/addon-essentials@8.6.15 which depends on 8.6.15
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/addons/essentials
+
+Please consider updating your packages or contacting the maintainers for compatibility details.
+
+For more details on compatibility guidance, see:
+https://github.com/storybookjs/storybook/issues/32836
+[17:54:45.735] [DEBUG] Serving static files from [36mpublic[39m at [36m/[39m
+[17:54:45.741] [INFO] Starting...
+[17:54:46.177] [ERROR] [38;2;241;97;97mSB_CORE-SERVER_0004 (NoMatchingExportError): There was an exports mismatch error when trying to build Storybook.
+Please check whether the versions of your Storybook packages match whenever possible, as this might be the cause.
+
+Problematic example:
+{ "@storybook/react": "7.5.3", "@storybook/react-vite": "7.4.5", "storybook": "7.3.0" }
+
+Correct example:
+{ "@storybook/react": "7.5.3", "@storybook/react-vite": "7.5.3", "storybook": "7.5.3" }
+
+Please run `npx storybook doctor` for guidance on how to fix this issue.
+
+More info: 
+[39m
+    at buildOrThrow (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/core-server/index.js:5561:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async buildDevStandalone (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/core-server/index.js:7582:66)
     at async withTelemetry (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/_node-chunks/chunk-VGBOM5PD.js:209:12)
     at async dev (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/bin/core.js:2734:3)
     at async _Command.<anonymous> (file:///Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/storybook/dist/bin/core.js:2801:92)
-[17:08:33.367] [WARN] Broken build, fix the error above.
+[17:54:46.179] [WARN] Broken build, fix the error above.
 You may need to refresh the browser.
-[17:08:33.369] [WARN]   Failed to load preset: "/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/packages/ui/.storybook/main.ts"
-[17:08:33.369] [ERROR] [38;2;241;97;97mError: Transform failed with 1 error:
-<stdin>:14:29: ERROR: Expected ":" but found ","[39m
-    at failureErrorWithLog (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:1467:15)
-    at /Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:736:50
-    at responseCallbacks.<computed> (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:603:9)
-    at handleIncomingPacket (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:658:12)
-    at Socket.readFromStdout (/Users/kgy/Documents/gayoung/dev/acme-design-system-storybook/node_modules/esbuild/lib/main.js:581:7)
-    at Socket.emit (node:events:524:28)
-    at addChunk (node:internal/streams/readable:561:12)
-    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-    at Readable.push (node:internal/streams/readable:392:5)
-    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)

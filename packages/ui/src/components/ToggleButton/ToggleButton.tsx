@@ -161,7 +161,7 @@ const ToggleButton = <Value extends string | number = string>({
               $disabled={itemDisabled}
               onClick={itemDisabled ? undefined : () => onClick(btn.value)}
             >
-              <Flex align="center" gap={gap}>
+              <ToggleItemContent align="center" gap={gap}>
                 {btn.startIcon && (
                   <Icon name={btn.startIcon} size={iconSize} color={color} {...iconProps} />
                 )}
@@ -171,6 +171,7 @@ const ToggleButton = <Value extends string | number = string>({
                     variant={selected ? "b2Medium" : "b2Regular"}
                     color={color}
                     text={btn.label}
+                    ellipsis
                     sx={{ fontSize, lineHeight: 1 }}
                   />
                 )}
@@ -178,7 +179,7 @@ const ToggleButton = <Value extends string | number = string>({
                 {btn.endIcon && (
                   <Icon name={btn.endIcon} size={iconSize} color={color} {...iconProps} />
                 )}
-              </Flex>
+              </ToggleItemContent>
             </ToggleItemButton>
           )
         })}
@@ -233,6 +234,23 @@ const ToggleItemButton = styled.button<{
 
   &:focus-visible {
     box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary[200]};
+  }
+`
+
+const ToggleItemContent = styled(Flex)`
+  width: 100%;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;
+
+  & > svg {
+    flex: 0 0 auto;
+  }
+
+  & > p {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
   }
 `
 

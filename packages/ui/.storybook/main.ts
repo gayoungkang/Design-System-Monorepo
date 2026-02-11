@@ -1,19 +1,14 @@
-import type { StorybookConfig } from "@storybook/react-vite"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const config: StorybookConfig = {
-  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
+/** @type {import("@storybook/react-vite").StorybookConfig} */
+const config = {
+  stories: ["../../../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     {
       name: "@storybook/addon-essentials",
-      options: {
-        toolbar: false,
-      },
+      options: { toolbar: false },
     },
     "@storybook/addon-a11y",
     "@storybook/addon-themes",
@@ -24,21 +19,22 @@ const config: StorybookConfig = {
   },
   staticDirs: [
     {
-      from: resolve(__dirname, "../../../public"),
+      from: resolve(dirname(fileURLToPath(import.meta.url)), "../../../public"),
       to: "/",
     },
   ],
+  async viteFinal(viteConfig) {
+    const __dirname = dirname(fileURLToPath(import.meta.url))
 
-  viteFinal(config) {
-    config.plugins = [
-      ...(config.plugins ?? []),
+    viteConfig.plugins = [
+      ...(viteConfig.plugins ?? []),
       createSvgIconsPlugin({
-        iconDirs: [resolve(__dirname, "../src/components/Icon/svgs")],
+        iconDirs: [resolve(__dirname, "../../../packages/ui/src/components/Icon/svgs")],
         symbolId: "icon-[name]",
       }),
     ]
 
-    return config
+    return viteConfig
   },
 }
 

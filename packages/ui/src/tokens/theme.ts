@@ -124,62 +124,62 @@ export const zIndex = {
 export const fonts = {
   heading: {
     h1: css`
-      font-size: 1.125rem;
+      font-size: 1.5rem; /* 24px */
       font-weight: 700;
-      line-height: 1.125rem;
+      line-height: 2rem; /* 32px */
     `,
     h2: css`
-      font-size: 1rem;
+      font-size: 1.25rem; /* 20px */
       font-weight: 700;
-      line-height: 1rem;
+      line-height: 1.75rem; /* 28px */
     `,
     h3: css`
-      font-size: 0.875rem;
+      font-size: 1.125rem; /* 18px */
       font-weight: 700;
-      line-height: 0.875rem;
+      line-height: 1.5rem; /* 24px */
     `,
   },
 
   body: {
     b1: {
       Bold: css`
-        font-size: 0.875rem;
+        font-size: 1rem; /* 16px */
         font-weight: 700;
-        line-height: 1.09375rem;
+        line-height: 1.5rem; /* 24px */
       `,
       Medium: css`
-        font-size: 0.875rem;
+        font-size: 1rem;
         font-weight: 500;
-        line-height: 1.09375rem;
+        line-height: 1.5rem;
       `,
       Regular: css`
-        font-size: 0.875rem;
+        font-size: 1rem;
         font-weight: 400;
-        line-height: 1.09375rem;
+        line-height: 1.5rem;
       `,
     },
     b2: {
       Medium: css`
-        font-size: 0.75rem;
+        font-size: 0.875rem; /* 14px */
         font-weight: 500;
-        line-height: 0.9375rem;
+        line-height: 1.25rem; /* 20px */
       `,
       Regular: css`
-        font-size: 0.75rem;
+        font-size: 0.875rem;
         font-weight: 400;
-        line-height: 0.9375rem;
+        line-height: 1.25rem;
       `,
     },
     b3: {
       Medium: css`
-        font-size: 0.625rem;
+        font-size: 0.75rem; /* 12px */
         font-weight: 500;
-        line-height: 0.78125rem;
+        line-height: 1rem; /* 16px */
       `,
       Regular: css`
-        font-size: 0.625rem;
+        font-size: 0.75rem;
         font-weight: 400;
-        line-height: 0.78125rem;
+        line-height: 1rem;
       `,
     },
   },

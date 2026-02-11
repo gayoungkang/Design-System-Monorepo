@@ -13,6 +13,8 @@ export const IconNames = [
   "ClipboardLine",
   "CloseCircleFill",
   "CloseLine",
+  "Date",
+  "DateTime",
   "Download",
   "Eye",
   "EyeOff",
@@ -29,6 +31,7 @@ export const IconNames = [
   "StatusInfo",
   "StatusSuccess",
   "StatusWarning",
+  "Time",
   "ViewColumn",
   "reset"
 ] as const;
