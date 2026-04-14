@@ -8,7 +8,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const START_ICON = "Add"
-const END_ICON = "CloseLine"
+const END_ICON = "ArrowDown"
 
 const meta: Meta<typeof Chip> = {
   title: "Components/Chip",
