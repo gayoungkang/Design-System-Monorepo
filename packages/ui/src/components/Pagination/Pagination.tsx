@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 import type { HTMLAttributes, ReactNode } from "react"
+import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
-import { theme } from "../../tokens/theme"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import IconButton from "../IconButton/IconButton"
@@ -11,37 +11,47 @@ import type { IconName } from "../Icon/icon-types"
 
 export type PaginationType = "Table" | "Basic"
 
-export type PaginationProps = BaseMixinProps &
+type PaginationIcons = Partial<{
+  prev: IconName
+  next: IconName
+  first: IconName
+  last: IconName
+}>
+
+type PaginationBaseProps = BaseMixinProps &
   Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
-    type: PaginationType
     disabled?: boolean
-
-    // * Table: from-to 표시 + prev/next
-    count?: number
-    page?: number // 1-based
-    onPageChange?: (page: number) => void
-    labelDisplayedRows?: (from: number, to: number, count: number) => ReactNode
-
-    // * Basic: 페이지 번호/ellipsis 구성
-    pageCount?: number
-    siblingCount?: number
-    boundaryCount?: number
-    hidePrevNextButtons?: boolean
-    hideFirstLastButtons?: boolean
-    showFirstLastButtons?: boolean
-    showPrevNextButtons?: boolean
-
-    // * icons: 네비게이션 아이콘 커스터마이즈
-    icons?: Partial<{
-      prev: IconName
-      next: IconName
-      first: IconName
-      last: IconName
-    }>
+    icons?: PaginationIcons
   }
 
+type TablePaginationProps = PaginationBaseProps & {
+  type: "Table"
+  count?: number
+  page?: number
+  onPageChange?: (page: number) => void
+  labelDisplayedRows?: (from: number, to: number, count: number) => ReactNode
+}
+
+type BasicPaginationProps = PaginationBaseProps & {
+  type: "Basic"
+  count?: number
+  page?: number
+  onPageChange?: (page: number) => void
+  pageCount?: number
+  siblingCount?: number
+  boundaryCount?: number
+  hidePrevNextButtons?: boolean
+  hideFirstLastButtons?: boolean
+  showFirstLastButtons?: boolean
+  showPrevNextButtons?: boolean
+}
+
+export type PaginationProps = TablePaginationProps | BasicPaginationProps
+
+type BasicItem = number | "start-ellipsis" | "end-ellipsis"
+
 // * start~end 구간의 연속 숫자 배열 생성
-const range = (start: number, end: number) => {
+const range = (start: number, end: number): number[] => {
   const out: number[] = []
   for (let i = start; i <= end; i += 1) out.push(i)
   return out
@@ -53,7 +63,7 @@ const getBasicItems = (
   count: number,
   siblingCount: number,
   boundaryCount: number,
-) => {
+): BasicItem[] => {
   const startPages = range(1, Math.min(boundaryCount, count))
   const endPages = range(Math.max(count - boundaryCount + 1, boundaryCount + 1), count)
 
@@ -66,7 +76,7 @@ const getBasicItems = (
     endPages.length > 0 ? endPages[0] - 2 : count - 1,
   )
 
-  const items: Array<number | "start-ellipsis" | "end-ellipsis"> = []
+  const items: BasicItem[] = []
 
   items.push(...startPages)
 
@@ -81,7 +91,7 @@ const getBasicItems = (
   items.push(...endPages)
 
   // * 연속으로 중복된 숫자 제거 (start/end 경계에서 발생 가능)
-  const dedup: Array<number | "start-ellipsis" | "end-ellipsis"> = []
+  const dedup: BasicItem[] = []
   for (const it of items) {
     const prev = dedup[dedup.length - 1]
     if (typeof it === "number" && typeof prev === "number" && it === prev) continue
@@ -104,7 +114,7 @@ const getBasicItems = (
  *   * 주요 분기 조건 및 처리 우선순위
  *     * type === "Table" 이면 Table 렌더링만 수행
  *     * type === "Basic" 이면 Basic 렌더링만 수행
- *     * pageCount prop이 유효하면(pageCount > 0) 이를 최우선으로 사용
+ *     * Basic 타입에서 pageCount prop이 유효하면(pageCount > 0) 이를 최우선으로 사용
  *     * pageCount가 없으면 count 기반으로 페이지 수를 계산(기본 10개 단위)
  *     * page는 1~computedPageCount 범위로 clamp하여 safePage로 사용
  *   * 이벤트 처리 방식
@@ -140,7 +150,8 @@ const getBasicItems = (
  *   * 내부 계산 로직 요약
  *     * safeCount: count를 0 이상으로 보정
  *     * computedPageCount:
- *       * pageCount 우선, 없으면 safeCount/10으로 계산(최소 1)
+ *       * Basic에서는 pageCount 우선, 없으면 safeCount/10으로 계산(최소 1)
+ *       * Table에서는 safeCount/10으로 계산(최소 1)
  *     * safePage: page를 1~computedPageCount로 clamp
  *     * Table from/to:
  *       * (safePage-1)*10+1 ~ min(count, safePage*10)
@@ -159,46 +170,33 @@ const getBasicItems = (
  *
 /---------------------------------------------------------------------------**/
 
-const Pagination = ({
-  type,
-  disabled = false,
+const Pagination = (props: PaginationProps) => {
+  const theme = useTheme()
+  const { type, disabled = false, icons, ...baseProps } = props
 
-  count,
-  page,
-  onPageChange,
-  labelDisplayedRows,
-
-  pageCount,
-  siblingCount = 1,
-  boundaryCount = 1,
-  hidePrevNextButtons = false,
-  hideFirstLastButtons = false,
-  showFirstLastButtons = false,
-  showPrevNextButtons = true,
-  icons,
-  ...baseProps
-}: PaginationProps) => {
   // * 기본 아이콘 fallback 구성
-  const iconPrev = icons?.prev ?? ("ArrowLeft" as IconName)
-  const iconNext = icons?.next ?? ("ArrowRight" as IconName)
-  const iconFirst = icons?.first ?? ("FirstPageArrow" as IconName)
-  const iconLast = icons?.last ?? ("LastPageArrow" as IconName)
+  const iconPrev = icons?.prev ?? "ArrowLeft"
+  const iconNext = icons?.next ?? "ArrowRight"
+  const iconFirst = icons?.first ?? "FirstPageArrow"
+  const iconLast = icons?.last ?? "LastPageArrow"
 
   // * count 안전값 보정
-  const safeCount = typeof count === "number" ? Math.max(0, count) : 0
+  const safeCount = typeof props.count === "number" ? Math.max(0, props.count) : 0
 
-  // * pageCount 우선, 없으면 count 기반으로 페이지 수 계산 (Table 타입 기본 10개 단위)
+  // * pageCount 우선, 없으면 count 기반으로 페이지 수 계산 (기본 10개 단위)
   const computedPageCount = useMemo(() => {
-    if (typeof pageCount === "number" && pageCount > 0) return Math.floor(pageCount)
+    if (type === "Basic" && typeof props.pageCount === "number" && props.pageCount > 0) {
+      return Math.floor(props.pageCount)
+    }
     if (safeCount <= 0) return 1
     return Math.max(1, Math.ceil(safeCount / 10))
-  }, [pageCount, safeCount])
+  }, [type, props, safeCount])
 
   // * 입력 page를 1~computedPageCount 범위로 보정
   const safePage = useMemo(() => {
-    const p = typeof page === "number" ? page : 1
+    const p = typeof props.page === "number" ? props.page : 1
     return clamp(p, 1, computedPageCount)
-  }, [page, computedPageCount])
+  }, [props.page, computedPageCount])
 
   // * Table 타입의 from/to 계산 (기본 10개 단위)
   const fromTo = useMemo(() => {
@@ -211,14 +209,22 @@ const Pagination = ({
   // * Table 타입 표시 문구 계산 (사용자 formatter 우선)
   const displayedRows = useMemo<ReactNode>(() => {
     if (!safeCount) return "0–0 of 0"
-    if (labelDisplayedRows) return labelDisplayedRows(fromTo.from, fromTo.to, safeCount)
+    if (type === "Table" && props.labelDisplayedRows) {
+      return props.labelDisplayedRows(fromTo.from, fromTo.to, safeCount)
+    }
     return `${fromTo.from}–${fromTo.to} of ${safeCount}`
-  }, [fromTo.from, fromTo.to, safeCount, labelDisplayedRows])
+  }, [type, props, fromTo.from, fromTo.to, safeCount])
 
   // * Basic 타입 페이지 아이템 계산
   const basicItems = useMemo(() => {
-    return getBasicItems(safePage, computedPageCount, siblingCount, boundaryCount)
-  }, [safePage, computedPageCount, siblingCount, boundaryCount])
+    if (type !== "Basic") return []
+    return getBasicItems(
+      safePage,
+      computedPageCount,
+      props.siblingCount ?? 1,
+      props.boundaryCount ?? 1,
+    )
+  }, [type, safePage, computedPageCount, props])
 
   // * 이전/다음 이동 가능 여부
   const canPrev = safePage > 1
@@ -226,22 +232,22 @@ const Pagination = ({
 
   // * Table 타입 렌더링
   const renderTable = () => (
-    <Flex align="center" gap={12} width={"fit-content"}>
+    <Flex align="center" gap={12} width="fit-content">
       {typeof displayedRows === "string" ? (
         <Typography text={displayedRows} variant="b1Bold" color={theme.colors.text.primary} />
       ) : (
-        <>{displayedRows}</>
+        displayedRows
       )}
 
       <Flex align="center" gap={4}>
         <IconButton
-          onClick={() => onPageChange?.(safePage - 1)}
+          onClick={() => props.onPageChange?.(safePage - 1)}
           disabled={disabled || !canPrev}
           icon={iconPrev}
         />
 
         <IconButton
-          onClick={() => onPageChange?.(safePage + 1)}
+          onClick={() => props.onPageChange?.(safePage + 1)}
           disabled={disabled || !canNext}
           icon={iconNext}
         />
@@ -251,15 +257,17 @@ const Pagination = ({
 
   // * Basic 타입 렌더링
   const renderBasic = () => {
-    const showPrevNext = showPrevNextButtons && !hidePrevNextButtons
-    const showFirstLast = showFirstLastButtons && !hideFirstLastButtons
+    if (type !== "Basic") return null
+
+    const showPrevNext = (props.showPrevNextButtons ?? true) && !props.hidePrevNextButtons
+    const showFirstLast = (props.showFirstLastButtons ?? false) && !props.hideFirstLastButtons
 
     return (
       <Flex align="center" gap={6} width="fit-content">
         {showFirstLast ? (
           <IconButton
             disabled={disabled || !canPrev}
-            onClick={() => onPageChange?.(1)}
+            onClick={() => props.onPageChange?.(1)}
             icon={iconFirst}
             size={13}
           />
@@ -268,7 +276,7 @@ const Pagination = ({
         {showPrevNext ? (
           <IconButton
             disabled={disabled || !canPrev}
-            onClick={() => onPageChange?.(safePage - 1)}
+            onClick={() => props.onPageChange?.(safePage - 1)}
             icon={iconPrev}
             size={13}
           />
@@ -283,22 +291,23 @@ const Pagination = ({
             )
           }
 
-          const p = it
-          const selected = p === safePage
+          const selected = it === safePage
 
           return (
             <PageButton
-              key={`p-${p}`}
+              key={`p-${it}`}
               type="button"
               $selected={selected}
+              $selectedBg={theme.colors.grayscale[200]}
+              $hoverBg={selected ? theme.colors.grayscale[100] : theme.colors.background.default}
               disabled={disabled}
               aria-current={selected ? "page" : undefined}
-              onClick={() => onPageChange?.(p)}
+              onClick={() => props.onPageChange?.(it)}
             >
               <Typography
                 variant={selected ? "b1Bold" : "b1Regular"}
                 color={selected ? theme.colors.text.primary : theme.colors.text.secondary}
-                text={`${p}`}
+                text={`${it}`}
                 sx={{ lineHeight: "1" }}
               />
             </PageButton>
@@ -308,7 +317,7 @@ const Pagination = ({
         {showPrevNext ? (
           <IconButton
             disabled={disabled || !canNext}
-            onClick={() => onPageChange?.(safePage + 1)}
+            onClick={() => props.onPageChange?.(safePage + 1)}
             icon={iconNext}
             size={13}
           />
@@ -316,7 +325,7 @@ const Pagination = ({
 
         {showFirstLast ? (
           <IconButton
-            onClick={() => onPageChange?.(computedPageCount)}
+            onClick={() => props.onPageChange?.(computedPageCount)}
             disabled={disabled || !canNext}
             icon={iconLast}
             size={13}
@@ -334,9 +343,13 @@ const Pagination = ({
   )
 }
 
-const PageButton = styled.button<{ $selected: boolean }>`
+const PageButton = styled.button<{
+  $selected: boolean
+  $selectedBg: string
+  $hoverBg: string
+}>`
   border: none;
-  background: ${({ $selected }) => ($selected ? theme.colors.grayscale[200] : "transparent")};
+  background: ${({ $selected, $selectedBg }) => ($selected ? $selectedBg : "transparent")};
   width: 20px;
   height: 20px;
   border-radius: ${({ theme }) => theme.borderRadius[6]};
@@ -350,8 +363,7 @@ const PageButton = styled.button<{ $selected: boolean }>`
     opacity 0.15s ease;
 
   &:hover {
-    background: ${({ $selected }) =>
-      $selected ? theme.colors.grayscale[100] : theme.colors.background.default};
+    background: ${({ $hoverBg }) => $hoverBg};
   }
 
   &:active {

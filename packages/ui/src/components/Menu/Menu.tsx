@@ -1,15 +1,14 @@
 import { forwardRef } from "react"
-import type { ForwardedRef, MouseEventHandler } from "react"
+import type { MouseEventHandler } from "react"
+import { useTheme } from "styled-components"
 import { BaseMixin } from "../../tokens/baseMixin"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
-
 import Icon from "../Icon/Icon"
 import type { IconProps } from "../Icon/Icon"
 import { Typography } from "../Typography/Typography"
 import type { TypographyProps } from "../Typography/Typography"
 import Flex from "../Flex/Flex"
 import { styled } from "../../tokens/customStyled"
-import { theme } from "../../tokens/theme"
 import type { SizeUiType } from "../../types/ui"
 import type { IconName } from "../Icon/icon-types"
 
@@ -22,7 +21,7 @@ export type MenuProps = BaseMixinProps & {
   selected?: boolean
   disabled?: boolean
   iconProps?: Partial<Omit<IconProps, "name">>
-  typographyProps?: Partial<TypographyProps>
+  typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>
 }
 /**---------------------------------------------------------------------------/
  *
@@ -46,7 +45,7 @@ export type MenuProps = BaseMixinProps & {
  * * 레이아웃/스타일 관련 규칙
  *   * 버튼 레이아웃
  *     * 좌측: startIcon(옵션) + 텍스트 + endIcon(옵션)
- *     * 우측: selected === true 인 경우 체크 아이콘(SelectedIcon) 표시
+ *     * 우측: selected === true 인 경우 체크 아이콘 표시
  *     * justify-content: space-between으로 좌/우 영역 분리
  *   * size(S/M/L)에 따른 규칙
  *     * iconSize: S=12, M=14, L=16
@@ -64,10 +63,11 @@ export type MenuProps = BaseMixinProps & {
  *     * startIcon/endIcon: 좌/우 아이콘(옵션)
  *     * selected: 선택 상태(체크 아이콘 표시), 기본 false
  *     * disabled: 비활성 상태, 기본 false
- *     * iconProps/typographyProps: 내부 Icon/Typograpy 커스터마이징 확장 포인트
+ *     * iconProps: 내부 Icon 커스터마이징 확장 포인트
+ *     * typographyProps: text/variant/color를 제외한 Typography 커스터마이징 확장 포인트
  *   * 내부 계산 로직 요약
  *     * size 기반 iconSize 및 Typography fontSize를 계산
- *     * iconProps.color가 있으면 Icon에 color를 전달하고, 없으면 color를 undefined로 두어 기본(currentColor) 흐름을 유지
+ *     * iconProps.color가 있으면 Icon에 color를 전달하고, 없으면 기본 currentColor 흐름 또는 success 컬러를 사용
  *   * 클라이언트 제어 컴포넌트 (서버 제어 없음)
  *
  * @module Menu
@@ -83,7 +83,7 @@ export type MenuProps = BaseMixinProps & {
  *
 /---------------------------------------------------------------------------**/
 
-const Menu = forwardRef(
+const Menu = forwardRef<HTMLButtonElement, MenuProps>(
   (
     {
       text,
@@ -96,9 +96,11 @@ const Menu = forwardRef(
       iconProps,
       typographyProps,
       ...others
-    }: MenuProps,
-    ref: ForwardedRef<HTMLButtonElement>,
+    },
+    ref,
   ) => {
+    const theme = useTheme()
+
     // * disabled 상태에서는 클릭을 무시하고, 이벤트 전파는 차단
     const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
       e.stopPropagation()
@@ -107,6 +109,8 @@ const Menu = forwardRef(
     }
 
     const iconSize = size === "S" ? 12 : size === "L" ? 16 : 14
+    const textSize = size === "S" ? "8px" : size === "L" ? "12px" : "10px"
+    const iconColor = iconProps?.color
 
     return (
       <StyledMenu
@@ -120,31 +124,19 @@ const Menu = forwardRef(
       >
         <Flex align="center">
           {startIcon && (
-            <Icon
-              name={startIcon}
-              size={iconSize}
-              mr="2px"
-              {...iconProps}
-              {...(iconProps?.color ? { color: iconProps.color } : { color: undefined })}
-            />
+            <Icon name={startIcon} size={iconSize} mr="2px" {...iconProps} color={iconColor} />
           )}
 
           <Typography
             text={text}
             variant="b2Regular"
             color="currentColor"
-            sx={{ fontSize: size === "S" ? "8px" : size === "L" ? "12px" : "10px" }}
+            sx={{ fontSize: textSize }}
             {...typographyProps}
           />
 
           {endIcon && (
-            <Icon
-              name={endIcon}
-              size={iconSize}
-              ml="2px"
-              {...iconProps}
-              {...(iconProps?.color ? { color: iconProps.color } : { color: undefined })}
-            />
+            <Icon name={endIcon} size={iconSize} ml="2px" {...iconProps} color={iconColor} />
           )}
         </Flex>
 
@@ -154,9 +146,7 @@ const Menu = forwardRef(
             size={iconSize}
             ml="2px"
             {...iconProps}
-            {...(iconProps?.color
-              ? { color: iconProps.color }
-              : { color: theme.colors.success[500] })}
+            color={iconColor ?? theme.colors.success[500]}
             sx={{ flexShrink: 0 }}
           />
         )}
@@ -168,7 +158,11 @@ const Menu = forwardRef(
 Menu.displayName = "Menu"
 
 const StyledMenu = styled.button<
-  Omit<MenuProps, "text" | "size" | "selected"> & { $size: SizeUiType; $selected: boolean }
+  BaseMixinProps & {
+    $size: SizeUiType
+    $selected: boolean
+    disabled?: boolean
+  }
 >`
   ${BaseMixin}
 

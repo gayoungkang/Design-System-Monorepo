@@ -1,127 +1,161 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useState } from "react"
-
+import { useState } from "react"
+import CheckBoxGroup, { CheckBox } from "./CheckBoxGroup"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
-import CheckBoxGroup, { CheckBox } from "./CheckBoxGroup"
 
 const meta: Meta<typeof CheckBoxGroup> = {
   title: "Components/CheckBox",
   component: CheckBoxGroup,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "centered",
+  },
 }
+
 export default meta
 type Story = StoryObj<typeof CheckBoxGroup>
 
-export const Single: Story = {
+export const Playground: Story = {
   render: () => {
-    const [checked, setChecked] = useState(false)
-    const [indeterminate, setIndeterminate] = useState(true)
+    const [value, setValue] = useState<string[]>([])
 
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Single" mb="12px" />
-        <Flex gap="10px" mb="12px">
-          <Button
-            text="Toggle checked"
-            variant="outlined"
-            color="normal"
-            onClick={() => setChecked((v) => !v)}
-          />
-          <Button
-            text="Toggle indeterminate"
-            variant="text"
-            color="secondary"
-            onClick={() => setIndeterminate((v) => !v)}
-          />
-        </Flex>
-
-        <CheckBox
-          checked={checked}
-          onChange={setChecked}
-          indeterminate={indeterminate}
-          label="단일 체크"
-          labelPlacement="right"
-          size="M"
-        />
-
-        <Box mt="10px">
-          <Typography
-            variant="b3Regular"
-            text={`checked=${checked}, indeterminate=${indeterminate}`}
-            color="#666666"
-          />
-        </Box>
-      </Box>
-    )
-  },
-}
-
-export const GroupAllCheck: Story = {
-  render: () => {
-    const data = [
-      { text: "A", value: "A" },
-      { text: "B", value: "B" },
-      { text: "C", value: "C" },
-    ] as const
-
-    const [value, setValue] = useState<string[]>(["A"])
-
-    return (
-      <Box p="20px">
-        <Typography variant="h3" text="Group + allCheck" mb="12px" />
-
+      <Flex direction="column" gap="12px" align="center">
         <CheckBoxGroup
+          data={[
+            { text: "Option A", value: "a" },
+            { text: "Option B", value: "b" },
+          ]}
           value={value}
           onChange={setValue}
-          data={data as any}
-          allCheck
-          allCheckText="전체"
-          direction="horizontal"
-          label="선택"
-          labelPlacement="top"
         />
 
-        <Box mt="10px">
-          <Typography variant="b3Regular" text={`value=[${value.join(", ")}]`} color="#666666" />
-        </Box>
+        <Typography
+          variant="b3Regular"
+          text={`selected: ${value.join(", ") || "none"}`}
+          color="text.secondary"
+        />
+      </Flex>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  parameters: {
+    layout: "fullscreen",
+  },
+  render: () => {
+    const [value, setValue] = useState<string[]>(["a"])
+
+    return (
+      <Box p="24px" width="900px">
+        <Typography variant="h3" text="CheckBox Cases" mb="16px" />
+
+        <Flex direction="column" gap="24px">
+          <Box>
+            <Typography variant="b1Bold" text="Single" mb="8px" />
+            <Flex gap="12px">
+              <CheckBox label="Default" />
+              <CheckBox label="Checked" checked />
+              <CheckBox label="Indeterminate" indeterminate />
+              <CheckBox label="Disabled" disabled />
+            </Flex>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Group" mb="8px" />
+            <CheckBoxGroup
+              data={[
+                { text: "A", value: "a" },
+                { text: "B", value: "b" },
+                { text: "C", value: "c" },
+              ]}
+              value={value}
+              onChange={setValue}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="All Check" mb="8px" />
+            <CheckBoxGroup
+              allCheck
+              data={[
+                { text: "A", value: "a" },
+                { text: "B", value: "b" },
+                { text: "C", value: "c" },
+              ]}
+              value={value}
+              onChange={setValue}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Vertical" mb="8px" />
+            <CheckBoxGroup
+              direction="vertical"
+              data={[
+                { text: "A", value: "a" },
+                { text: "B", value: "b" },
+                { text: "C", value: "c" },
+              ]}
+              value={value}
+              onChange={setValue}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Error / HelperText" mb="8px" />
+            <CheckBoxGroup
+              data={[
+                { text: "A", value: "a" },
+                { text: "B", value: "b" },
+              ]}
+              error
+              helperText="필수 선택 항목입니다."
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Sizes" mb="8px" />
+            <Flex gap="20px">
+              <CheckBoxGroup size="S" data={[{ text: "S", value: "s" }]} />
+              <CheckBoxGroup size="M" data={[{ text: "M", value: "m" }]} />
+              <CheckBoxGroup size="L" data={[{ text: "L", value: "l" }]} />
+            </Flex>
+          </Box>
+        </Flex>
       </Box>
     )
   },
 }
 
-export const SizesAndDirection: Story = {
+export const Interactive: Story = {
   render: () => {
-    const data = [
-      { text: "Option 1", value: 1 },
-      { text: "Option 2", value: 2 },
-      { text: "Option 3", value: 3 },
-    ]
-
-    const [value, setValue] = useState<number[]>([1])
+    const [value, setValue] = useState<string[]>([])
 
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Sizes + direction" mb="12px" />
+      <Flex direction="column" gap="16px" align="center">
+        <CheckBoxGroup
+          allCheck
+          data={[
+            { text: "React", value: "react" },
+            { text: "Vue", value: "vue" },
+            { text: "Angular", value: "angular" },
+          ]}
+          value={value}
+          onChange={setValue}
+        />
 
-        <Flex gap="20px" wrap="wrap">
-          {(["S", "M", "L"] as const).map((s) => (
-            <Box key={s}>
-              <Typography variant="b3Regular" text={`size=${s}`} mb="8px" color="#666666" />
-              <CheckBoxGroup
-                value={value}
-                onChange={setValue}
-                data={data}
-                direction="vertical"
-                size={s}
-                labelPlacement="top"
-              />
-            </Box>
-          ))}
-        </Flex>
-      </Box>
+        <Button text="Reset" variant="outlined" onClick={() => setValue([])} />
+
+        <Typography
+          variant="b3Regular"
+          text={`selected: ${value.join(", ") || "none"}`}
+          color="text.secondary"
+        />
+      </Flex>
     )
   },
 }

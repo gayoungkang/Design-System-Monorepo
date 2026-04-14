@@ -78,6 +78,13 @@ export type ListProps = BaseMixinProps & {
   separator?: boolean
 }
 
+// * CheckBoxProps 형태인지 판별
+const isCheckBoxGroupProps = (
+  props: CheckBoxProps | SimpleCheckBoxConfig,
+): props is CheckBoxProps => {
+  return "data" in props && Array.isArray(props.data)
+}
+
 // * ListItemRenderConfig 타입에 따라 실제 렌더링 컴포넌트를 분기
 const renderItem = (item: ListItemRenderConfig): ReactNode => {
   switch (item.type) {
@@ -91,25 +98,24 @@ const renderItem = (item: ListItemRenderConfig): ReactNode => {
       const props = item.props
 
       // * CheckBoxGroup 형태 (data 배열 보유)
-      if ("data" in props && Array.isArray((props as any).data)) {
-        return <CheckBoxGroup {...(props as CheckBoxProps)} />
+      if (isCheckBoxGroupProps(props)) {
+        return <CheckBoxGroup {...props} />
       }
 
       // * 단일 체크박스 형태(SimpleCheckBoxConfig) → 내부적으로 CheckBoxGroup로 래핑
-      const single = props as SimpleCheckBoxConfig
-      const value = single.checked ? ["__single__"] : []
+      const value = props.checked ? ["__single__"] : []
 
       return (
         <CheckBoxGroup
           value={value}
-          onChange={(values) => single.onChange(values.length > 0)}
+          onChange={(values) => props.onChange(values.length > 0)}
           data={[
             {
-              text: single.label,
+              text: props.label,
               value: "__single__",
             },
           ]}
-          disabled={single.disabled}
+          disabled={props.disabled}
         />
       )
     }

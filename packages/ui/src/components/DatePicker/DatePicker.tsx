@@ -15,6 +15,7 @@ import Popper from "../Popper/Popper"
 import TextField from "../TextField/TextField"
 import Divider from "../Divider/Divider"
 import type { LabelProps } from "../Label/Label"
+import { IconName } from "../Icon/icon-types"
 
 export type DateType = "Date" | "Time" | "Month" | "DateTime" | "Year"
 export type DatePickerMode = "Single" | "Range"
@@ -395,7 +396,6 @@ const DatePicker = (props: DatePickerProps) => {
 
   const anchorRef = useRef<HTMLDivElement>(null)
 
-  const [isActive, setIsActive] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
   const unit: dayjs.OpUnitType = useMemo(() => {
@@ -613,19 +613,16 @@ const DatePicker = (props: DatePickerProps) => {
       focusedTimeIndex,
     }
 
-    setIsActive(true)
     setIsOpen(true)
   }
 
   const closePopover = () => {
     // * popover를 닫고 포커스 active 상태를 해제
     setIsOpen(false)
-    setIsActive(false)
   }
 
   const handleBlurLocal = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // * TextField blur 시 내부 active 상태를 해제하고 외부 onBlur를 호출
-    setIsActive(false)
+    // * TextField blur 시 외부 onBlur를 호출
     onBlur?.(e)
   }
 
@@ -1129,8 +1126,6 @@ const DatePicker = (props: DatePickerProps) => {
     onChange?.(normalizeSingleValue(next))
     closePopover()
   }
-
-  const onCellActivate = (fn: () => void) => fn()
 
   const onCellKeyDown = (
     e: React.KeyboardEvent<HTMLButtonElement>,
@@ -1711,13 +1706,12 @@ const DatePicker = (props: DatePickerProps) => {
           readOnly={readOnly}
           error={error}
           helperText={helperText}
-          startIcon={leftIconName as any}
+          startIcon={leftIconName as IconName}
           clearable={clearable}
           onClick={openPopover}
           onFocus={() => {
             // * 포커스 진입 시 interaction 가능할 때 popover를 연다
             if (isInteractionBlocked) return
-            setIsActive(true)
             setIsOpen(true)
           }}
           onBlur={handleBlurLocal}

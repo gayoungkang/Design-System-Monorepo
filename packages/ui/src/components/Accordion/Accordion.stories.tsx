@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import Accordion from "./Accordion"
 import type { AccordionProps } from "./Accordion"
 import Box from "../Box/Box"
@@ -10,128 +10,164 @@ import { Typography } from "../Typography/Typography"
 const meta: Meta<typeof Accordion> = {
   title: "Components/Accordion",
   component: Accordion,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "centered",
+  },
   argTypes: {
-    expanded: { control: "boolean" },
+    expanded: { control: false },
     defaultExpanded: { control: "boolean" },
     disabled: { control: "boolean" },
     onChange: { action: "onChange" },
-    summary: { control: false },
-    children: { control: false },
+    summary: { control: "text" },
+    children: { control: "text" },
   },
   args: {
-    disabled: false,
     defaultExpanded: false,
+    disabled: false,
+    summary: "Accordion Summary",
+    children: "Accordion Details Content",
   },
 }
 
 export default meta
 type Story = StoryObj<typeof Accordion>
 
-const Content = () => (
-  <Box
-    sx={{
-      backgroundColor: "#ffffff",
-      borderRadius: "12px",
-      border: "1px solid #e5e7eb",
-      padding: "12px",
-    }}
-  >
-    <Typography
-      variant="b2Regular"
-      text="Details 영역입니다. 텍스트/컴포넌트/리스트 등 어떤 콘텐츠도 들어갈 수 있습니다."
-    />
-  </Box>
-)
-
-export const Uncontrolled: Story = {
+export const Playground: Story = {
   render: (args) => {
     return (
-      <Box p="20px" width="720px">
-        <Typography variant="h3" text="Uncontrolled (defaultExpanded)" mb="12px" />
-        <Accordion {...(args as AccordionProps)} summary="Uncontrolled Accordion">
-          <Content />
-        </Accordion>
+      <Box width="520px">
+        <Accordion {...args} />
       </Box>
     )
   },
 }
 
 export const Controlled: Story = {
-  render: () => {
+  render: (args) => {
     const [expanded, setExpanded] = useState(false)
 
     return (
-      <Box p="20px" width="720px">
-        <Typography variant="h3" text="Controlled (expanded/onChange)" mb="12px" />
+      <Box width="520px">
+        <Flex direction="column" gap="12px">
+          <Flex align="center" gap="8px">
+            <Button
+              text={expanded ? "Close from outside" : "Open from outside"}
+              variant="outlined"
+              color="normal"
+              onClick={() => setExpanded((prev) => !prev)}
+            />
+            <Typography
+              variant="b2Regular"
+              text={`expanded: ${expanded ? "true" : "false"}`}
+              color="text.secondary"
+            />
+          </Flex>
 
-        <Flex gap="10px" mb="12px" align="center">
-          <Button
-            text={expanded ? "Collapse" : "Expand"}
-            variant="outlined"
-            color="normal"
-            onClick={() => setExpanded((v) => !v)}
-          />
-          <Typography variant="b3Regular" text={`expanded = ${String(expanded)}`} color="#666666" />
+          <Accordion
+            {...args}
+            expanded={expanded}
+            onChange={(next) => {
+              args.onChange?.(next)
+              setExpanded(next)
+            }}
+            summary="Controlled Accordion"
+          >
+            Controlled details content
+          </Accordion>
         </Flex>
-
-        <Accordion
-          expanded={expanded}
-          onChange={(next) => setExpanded(next)}
-          summary={<Typography variant="b1Bold" text="Controlled Accordion Summary (Custom)" />}
-        >
-          <Content />
-        </Accordion>
       </Box>
     )
   },
 }
 
-export const Disabled: Story = {
+export const AllCases: Story = {
+  parameters: {
+    layout: "fullscreen",
+  },
   render: () => {
+    const [controlledOpen, setControlledOpen] = useState(true)
+
     return (
-      <Box p="20px" width="720px">
-        <Typography variant="h3" text="Disabled" mb="12px" />
-        <Accordion disabled summary="Disabled Accordion">
-          <Content />
-        </Accordion>
+      <Box p="24px" width="900px">
+        <Typography variant="h3" text="Accordion Cases" mb="16px" />
+
+        <Flex direction="column" gap="12px">
+          <Accordion summary="Default Closed">기본 닫힘 상태입니다.</Accordion>
+
+          <Accordion summary="Default Expanded" defaultExpanded>
+            기본 열림 상태입니다.
+          </Accordion>
+
+          <Accordion summary="Disabled" disabled>
+            disabled 상태에서는 열리지 않습니다.
+          </Accordion>
+
+          <Accordion
+            summary={
+              <Flex align="center" gap="8px">
+                <Typography variant="b1Bold" text="Custom Summary Node" />
+                <Typography variant="b3Regular" text="ReactNode header" color="text.secondary" />
+              </Flex>
+            }
+          >
+            summary가 ReactNode인 케이스입니다.
+          </Accordion>
+
+          <Accordion
+            expanded={controlledOpen}
+            onChange={setControlledOpen}
+            summary="Controlled State"
+          >
+            외부 state로 제어되는 아코디언입니다.
+          </Accordion>
+
+          <Flex align="center" gap="8px">
+            <Button
+              text={controlledOpen ? "Set Closed" : "Set Open"}
+              variant="outlined"
+              color="primary"
+              onClick={() => setControlledOpen((prev) => !prev)}
+            />
+            <Typography
+              variant="b2Regular"
+              text={`controlledOpen: ${controlledOpen ? "true" : "false"}`}
+              color="text.secondary"
+            />
+          </Flex>
+        </Flex>
       </Box>
     )
   },
 }
 
-export const MultipleAndSingleOpen: Story = {
+export const FAQGroup: Story = {
+  parameters: {
+    layout: "fullscreen",
+  },
   render: () => {
-    const items = useMemo(
-      () => [
-        { id: "a", title: "Section A" },
-        { id: "b", title: "Section B" },
-        { id: "c", title: "Section C" },
-      ],
-      [],
-    )
-
-    const [openId, setOpenId] = useState<string | null>("a")
+    const items: Pick<AccordionProps, "summary" | "children">[] = [
+      {
+        summary: "디자인 시스템은 어디에서 개발하나요?",
+        children: "UI 컴포넌트는 packages/ui에서만 개발하고 앱에서는 소비만 합니다.",
+      },
+      {
+        summary: "앱에서 deep import를 해도 되나요?",
+        children: "아니요. public entry인 @acme/ui만 사용하고 deep import는 금지합니다.",
+      },
+      {
+        summary: "스토리북은 언제 추가하나요?",
+        children: "신규 컴포넌트 또는 기능 변경 시 Playground와 상태별 스토리를 함께 관리합니다.",
+      },
+    ]
 
     return (
-      <Box p="20px" width="720px">
-        <Typography variant="h3" text="Multiple (single-open behavior)" mb="12px" />
-        <Typography
-          variant="b3Regular"
-          text={`openId = ${openId ?? "null"}`}
-          color="#666666"
-          mb="12px"
-        />
+      <Box p="24px" width="760px">
+        <Typography variant="h3" text="FAQ Group" mb="16px" />
 
         <Flex direction="column" gap="10px">
-          {items.map((it) => (
-            <Accordion
-              key={it.id}
-              expanded={openId === it.id}
-              onChange={(next) => setOpenId(next ? it.id : null)}
-              summary={it.title}
-            >
-              <Content />
+          {items.map((item, index) => (
+            <Accordion key={`${String(item.summary)}_${index}`} summary={item.summary}>
+              {item.children}
             </Accordion>
           ))}
         </Flex>

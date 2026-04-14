@@ -1,18 +1,18 @@
 import { useTheme } from "styled-components"
-import type { AnchorHTMLAttributes, ReactNode } from "react"
-import type { BaseMixinProps } from "../../tokens/baseMixin"
+import type { AnchorHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode } from "react"
+import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import { Typography } from "../Typography/Typography"
 import type { TypographyProps } from "../Typography/Typography"
 
 export type LinkProps = BaseMixinProps &
-  AnchorHTMLAttributes<HTMLAnchorElement> & {
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseMixinProps> & {
     children: string | ReactNode
     underline?: "none" | "hover" | "always"
     color?: string
     hoverColor?: string
     disabled?: boolean
-    typographyProps?: Partial<TypographyProps>
+    typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>
   }
 /**---------------------------------------------------------------------------/
  *
@@ -21,6 +21,7 @@ export type LinkProps = BaseMixinProps &
  * * 텍스트 또는 커스텀 노드를 감싸는 링크(anchor) 컴포넌트
  * * underline 옵션과 color/disabled 상태에 따라 시각적·동작적 링크 규칙을 제어
  * * 문자열 children은 Typography로 래핑하여 디자인 시스템 타이포 규칙을 유지
+ * * BaseMixinProps를 통해 spacing/size/sx 등 공통 스타일 확장을 지원
  *
  * * 동작 규칙
  *   * 주요 분기 조건
@@ -41,14 +42,16 @@ export type LinkProps = BaseMixinProps &
  *   * hover 시 기본 컬러는 theme.colors.primary[400]으로 전환
  *   * disabled 상태에서는 text.disabled 컬러 + not-allowed 커서 적용
  *   * Typography 래핑 시 lineHeight를 inherit하여 레이아웃 깨짐 방지
+ *   * BaseMixin을 통해 외부 spacing/sx 스타일을 루트 anchor에 병합
  *
  * * 데이터 처리 규칙
  *   * 입력 props 계약
  *     * children: string | ReactNode (string일 경우 Typography로 자동 래핑)
  *     * underline: "none" | "hover" | "always", 기본 "always"
  *     * color: 링크 기본 색상, 기본 text.primary
+ *     * hoverColor: hover 시 색상, 기본 primary[400]
  *     * disabled: 링크 비활성화 여부
- *     * typographyProps: children이 string일 때 Typography 옵션 확장
+ *     * typographyProps: children이 string일 때 text/variant/color를 제외한 Typography 옵션 확장
  *   * 내부 처리 로직
  *     * disabled 상태에 따라 href를 undefined로 처리하여 브라우저 기본 이동 차단
  *   * 클라이언트 제어 컴포넌트 (서버 제어 없음)
@@ -78,14 +81,15 @@ const Link = ({
   const theme = useTheme()
 
   const resolvedColor = color ?? theme.colors.text.primary
-  const resolvedHoverColor = hoverColor ?? resolvedColor
+  const resolvedHoverColor = hoverColor ?? theme.colors.primary[400]
 
   // * disabled 상태일 때 기본 링크 동작을 막고, 활성 상태일 때만 onClick을 위임
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = (e: ReactMouseEvent<HTMLAnchorElement>) => {
     if (disabled) {
       e.preventDefault()
       return
     }
+
     onClick?.(e)
   }
 
@@ -110,18 +114,21 @@ const Link = ({
           {...typographyProps}
         />
       ) : (
-        <>{children}</>
+        children
       )}
     </StyledLink>
   )
 }
 
-const StyledLink = styled.a<{
-  $underline: "none" | "hover" | "always"
-  $disabled: boolean
-  $color: string
-  $hoverColor: string
-}>`
+const StyledLink = styled.a<
+  BaseMixinProps & {
+    $underline: "none" | "hover" | "always"
+    $disabled: boolean
+    $color: string
+    $hoverColor: string
+  }
+>`
+  ${BaseMixin};
   display: inline;
   cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   color: ${({ theme, $disabled, $color }) => ($disabled ? theme.colors.text.disabled : $color)};

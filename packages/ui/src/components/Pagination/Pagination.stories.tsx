@@ -1,178 +1,78 @@
+import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useMemo, useState } from "react"
-import Pagination from "./Pagination"
-import Flex from "../Flex/Flex"
 import Box from "../Box/Box"
-import { Typography } from "../Typography/Typography"
-import { theme } from "../../tokens/theme"
-import { formatWithComma } from "../../utils/string"
+import Flex from "../Flex/Flex"
+import Pagination from "./Pagination"
 
 const meta: Meta<typeof Pagination> = {
-  title: "Components/Pagination",
+  title: "Navigation/Pagination",
   component: Pagination,
-  parameters: { layout: "padded" },
-  argTypes: {
-    onPageChange: { action: "onPageChange", control: false },
-    labelDisplayedRows: { control: false },
-    icons: { control: false },
-  },
-}
-export default meta
-type Story = StoryObj<typeof Pagination>
-
-export const Table: Story = {
-  args: {
-    type: "Table",
-    count: 235,
-    disabled: false,
-    width: "fit-content",
-  },
-  render: (args) => {
-    const [page, setPage] = useState(1)
-
-    const labelDisplayedRows = useMemo(
-      () => (from: number, to: number, count: number) => (
-        <Typography
-          variant="b1Bold"
-          color={theme.colors.text.primary}
-          text={`${from}–${to} / 총 ${formatWithComma(count)}건`}
-        />
-      ),
-      [],
-    )
-
-    return (
-      <Box>
-        <Typography variant="h3" text="Pagination (Table)" mb="12px" />
-        <Flex align="center" gap="12px" mb="12px">
-          <Typography
-            variant="b2Regular"
-            color={theme.colors.text.secondary}
-            text={`page: ${page}`}
-          />
-        </Flex>
-
-        <Pagination
-          {...args}
-          page={page}
-          onPageChange={(p) => {
-            setPage(p)
-          }}
-          labelDisplayedRows={labelDisplayedRows}
-        />
-      </Box>
-    )
-  },
-}
-
-export const Basic: Story = {
   args: {
     type: "Basic",
-    pageCount: 32,
-    siblingCount: 1,
-    boundaryCount: 1,
-    showPrevNextButtons: true,
-    showFirstLastButtons: true,
-    hidePrevNextButtons: false,
-    hideFirstLastButtons: false,
+    page: 3,
+    pageCount: 12,
     disabled: false,
-    width: "fit-content",
   },
-  render: (args) => {
-    const [page, setPage] = useState(7)
-
-    return (
-      <Box>
-        <Typography variant="h3" text="Pagination (Basic)" mb="12px" />
-        <Flex align="center" gap="12px" mb="12px">
-          <Typography
-            variant="b2Regular"
-            color={theme.colors.text.secondary}
-            text={`page: ${page}`}
-          />
-          <Typography
-            variant="b2Regular"
-            color={theme.colors.text.secondary}
-            text={`pageCount: ${args.pageCount}`}
-          />
-        </Flex>
-
-        <Pagination
-          {...args}
-          page={page}
-          onPageChange={(p) => {
-            setPage(p)
-          }}
-        />
-      </Box>
-    )
+  argTypes: {
+    type: { control: "radio", options: ["Table", "Basic"] },
+    page: { control: "number" },
+    count: { control: "number" },
+    pageCount: { control: "number" },
+    siblingCount: { control: "number" },
+    boundaryCount: { control: "number" },
+    disabled: { control: "boolean" },
+    hidePrevNextButtons: { control: "boolean" },
+    hideFirstLastButtons: { control: "boolean" },
+    showPrevNextButtons: { control: "boolean" },
+    showFirstLastButtons: { control: "boolean" },
   },
 }
 
-export const DisabledMatrix: Story = {
+export default meta
+
+type Story = StoryObj<typeof Pagination>
+
+export const Playground: Story = {
+  render: (args) => {
+    const [page, setPage] = useState(typeof args.page === "number" ? args.page : 1)
+
+    return <Pagination {...args} page={page} onPageChange={setPage} />
+  },
+}
+
+export const AllCases: Story = {
   render: () => {
-    const [pageA, setPageA] = useState(1)
-    const [pageB, setPageB] = useState(5)
+    const [tablePage, setTablePage] = useState(1)
+    const [basicPage, setBasicPage] = useState(5)
 
     return (
-      <Box>
-        <Typography variant="h3" text="Disabled / Options Matrix" mb="12px" />
+      <Flex direction="column" gap={20}>
+        <Box>
+          <Pagination type="Table" count={126} page={tablePage} onPageChange={setTablePage} />
+        </Box>
 
-        <Flex direction="column" gap="16px">
-          <Box>
-            <Typography variant="h2" text="Table - enabled" mb="8px" />
-            <Pagination type="Table" count={120} page={pageA} onPageChange={setPageA} />
-          </Box>
+        <Box>
+          <Pagination type="Basic" page={basicPage} pageCount={15} onPageChange={setBasicPage} />
+        </Box>
 
-          <Box>
-            <Typography variant="h2" text="Table - disabled" mb="8px" />
-            <Pagination type="Table" count={120} page={pageA} onPageChange={setPageA} disabled />
-          </Box>
+        <Box>
+          <Pagination
+            type="Basic"
+            page={basicPage}
+            pageCount={15}
+            onPageChange={setBasicPage}
+            showFirstLastButtons
+          />
+        </Box>
 
-          <Box>
-            <Typography variant="h2" text="Basic - full controls" mb="8px" />
-            <Pagination
-              type="Basic"
-              page={pageB}
-              onPageChange={setPageB}
-              pageCount={24}
-              siblingCount={2}
-              boundaryCount={2}
-              showFirstLastButtons
-              showPrevNextButtons
-            />
-          </Box>
+        <Box>
+          <Pagination type="Basic" page={3} pageCount={20} siblingCount={2} boundaryCount={2} />
+        </Box>
 
-          <Box>
-            <Typography variant="h2" text="Basic - no first/last, no prev/next" mb="8px" />
-            <Pagination
-              type="Basic"
-              page={pageB}
-              onPageChange={setPageB}
-              pageCount={24}
-              siblingCount={1}
-              boundaryCount={1}
-              showFirstLastButtons={false}
-              showPrevNextButtons={false}
-            />
-          </Box>
-
-          <Box>
-            <Typography variant="h2" text="Basic - disabled" mb="8px" />
-            <Pagination
-              type="Basic"
-              page={pageB}
-              onPageChange={setPageB}
-              pageCount={24}
-              siblingCount={1}
-              boundaryCount={1}
-              showFirstLastButtons
-              showPrevNextButtons
-              disabled
-            />
-          </Box>
-        </Flex>
-      </Box>
+        <Box>
+          <Pagination type="Basic" page={1} pageCount={8} disabled showFirstLastButtons />
+        </Box>
+      </Flex>
     )
   },
 }

@@ -21,6 +21,10 @@ const STATUS_ICONS: Record<HelperTextUiType, IconName> = {
   info: "StatusInfo",
   default: "StatusDefault",
 }
+
+const getLiveMode = (status: HelperTextUiType): "assertive" | "polite" => {
+  return status === "error" ? "assertive" : "polite"
+}
 /**---------------------------------------------------------------------------/
  *
  * ! HelperText
@@ -28,6 +32,7 @@ const STATUS_ICONS: Record<HelperTextUiType, IconName> = {
  * * 입력/폼 컴포넌트 하단에 상태 메시지를 표시하는 보조 텍스트(HelperText) 컴포넌트
  * * `status(error|success|info|default)`에 따라 아이콘과 텍스트 색상을 동기화하여 피드백을 제공
  * * Typography/Icon 옵션은 `typographyProps`/`iconProps`로 확장 가능하며, BaseMixinProps로 외부 스타일 확장 지원
+ * * 접근성 강화를 위해 상태 메시지 컨테이너에 role/status 및 aria-live를 부여
  *
  * * 동작 규칙
  *   * 상태 아이콘
@@ -35,11 +40,15 @@ const STATUS_ICONS: Record<HelperTextUiType, IconName> = {
  *   * 색상 결정
  *     * status별 theme 토큰 컬러를 매핑하여 아이콘/텍스트에 동일하게 적용
  *     * color 계산은 useMemo로 캐싱하여 렌더 비용을 최소화
+ *   * 라이브 리전 정책
+ *     * error는 즉시 전달이 필요한 상태로 보고 `aria-live="assertive"` 적용
+ *     * success/info/default는 일반 안내 성격으로 `aria-live="polite"` 적용
  *   * 텍스트 표시
  *     * `Typography`에 `whiteSpace: pre-line`을 적용해 줄바꿈 문자열을 그대로 표시
  *
  * * 레이아웃/스타일 관련 규칙
  *   * Root는 flex row로 아이콘 + 텍스트를 수평 정렬
+ *   * 멀티라인 메시지에서도 첫 줄 기준 정렬이 자연스럽도록 `align-items: flex-start` 적용
  *   * Icon은 고정 크기(0.75rem)로 표시하며, mr로 텍스트와 간격을 둠
  *   * BaseMixin을 통해 spacing/size/sx 등 공통 스타일을 외부에서 주입 가능
  *
@@ -50,7 +59,7 @@ const STATUS_ICONS: Record<HelperTextUiType, IconName> = {
  *     * `typographyProps`는 text/variant/color를 제외한 Typography 옵션 확장 포인트
  *     * `iconProps`는 name을 제외한 Icon 옵션 확장 포인트
  *   * 내부 계산 로직
- *     * status → (color, icon) 매핑을 통해 UI 표현을 일관되게 유지
+ *     * status → (color, icon, aria-live) 매핑을 통해 UI 표현과 접근성 표현을 일관되게 유지
  *
  * @module HelperText
  * 폼 상태(error/success/info/default)에 맞춰 아이콘과 함께 안내 문구를 표시하는 HelperText 컴포넌트
@@ -71,12 +80,22 @@ const HelperText = ({ text, status, typographyProps, iconProps, ...others }: Hel
       info: theme.colors.info[500],
       default: theme.colors.grayscale[500],
     }
+
     return map[status]
   }, [status, theme])
 
+  const liveMode = useMemo(() => getLiveMode(status), [status])
+
   return (
-    <Root {...others}>
-      <Icon name={STATUS_ICONS[status]} color={color} size={"0.75rem"} mr={4} {...iconProps} />
+    <Root {...others} role="status" aria-live={liveMode}>
+      <Icon
+        name={STATUS_ICONS[status]}
+        color={color}
+        size="0.75rem"
+        mr={4}
+        aria-hidden="true"
+        {...iconProps}
+      />
       <Typography
         text={text}
         variant="b2Regular"
@@ -91,7 +110,7 @@ const HelperText = ({ text, status, typographyProps, iconProps, ...others }: Hel
 const Root = styled.div<BaseMixinProps>`
   ${BaseMixin};
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 `
 
 export default HelperText

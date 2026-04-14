@@ -1,161 +1,120 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useMemo, useState } from "react"
 import Grid from "./Grid"
-import type { GridProps } from "./Grid"
 import Box from "../Box/Box"
-import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 
-const meta: Meta<typeof Grid> = {
-  title: "Components/Grid",
-  component: Grid,
-  parameters: { layout: "fullscreen" },
-  argTypes: {
-    columns: { control: "text" },
-    gap: { control: "text" },
-  },
-  args: {
-    columns: "1fr 1fr 1fr",
-    gap: "12px",
-  },
-}
-
-export default meta
-type Story = StoryObj<typeof Grid>
-
-const Cell = ({ label }: { label: string }) => {
+const Cell = ({ text }: { text: string }) => {
   return (
     <Box
-      height="64px"
+      p={12}
       sx={{
-        borderRadius: "12px",
-        border: "1px solid #e5e7eb",
-        backgroundColor: "#ffffff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        border: "1px solid",
+        borderColor: "border.default",
+        borderRadius: "8px",
+        backgroundColor: "background.secondary",
       }}
     >
-      <Typography variant="b2Regular" text={label} />
+      <Typography text={text} />
     </Box>
   )
 }
 
+const meta: Meta<typeof Grid> = {
+  title: "Layout/Grid",
+  component: Grid,
+  args: {
+    columns: "1fr 1fr",
+    gap: 12,
+    inline: false,
+  },
+  argTypes: {
+    columns: {
+      control: "text",
+    },
+    rows: {
+      control: "text",
+    },
+    gap: {
+      control: "text",
+    },
+    rowGap: {
+      control: "text",
+    },
+    columnGap: {
+      control: "text",
+    },
+    inline: {
+      control: "boolean",
+    },
+  },
+}
+
+export default meta
+
+type Story = StoryObj<typeof Grid>
+
 export const Playground: Story = {
   render: (args) => {
-    const items = useMemo(() => Array.from({ length: 12 }).map((_, i) => `Cell ${i + 1}`), [])
     return (
-      <Box p="20px" width={"100%"}>
-        <Typography variant="h3" text="Grid Playground" mb="12px" />
-
-        <Box
-          p="14px"
-          bgColor="#f7f7f7"
-          sx={{ border: "1px solid #eee", borderRadius: "12px" }}
-          mb="12px"
-        >
-          <Typography
-            variant="b3Regular"
-            text={`columns="${args.columns}" | gap="${String(args.gap)}"`}
-            color="#666666"
-          />
-        </Box>
-
-        <Grid
-          {...(args as GridProps)}
-          width="100%"
-          sx={{
-            padding: "12px",
-            border: "1px dashed #cbd5e1",
-            borderRadius: "12px",
-            backgroundColor: "#fafafa",
-          }}
-        >
-          {items.map((t) => (
-            <Cell key={t} label={t} />
-          ))}
-        </Grid>
-      </Box>
+      <Grid {...args}>
+        <Cell text="Item 1" />
+        <Cell text="Item 2" />
+        <Cell text="Item 3" />
+        <Cell text="Item 4" />
+      </Grid>
     )
   },
 }
 
-export const InteractivePresets: Story = {
+export const AllCases: Story = {
   render: () => {
-    const [columns, setColumns] = useState<string>("1fr 1fr 1fr")
-    const [gap, setGap] = useState<GridProps["gap"]>(12)
-
     return (
-      <Box p="20px" width={"100%"}>
-        <Typography variant="h3" text="Grid Presets (Interactive)" mb="12px" />
-
-        <Flex gap="10px" wrap="wrap" mb="12px">
-          {[
-            "1fr 1fr",
-            "1fr 1fr 1fr",
-            "200px 1fr",
-            "200px 1fr 1fr",
-            "repeat(4, minmax(0, 1fr))",
-          ].map((c) => (
-            <Box
-              key={c}
-              as="button"
-              onClick={() => setColumns(c)}
-              sx={{
-                padding: "6px 10px",
-                borderRadius: "10px",
-                border: "1px solid #e5e7eb",
-                backgroundColor: columns === c ? "#111827" : "#ffffff",
-                color: columns === c ? "#ffffff" : "#111827",
-                cursor: "pointer",
-              }}
-            >
-              {c}
-            </Box>
-          ))}
-
-          {([0, 8, 12, 16, "24px"] as Array<GridProps["gap"]>).map((g) => (
-            <Box
-              key={String(g)}
-              as="button"
-              onClick={() => setGap(g)}
-              sx={{
-                padding: "6px 10px",
-                borderRadius: "10px",
-                border: "1px solid #e5e7eb",
-                backgroundColor: String(gap) === String(g) ? "#111827" : "#ffffff",
-                color: String(gap) === String(g) ? "#ffffff" : "#111827",
-                cursor: "pointer",
-              }}
-            >
-              gap={String(g)}
-            </Box>
-          ))}
-        </Flex>
-
-        <Box mb="10px">
-          <Typography
-            variant="b3Regular"
-            text={`columns="${columns}" | gap="${String(gap)}"`}
-            color="#666666"
-          />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "32px",
+        }}
+      >
+        <Box>
+          <Typography text="Basic 2 Columns" sx={{ marginBottom: "8px" }} />
+          <Grid columns="1fr 1fr" gap={12}>
+            <Cell text="A" />
+            <Cell text="B" />
+            <Cell text="C" />
+            <Cell text="D" />
+          </Grid>
         </Box>
 
-        <Grid
-          columns={columns}
-          gap={gap}
-          width="100%"
-          sx={{
-            padding: "12px",
-            border: "1px dashed #cbd5e1",
-            borderRadius: "12px",
-            backgroundColor: "#fafafa",
-          }}
-        >
-          {Array.from({ length: 14 }).map((_, i) => (
-            <Cell key={i} label={`Cell ${i + 1}`} />
-          ))}
-        </Grid>
+        <Box>
+          <Typography text="Mixed Columns" sx={{ marginBottom: "8px" }} />
+          <Grid columns="200px 1fr 1fr" gap={16}>
+            <Cell text="Sidebar" />
+            <Cell text="Content 1" />
+            <Cell text="Content 2" />
+          </Grid>
+        </Box>
+
+        <Box>
+          <Typography text="Row / Column Gap" sx={{ marginBottom: "8px" }} />
+          <Grid columns="repeat(3, minmax(0, 1fr))" rowGap={8} columnGap={24}>
+            <Cell text="1" />
+            <Cell text="2" />
+            <Cell text="3" />
+            <Cell text="4" />
+            <Cell text="5" />
+            <Cell text="6" />
+          </Grid>
+        </Box>
+
+        <Box>
+          <Typography text="Inline Grid" sx={{ marginBottom: "8px" }} />
+          <Grid columns="auto auto auto" gap={8} inline>
+            <Cell text="Chip 1" />
+            <Cell text="Chip 2" />
+            <Cell text="Chip 3" />
+          </Grid>
+        </Box>
       </Box>
     )
   },

@@ -1,36 +1,53 @@
 import type { ReactNode } from "react"
+import type { DefaultTheme } from "styled-components"
+import { css } from "styled-components"
 import { BaseMixin } from "../../tokens/baseMixin"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
-import { theme } from "../../tokens/theme"
 import { styled } from "../../tokens/customStyled"
-import { css } from "styled-components"
+
+type BorderRadiusKey = keyof DefaultTheme["borderRadius"]
 
 type PaperProps = BaseMixinProps & {
-  children: ReactNode
+  children?: ReactNode
   elevation?: number
-  radius?: keyof typeof theme.borderRadius | number | string
+  radius?: BorderRadiusKey | number | string
+}
+
+const clampElevation = (elevation: number, max: number) => {
+  return Math.min(Math.max(0, elevation), max)
+}
+
+const resolveRadius = (theme: DefaultTheme, radius: BorderRadiusKey | number | string): string => {
+  if (typeof radius === "string") return radius
+
+  if (radius in theme.borderRadius) {
+    return theme.borderRadius[radius as BorderRadiusKey]
+  }
+
+  return `${radius}px`
 }
 /**---------------------------------------------------------------------------/
  *
  * ! Paper
  *
  * * elevation(그림자)과 radius(모서리 반경)를 제공하는 컨테이너 컴포넌트
- * * theme.shadows.elevation 토큰을 기반으로 box-shadow를 적용하며, elevation 범위는 최대 24로 클램프
+ * * theme.shadows.elevation 토큰을 기반으로 box-shadow를 적용하며, elevation 범위는 토큰 최대 인덱스로 클램프
  * * radius는 theme.borderRadius 키 또는 임의의 CSS 문자열 값으로 지정 가능
  * * BaseMixin을 통해 외부 spacing/sx 등 공통 스타일 확장을 지원
  *
  * * 동작 규칙
  *   * 주요 분기 조건 및 처리 우선순위
- *     * elevation은 theme.shadows.elevation 인덱스로 사용하며, 24를 초과하면 24로 보정
- *     * radius가 string이면 그대로 사용, 아니면 theme.borderRadius[radius]로 해석
- *     * shouldForwardProp로 elevation/radius는 DOM 속성으로 전달하지 않음
+ *     * elevation은 theme.shadows.elevation 인덱스로 사용하며, 음수면 0, 최대값을 초과하면 마지막 인덱스로 보정
+ *     * radius가 string이면 그대로 사용
+ *     * radius가 number 또는 theme.borderRadius 키면 theme.borderRadius에서 우선 해석하고, 없으면 문자열 값으로 fallback
+ *     * styled props는 `$elevation`, `$radius` 형태로만 내부 전달하여 DOM 속성 누수를 방지
  *   * 이벤트 처리 방식
  *     * 없음(표시용 컨테이너)
  *   * disabled 상태에서 차단되는 동작
  *     * 해당 없음
  *
  * * 레이아웃/스타일 관련 규칙
- *   * box-shadow: theme.shadows.elevation[elevation] 적용
+ *   * box-shadow: theme.shadows.elevation[clampedElevation] 적용
  *   * border-radius: radius 타입에 따라 string 또는 테마 토큰 적용
  *   * transition: box-shadow 0.2s ease-in-out 적용
  *   * padding: 16px 기본 적용
@@ -38,12 +55,12 @@ type PaperProps = BaseMixinProps & {
  *
  * * 데이터 처리 규칙
  *   * 입력 props 계약(필수/선택)
- *     * children: 필수(내부 콘텐츠)
- *     * elevation: 옵션(기본 0), 최대 24로 보정
+ *     * children: 옵션(내부 콘텐츠)
+ *     * elevation: 옵션(기본 0), 토큰 범위 내로 보정
  *     * radius: 옵션(기본 4), theme.borderRadius 키 또는 CSS 문자열
  *   * 내부 계산 로직 요약
- *     * elevation 인덱스: Math.min(elevation, 24)
- *     * radius 해석: typeof radius === "string" ? radius : theme.borderRadius[radius]
+ *     * elevation 인덱스: clampElevation(elevation, theme.shadows.elevation.length - 1)
+ *     * radius 해석: resolveRadius(theme, radius)
  *   * 서버 제어/클라이언트 제어 여부
  *     * 순수 프리젠테이션 컴포넌트(상태/서버 제어 없음)
  *
@@ -69,19 +86,16 @@ const Paper = ({ children, elevation = 0, radius = 4, ...others }: PaperProps) =
 const StyledPaper = styled.div<
   {
     $elevation: number
-    $radius: keyof typeof theme.borderRadius | number | string
+    $radius: BorderRadiusKey | number | string
   } & BaseMixinProps
 >`
   ${({ theme, $elevation, $radius }) => {
-    const resolvedRadius =
-      typeof $radius === "string"
-        ? $radius
-        : typeof $radius === "number"
-          ? theme.borderRadius[$radius as keyof typeof theme.borderRadius]
-          : theme.borderRadius[$radius]
+    const maxElevationIndex = Math.max(0, theme.shadows.elevation.length - 1)
+    const resolvedElevation = clampElevation($elevation, maxElevationIndex)
+    const resolvedRadius = resolveRadius(theme, $radius)
 
     return css`
-      box-shadow: ${theme.shadows.elevation[Math.min($elevation, 24)]};
+      box-shadow: ${theme.shadows.elevation[resolvedElevation]};
       border-radius: ${resolvedRadius};
       transition: box-shadow 0.2s ease-in-out;
       padding: 16px;
@@ -92,3 +106,4 @@ const StyledPaper = styled.div<
 `
 
 export default Paper
+export type { PaperProps }

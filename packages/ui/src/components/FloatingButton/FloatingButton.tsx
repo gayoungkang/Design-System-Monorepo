@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useTheme } from "styled-components"
+import { DefaultTheme, useTheme } from "styled-components"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import Icon, { type IconProps } from "../Icon/Icon"
@@ -44,14 +44,14 @@ const normalizePlacement = (p: AxisPlacement): "top" | "bottom" | "left" | "righ
   return "top"
 }
 
-const resolveBgColor = (theme: any, color: ColorUiType | string) => {
+const resolveBgColor = (theme: DefaultTheme, color: ColorUiType | string) => {
   if (color === "primary") return theme.colors.primary[400]
   if (color === "secondary") return theme.colors.secondary[400]
   if (color === "normal") return theme.colors.grayscale.white
   return color
 }
 
-const resolveContentColor = (theme: any, color: ColorUiType | string) => {
+const resolveContentColor = (theme: DefaultTheme, color: ColorUiType | string) => {
   if (color === "primary" || color === "secondary") return theme.colors.grayscale.white
   if (color === "normal") return theme.colors.text.primary
   return color

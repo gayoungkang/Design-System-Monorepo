@@ -1,65 +1,86 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { useState } from "react"
 import FloatingButton from "./FloatingButton"
-import type { FloatingButtonProps } from "./FloatingButton"
-import Box from "../Box/Box"
-import Flex from "../Flex/Flex"
-import Button from "../Button/Button"
-import { Typography } from "../Typography/Typography"
-
-const MAIN_ICON = "Add"
-const ITEM_ICON_1 = "Tag" as any
-const ITEM_ICON_2 = "ArrowRight"
-const ITEM_ICON_3 = "CheckLine"
 
 const meta: Meta<typeof FloatingButton> = {
   title: "Components/FloatingButton",
   component: FloatingButton,
-  parameters: { layout: "fullscreen" },
-  argTypes: {
-    item: { control: false },
-    iconProps: { control: false },
-    TypographyProps: { control: false },
-  },
   args: {
-    icon: MAIN_ICON,
-    label: "Create",
+    icon: "Add",
     size: "M",
     color: "primary",
     placement: "top",
-    disabled: false,
+  },
+  argTypes: {
+    size: {
+      control: "radio",
+      options: ["S", "M", "L"],
+    },
+    placement: {
+      control: "radio",
+      options: ["top", "bottom", "left", "right"],
+    },
+    color: {
+      control: "text",
+    },
   },
 }
+
 export default meta
 type Story = StoryObj<typeof FloatingButton>
 
 export const Playground: Story = {
-  render: () => {
-    const [log, setLog] = useState<string>("")
+  render: (args) => {
+    const [count, setCount] = useState(0)
 
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Menu + outside click + ESC" mb="12px" />
-
-        <Flex gap="10px" mb="12px">
-          <Button text="Clear log" variant="outlined" color="normal" onClick={() => setLog("")} />
-        </Flex>
-
+      <div>
         <FloatingButton
-          icon={MAIN_ICON}
-          label="New"
-          placement="top"
+          {...args}
           item={[
-            { icon: ITEM_ICON_1, label: "Tag", onClick: () => setLog("Tag clicked") },
-            { icon: ITEM_ICON_2, label: "Move", onClick: () => setLog("Move clicked") },
-            { icon: ITEM_ICON_3, onClick: () => setLog("Icon-only clicked") },
+            {
+              icon: "ClipboardLine",
+              label: "Clipboard",
+              onClick: () => setCount((p) => p + 1),
+            },
+            {
+              icon: "CloseLine",
+              label: "Delete",
+            },
           ]}
         />
 
-        <Box mt="14px">
-          <Typography variant="b3Regular" text={log || "no logs"} color="#666666" />
-        </Box>
-      </Box>
+        <div>clicked: {count}</div>
+      </div>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  render: () => {
+    return (
+      <div style={{ display: "flex", gap: 40 }}>
+        <FloatingButton icon="Add" size="S" />
+        <FloatingButton icon="Add" size="M" />
+        <FloatingButton icon="Add" size="L" />
+
+        <FloatingButton
+          icon="Add"
+          label="Create"
+          item={[
+            { icon: "ClipboardLine", label: "Clipboard" },
+            { icon: "CloseLine", label: "Delete" },
+          ]}
+        />
+
+        <FloatingButton
+          icon="Add"
+          placement="left"
+          item={[{ icon: "ClipboardLine", label: "Clipboard" }]}
+        />
+
+        <FloatingButton icon="Add" disabled />
+      </div>
     )
   },
 }

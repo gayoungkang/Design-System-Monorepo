@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { useState } from "react"
 import Avatar from "./Avatar"
-import type { AvatarProps } from "./Avatar"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import Button from "../Button/Button"
@@ -10,7 +9,9 @@ import { Typography } from "../Typography/Typography"
 const meta: Meta<typeof Avatar> = {
   title: "Components/Avatar",
   component: Avatar,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "centered",
+  },
   argTypes: {
     src: { control: "text" },
     alt: { control: "text" },
@@ -30,82 +31,149 @@ type Story = StoryObj<typeof Avatar>
 
 export const Playground: Story = {
   render: (args) => {
-    return (
-      <Box p="20px">
-        <Typography variant="h3" text="Avatar Playground" mb="12px" />
-        <Flex gap="12px" align="center">
-          <Avatar {...(args as AvatarProps)} />
-          <Typography
-            variant="b3Regular"
-            text={`src=${args.src ? "set" : "empty"} | name="${args.name ?? ""}" | size=${String(args.size)}`}
-            color="#666666"
-          />
-        </Flex>
-      </Box>
-    )
-  },
-}
-
-export const ImageFallbackAndReset: Story = {
-  render: () => {
-    const ok =
-      "data:image/svg+xml;utf8," +
-      encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="#60a5fa"/><text x="50%" y="54%" text-anchor="middle" font-size="18" fill="white" font-family="Arial">OK</text></svg>`,
-      )
-
-    const broken = "https://example.com/not-found-avatar.png"
-
-    const [src, setSrc] = useState<string | undefined>(broken)
+    const [useBrokenImage, setUseBrokenImage] = useState(false)
 
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Image error fallback + src reset" mb="12px" />
+      <Flex direction="column" gap="12px" align="center">
+        <Avatar
+          {...args}
+          src={useBrokenImage ? "/broken-avatar-image.png" : args.src}
+          alt={args.alt ?? "avatar"}
+        />
 
-        <Flex gap="10px" mb="12px">
+        <Flex gap="8px">
           <Button
-            text="Use broken src"
+            text={useBrokenImage ? "Use Original Src" : "Use Broken Src"}
             variant="outlined"
             color="normal"
-            onClick={() => setSrc(broken)}
-          />
-          <Button
-            text="Use ok src"
-            variant="contained"
-            color="primary"
-            onClick={() => setSrc(ok)}
-          />
-          <Button
-            text="Remove src"
-            variant="text"
-            color="secondary"
-            onClick={() => setSrc(undefined)}
+            onClick={() => setUseBrokenImage((prev) => !prev)}
           />
         </Flex>
 
-        <Flex gap="14px" align="center">
-          <Avatar src={src} name="Jane Doe" size="L" />
-          <Typography
-            variant="b3Regular"
-            text={`current src: ${src ? src.slice(0, 42) + "..." : "(none)"}`}
-          />
+        <Typography
+          variant="b3Regular"
+          text={useBrokenImage ? "현재 broken src 상태" : "현재 전달된 src 상태"}
+          color="text.secondary"
+        />
+      </Flex>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  parameters: {
+    layout: "fullscreen",
+  },
+  render: () => {
+    return (
+      <Box p="24px" width="900px">
+        <Typography variant="h3" text="Avatar Cases" mb="16px" />
+
+        <Flex direction="column" gap="20px">
+          <Box>
+            <Typography variant="b1Bold" text="Initials" mb="8px" />
+            <Flex gap="12px" align="center">
+              <Avatar name="Jane Doe" size="S" />
+              <Avatar name="Jane Doe" size="M" />
+              <Avatar name="Jane Doe" size="L" />
+              <Avatar name="John" size="M" />
+              <Avatar name="   " size="M" />
+            </Flex>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Custom Colors" mb="8px" />
+            <Flex gap="12px" align="center">
+              <Avatar name="Primary" bgColor="#4f46e5" fgColor="#ffffff" />
+              <Avatar name="Dark" bgColor="#111827" fgColor="#f9fafb" />
+              <Avatar name="Mint" bgColor="#10b981" fgColor="#052e16" />
+            </Flex>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Image / Fallback" mb="8px" />
+            <Flex gap="12px" align="center">
+              <Avatar
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80&fit=crop"
+                alt="profile"
+                name="Jane Doe"
+                size="L"
+              />
+              <Avatar src="/broken-avatar-image.png" name="Broken Image" size="L" />
+            </Flex>
+          </Box>
         </Flex>
       </Box>
     )
   },
 }
 
-export const SizeMatrix: Story = {
+export const InteractiveGallery: Story = {
   render: () => {
+    const [size, setSize] = useState<"S" | "M" | "L">("M")
+    const [name, setName] = useState("Design System")
+    const [useImage, setUseImage] = useState(false)
+
+    const imageSrc =
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80&fit=crop"
+
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Sizes" mb="12px" />
-        <Flex gap="12px" align="center">
-          <Avatar name="A B" size="S" />
-          <Avatar name="A B" size="M" />
-          <Avatar name="A B" size="L" />
+      <Flex direction="column" gap="16px" align="center">
+        <Avatar
+          name={name}
+          size={size}
+          src={useImage ? imageSrc : undefined}
+          alt={name}
+          bgColor="#334155"
+          fgColor="#ffffff"
+        />
+
+        <Flex gap="8px">
+          <Button
+            text="S"
+            variant={size === "S" ? "contained" : "outlined"}
+            onClick={() => setSize("S")}
+          />
+          <Button
+            text="M"
+            variant={size === "M" ? "contained" : "outlined"}
+            onClick={() => setSize("M")}
+          />
+          <Button
+            text="L"
+            variant={size === "L" ? "contained" : "outlined"}
+            onClick={() => setSize("L")}
+          />
         </Flex>
-      </Box>
+
+        <Flex gap="8px">
+          <Button
+            text="Name: Design System"
+            variant="outlined"
+            color="normal"
+            onClick={() => setName("Design System")}
+          />
+          <Button
+            text="Name: Jane Doe"
+            variant="outlined"
+            color="normal"
+            onClick={() => setName("Jane Doe")}
+          />
+          <Button
+            text="Name: Guest"
+            variant="outlined"
+            color="normal"
+            onClick={() => setName("Guest")}
+          />
+        </Flex>
+
+        <Button
+          text={useImage ? "Use Initials" : "Use Image"}
+          variant="text"
+          color="primary"
+          onClick={() => setUseImage((prev) => !prev)}
+        />
+      </Flex>
     )
   },
 }

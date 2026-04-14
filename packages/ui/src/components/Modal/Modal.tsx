@@ -1,12 +1,13 @@
-import { Suspense, useEffect, useRef } from "react"
+import { Suspense, useEffect, useId, useRef } from "react"
 import type { ReactNode } from "react"
+import { css, useTheme } from "styled-components"
+import type { DefaultTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Button from "../Button/Button"
 import type { ButtonProps } from "../Button/Button"
 import { useModalStack } from "../../stores/useModalStack"
 import ReactDOM from "react-dom"
 import Flex from "../Flex/Flex"
-import { theme } from "../../tokens/theme"
 import { MODAL_ZINDEX } from "../../types/zindex"
 import Box from "../Box/Box"
 import { fadeInUp } from "../../tokens/keyframes"
@@ -15,7 +16,6 @@ import IconButton from "../IconButton/IconButton"
 import Divider from "../Divider/Divider"
 import Progress from "../Progress/Progress"
 import { styled } from "../../tokens/customStyled"
-import { css } from "styled-components"
 import { canUseDOM } from "../../utils/canUseDOM"
 
 export type BasicModalProps = BaseMixinProps & {
@@ -35,6 +35,8 @@ export type BasicModalProps = BaseMixinProps & {
   bodySx?: BaseMixinProps
   container?: HTMLElement
 }
+
+const noop = () => undefined
 /**---------------------------------------------------------------------------/
  *
  * ! Modal
@@ -50,9 +52,9 @@ export type BasicModalProps = BaseMixinProps & {
  *     * open === true 이고 isTop === true 인 경우에만:
  *       * ESC 키 입력 시 onClose 호출
  *       * document.body overflow를 hidden으로 설정하여 스크롤 잠금
- *       * confirm 버튼(buttonRef)에 포커스 부여(queueMicrotask로 렌더 이후 보장)
+ *       * confirm 버튼(buttonRef)에 포커스 부여(requestAnimationFrame으로 렌더 이후 보장)
  *     * allowBackdrop === true 인 경우에만 오버레이 클릭으로 onClose 호출
- *     * headerComponent/footComponent가 제공되면 기본 헤더/푸터 대신 해당 컴포넌트를 우선 렌더링
+ *     * headerComponent/footerComponent가 제공되면 기본 헤더/푸터 대신 해당 컴포넌트를 우선 렌더링
  *   * 이벤트 처리 방식
  *     * overlay onClick: allowBackdrop가 true일 때만 onClose 실행
  *     * modal 컨텐츠 onClick: e.stopPropagation()으로 overlay 클릭 버블링 차단
@@ -81,6 +83,7 @@ export type BasicModalProps = BaseMixinProps & {
  *     * container: Portal 대상 엘리먼트(기본 document.body)
  *   * 내부 계산 로직 요약
  *     * useModalStack(open)으로 최상단 여부를 판단해 전역 이벤트/스크롤 잠금 적용 범위를 제한
+ *     * title이 있으면 aria-labelledby를 연결하고, 없으면 aria-label fallback을 사용
  *     * Suspense fallback으로 Circular Progress를 기본 로딩 표시로 사용
  *   * 클라이언트 제어 컴포넌트 (DOM 이벤트/Portal 기반, 서버 제어 없음)
  *
@@ -98,6 +101,23 @@ export type BasicModalProps = BaseMixinProps & {
  * </Modal>
  *
 /---------------------------------------------------------------------------**/
+
+const getOverlayStyles = (theme: DefaultTheme) => ({
+  position: "fixed" as const,
+  height: "100vh",
+  inset: 0,
+  backgroundColor: theme.colors.dim.default,
+  zIndex: MODAL_ZINDEX,
+})
+
+const getDialogStyles = (theme: DefaultTheme, width: string) => ({
+  maxHeight: "90vh",
+  overflow: "hidden" as const,
+  borderRadius: theme.borderRadius[8],
+  backgroundColor: theme.colors.grayscale.white,
+  boxShadow: theme.shadows.elevation[10],
+  width,
+})
 
 const Modal = ({
   open,
@@ -117,94 +137,88 @@ const Modal = ({
   container,
   ...others
 }: BasicModalProps) => {
-  const modalRef = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
   const buttonRef = useRef<HTMLButtonElement>(null)
   const { isTop } = useModalStack(open)
+  const titleId = useId()
 
   // * open + 최상단 모달일 때만: ESC 닫기 + body 스크롤 잠금 + confirm 버튼 포커스
   useEffect(() => {
-    if (!open || !isTop) return
+    if (!open || !isTop || !canUseDOM()) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose?.()
     }
 
     document.addEventListener("keydown", handleKeyDown)
+
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
 
-    // 포커스는 DOM이 렌더된 이후에 보장
-    queueMicrotask(() => {
+    const raf = window.requestAnimationFrame(() => {
       buttonRef.current?.focus()
     })
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
+      window.cancelAnimationFrame(raf)
       document.body.style.overflow = prevOverflow
     }
   }, [open, isTop, onClose])
 
-  if (!open) return null
+  if (!open || !canUseDOM()) return null
+
+  const closeHandler = onClose ?? noop
+  const confirmHandler = onConfirm ?? noop
 
   const overlay = (
     <Flex
-      onClick={() => allowBackdrop && onClose?.()}
+      onClick={() => {
+        if (allowBackdrop) closeHandler()
+      }}
       direction="column"
       justify="center"
       align="center"
-      sx={{
-        position: "fixed",
-        height: "100vh",
-        inset: 0,
-        backgroundColor: theme.colors.dim.default,
-        zIndex: MODAL_ZINDEX,
-      }}
+      sx={getOverlayStyles(theme)}
     >
       <AnimatedBox>
         <Flex
           direction="column"
-          ref={modalRef}
           width={width}
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
-          aria-label={title ?? "modal"}
-          sx={{
-            maxHeight: "90vh",
-            overflow: "hidden",
-            borderRadius: theme.borderRadius[8],
-            backgroundColor: theme.colors.grayscale.white,
-            boxShadow: theme.shadows.elevation[10],
-          }}
+          aria-labelledby={title ? titleId : undefined}
+          aria-label={title ? undefined : "modal"}
+          sx={getDialogStyles(theme, width)}
           {...others}
         >
-          {headerComponent ? (
-            <>{headerComponent}</>
-          ) : (
-            title && (
-              <>
-                <Flex justify="space-between" align="center" p="9px 20px">
-                  <Typography variant="h2" text={title} />
-                  <IconButton
-                    disableInteraction
-                    onClick={onClose ?? (() => {})}
-                    icon="CloseLine"
-                    iconProps={{ color: theme.colors.grayscale[400] }}
-                  />
-                </Flex>
-                <Divider />
-              </>
-            )
-          )}
+          {headerComponent
+            ? headerComponent
+            : title && (
+                <>
+                  <Flex justify="space-between" align="center" p="9px 20px">
+                    <Typography variant="h2" text={title} />
+                    <IconButton
+                      disableInteraction
+                      onClick={closeHandler}
+                      icon="CloseLine"
+                      ariaLabel="닫기"
+                      iconProps={{ color: theme.colors.grayscale[400] }}
+                    />
+                  </Flex>
+                  <Divider />
+                </>
+              )}
 
           <Box p="20px" sx={{ flex: 1, overflowY: "auto" }} {...bodySx}>
-            <Suspense fallback={<Progress type="Circular" variant="indeterminate" size="30px" />}>
+            <Suspense fallback={<Progress type="circular" variant="indeterminate" size="30px" />}>
               {children}
             </Suspense>
           </Box>
 
           {footerComponent ? (
-            <>{footerComponent}</>
+            footerComponent
           ) : (
             <>
               <Divider />
@@ -213,13 +227,13 @@ const Modal = ({
                   color="normal"
                   variant="text"
                   text={closeText ?? "취소"}
-                  onClick={onClose ?? (() => {})}
+                  onClick={closeHandler}
                   {...closeButtonProps}
                 />
                 <Button
                   ref={buttonRef}
                   text={confirmText ?? "확인"}
-                  onClick={onConfirm ?? (() => {})}
+                  onClick={confirmHandler}
                   {...confirmButtonProps}
                 />
               </Flex>
@@ -229,9 +243,6 @@ const Modal = ({
       </AnimatedBox>
     </Flex>
   )
-
-  // * SSR/테스트 안전 처리
-  if (!canUseDOM()) return null
 
   return ReactDOM.createPortal(overlay, container ?? document.body)
 }

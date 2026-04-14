@@ -1,16 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { useState } from "react"
 import Divider from "./Divider"
-import type { DividerProps } from "./Divider"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
-import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Divider> = {
   title: "Components/Divider",
   component: Divider,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "centered",
+  },
   argTypes: {
     direction: { control: "radio", options: ["horizontal", "vertical"] },
     thickness: { control: "text" },
@@ -29,42 +28,116 @@ type Story = StoryObj<typeof Divider>
 
 export const Playground: Story = {
   render: (args) => {
-    return (
-      <Box p="20px">
-        <Typography variant="h3" text="Divider Playground" mb="12px" />
-        <Box width="360px" sx={{ border: "1px solid #e5e7eb", borderRadius: "12px" }} p="12px">
-          <Typography variant="b2Regular" text="Above" />
-          <Divider {...(args as DividerProps)} my="12px" />
-          <Typography variant="b2Regular" text="Below" />
+    const isVertical = args.direction === "vertical"
+
+    return isVertical ? (
+      <Flex align="stretch" gap="16px" height="80px">
+        <Box p="8px">
+          <Typography variant="b2Regular" text="Left" />
         </Box>
+
+        <Divider {...args} />
+
+        <Box p="8px">
+          <Typography variant="b2Regular" text="Right" />
+        </Box>
+      </Flex>
+    ) : (
+      <Box width="360px">
+        <Typography variant="b2Regular" text="Top Content" mb="12px" />
+        <Divider {...args} />
+        <Typography variant="b2Regular" text="Bottom Content" mt="12px" />
       </Box>
     )
   },
 }
 
-export const VerticalInFlex: Story = {
+export const AllCases: Story = {
+  parameters: {
+    layout: "fullscreen",
+  },
   render: () => {
-    const [flexItem, setFlexItem] = useState(true)
-
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Vertical in Flex (flexItem)" mb="12px" />
+      <Box p="24px" width="900px">
+        <Typography variant="h3" text="Divider Cases" mb="16px" />
 
-        <Flex gap="10px" mb="12px">
-          <Button
-            text={flexItem ? "flexItem=true" : "flexItem=false"}
-            variant="outlined"
-            color="normal"
-            onClick={() => setFlexItem((v) => !v)}
-          />
-        </Flex>
+        <Flex direction="column" gap="24px">
+          <Box>
+            <Typography variant="b1Bold" text="Horizontal" mb="8px" />
+            <Box width="480px">
+              <Typography variant="b2Regular" text="Section A" mb="8px" />
+              <Divider />
+              <Typography variant="b2Regular" text="Section B" mt="8px" />
+            </Box>
+          </Box>
 
-        <Flex align="center" sx={{ border: "1px solid #e5e7eb", borderRadius: "12px" }} p="12px">
-          <Typography variant="b2Regular" text="Left" />
-          <Divider direction="vertical" thickness="2px" mx="12px" flexItem={flexItem} />
-          <Typography variant="b2Regular" text="Right" />
+          <Box>
+            <Typography variant="b1Bold" text="Thickness / Color" mb="8px" />
+            <Box width="480px">
+              <Divider thickness="2px" mb="8px" />
+              <Divider thickness="4px" color="rgb(59, 130, 246)" mb="8px" />
+              <Divider thickness="6px" color="rgb(239, 68, 68)" />
+            </Box>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Vertical" mb="8px" />
+            <Flex gap="16px" height="80px" align="stretch">
+              <Box p="8px" sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="b2Regular" text="Item A" />
+              </Box>
+
+              <Divider direction="vertical" />
+
+              <Box p="8px" sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="b2Regular" text="Item B" />
+              </Box>
+
+              <Divider direction="vertical" height="24px" />
+
+              <Box p="8px" sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="b2Regular" text="Item C" />
+              </Box>
+
+              <Divider direction="vertical" flexItem />
+
+              <Box p="8px" sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="b2Regular" text="Item D" />
+              </Box>
+            </Flex>
+          </Box>
         </Flex>
       </Box>
+    )
+  },
+}
+
+export const LayoutExamples: Story = {
+  render: () => {
+    return (
+      <Flex direction="column" gap="20px" width="520px">
+        <Box>
+          <Typography variant="b1Bold" text="Card Header" mb="8px" />
+          <Divider />
+          <Typography
+            variant="b2Regular"
+            text="카드 콘텐츠를 논리적인 구획으로 나눌 때 사용합니다."
+            mt="8px"
+          />
+        </Box>
+
+        <Flex gap="12px" align="stretch" height="72px">
+          <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Typography variant="b2Regular" text="Left Pane" />
+          </Box>
+
+          <Divider direction="vertical" flexItem />
+
+          <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Typography variant="b2Regular" text="Right Pane" />
+          </Box>
+        </Flex>
+      </Flex>
     )
   },
 }

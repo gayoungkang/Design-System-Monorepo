@@ -48,8 +48,11 @@ const normalizeSize = (size?: string | number) =>
  *     * `color`는 SVG의 currentColor로 전달되어 fill/stroke에 반영
  *     * `strokeWidth`는 stroke가 적용될 때만 의미가 있음
  *     * `paint`는 fill/stroke 적용 여부를 결정("auto"는 기본 fill 중심)
+ *   * 접근성 규칙
+ *     * `ariaLabel`이 있으면 `role="img"`와 `aria-label`을 부여
+ *     * `ariaLabel`이 없으면 장식용 아이콘으로 간주하고 `aria-hidden="true"`를 부여
  *   * 내부 계산 로직
- *     * `applyFill/applyStroke` 플래그로 <use>의 fill/stroke 속성을 조건부로 설정
+ *     * `applyFill`/`applyStroke` 플래그로 <use>의 fill/stroke 속성을 조건부로 설정
  *
  * @module Icon
  * SVG sprite 기반의 공통 아이콘 컴포넌트(색상/크기/선 두께/표현 방식 제어)
@@ -60,6 +63,7 @@ const normalizeSize = (size?: string | number) =>
  * <Icon name="Pen" paint="stroke" strokeWidth={1.5} />
  *
 /---------------------------------------------------------------------------**/
+
 const Icon = forwardRef<SVGSVGElement, IconProps>(
   ({ name, size = 24, color, strokeWidth, paint = "auto", ariaLabel, ...others }, ref) => {
     const resolvedSize = normalizeSize(size)
@@ -104,4 +108,5 @@ const StyledIcon = styled.svg<{ $color?: string }>`
 `
 
 Icon.displayName = "Icon"
+
 export default Icon

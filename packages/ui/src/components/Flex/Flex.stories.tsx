@@ -1,20 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useMemo, useState } from "react"
 import Flex from "./Flex"
-import type { FlexProps } from "./Flex"
 import Box from "../Box/Box"
+import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Flex> = {
   title: "Components/Flex",
   component: Flex,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "centered",
+  },
   argTypes: {
     as: {
       control: "select",
-      options: ["div", "section", "article", "main", "nav", "header", "footer"],
+      options: ["div", "section", "article", "main"],
     },
-    direction: { control: "select", options: ["row", "column", "row-reverse", "column-reverse"] },
+    direction: {
+      control: "radio",
+      options: ["row", "column", "row-reverse", "column-reverse"],
+    },
     justify: {
       control: "select",
       options: [
@@ -30,180 +34,203 @@ const meta: Meta<typeof Flex> = {
       control: "select",
       options: ["stretch", "flex-start", "center", "flex-end", "baseline"],
     },
-    wrap: { control: "select", options: ["nowrap", "wrap", "wrap-reverse"] },
+    wrap: {
+      control: "radio",
+      options: ["nowrap", "wrap", "wrap-reverse"],
+    },
     gap: { control: "text" },
-    extraProps: { control: false },
     children: { control: false },
+    extraProps: { control: false },
+    isActive: { control: false },
   },
   args: {
     as: "div",
     direction: "row",
     justify: "flex-start",
-    align: "stretch",
+    align: "center",
     wrap: "nowrap",
-    gap: "8px",
+    gap: "12px",
   },
 }
 
 export default meta
 type Story = StoryObj<typeof Flex>
 
-const Item = ({ label }: { label: string }) => {
-  return (
-    <Box
-      width="120px"
-      height="48px"
-      bgColor="#ffffff"
-      sx={{
-        border: "1px solid #e5e7eb",
-        borderRadius: "10px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Typography variant="b2Regular" text={label} />
-    </Box>
-  )
-}
-
 export const Playground: Story = {
   render: (args) => {
-    const items = useMemo(() => Array.from({ length: 10 }).map((_, i) => `Item ${i + 1}`), [])
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="Flex Playground" mb="12px" />
-
+      <Flex {...args}>
         <Box
-          p="14px"
-          bgColor="#f7f7f7"
-          sx={{ border: "1px solid #eee", borderRadius: "12px" }}
-          mb="12px"
-        >
-          <Typography
-            variant="b3Regular"
-            text={`as=${args.as} | direction=${args.direction} | justify=${args.justify} | align=${args.align} | wrap=${args.wrap} | gap=${String(
-              args.gap,
-            )}`}
-            color="#666666"
-          />
-        </Box>
-
-        <Flex
-          {...(args as FlexProps)}
-          width="100%"
+          p="12px"
           sx={{
-            border: "1px dashed #cbd5e1",
-            borderRadius: "12px",
-            padding: "12px",
-            backgroundColor: "#fafafa",
+            minWidth: "80px",
+            border: "1px solid",
+            borderColor: "border.default",
+            backgroundColor: "background.default",
+            textAlign: "center",
           }}
         >
-          {items.map((t) => (
-            <Item key={t} label={t} />
-          ))}
+          Item 1
+        </Box>
+        <Box
+          p="12px"
+          sx={{
+            minWidth: "80px",
+            border: "1px solid",
+            borderColor: "border.default",
+            backgroundColor: "grayscale.white",
+            textAlign: "center",
+          }}
+        >
+          Item 2
+        </Box>
+        <Box
+          p="12px"
+          sx={{
+            minWidth: "80px",
+            border: "1px solid",
+            borderColor: "border.default",
+            backgroundColor: "background.dark",
+            textAlign: "center",
+          }}
+        >
+          Item 3
+        </Box>
+      </Flex>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  parameters: {
+    layout: "fullscreen",
+  },
+  render: () => {
+    return (
+      <Box p="24px" width="960px">
+        <Typography variant="h3" text="Flex Cases" mb="16px" />
+
+        <Flex direction="column" gap="24px">
+          <Box>
+            <Typography variant="b1Bold" text="Direction" mb="8px" />
+            <Flex gap="20px" wrap="wrap">
+              <Flex
+                direction="row"
+                gap="8px"
+                p="12px"
+                sx={{ border: "1px solid", borderColor: "border.default" }}
+              >
+                <Button text="A" />
+                <Button text="B" />
+                <Button text="C" />
+              </Flex>
+
+              <Flex
+                direction="column"
+                gap="8px"
+                p="12px"
+                sx={{ border: "1px solid", borderColor: "border.default" }}
+              >
+                <Button text="A" />
+                <Button text="B" />
+                <Button text="C" />
+              </Flex>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Justify / Align" mb="8px" />
+            <Flex
+              justify="space-between"
+              align="center"
+              height="120px"
+              p="12px"
+              sx={{ border: "1px solid", borderColor: "border.default" }}
+            >
+              <Box p="12px" sx={{ border: "1px solid", borderColor: "border.default" }}>
+                Left
+              </Box>
+              <Box p="12px" sx={{ border: "1px solid", borderColor: "border.default" }}>
+                Center
+              </Box>
+              <Box p="12px" sx={{ border: "1px solid", borderColor: "border.default" }}>
+                Right
+              </Box>
+            </Flex>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Wrap" mb="8px" />
+            <Flex
+              wrap="wrap"
+              gap="8px"
+              width="360px"
+              p="12px"
+              sx={{ border: "1px solid", borderColor: "border.default" }}
+            >
+              {Array.from({ length: 8 }).map((_, index) => (
+                <Box
+                  key={index}
+                  p="12px"
+                  sx={{
+                    width: "90px",
+                    border: "1px solid",
+                    borderColor: "border.default",
+                    textAlign: "center",
+                  }}
+                >
+                  Item {index + 1}
+                </Box>
+              ))}
+            </Flex>
+          </Box>
+
+          <Box>
+            <Typography variant="b1Bold" text="Composition" mb="8px" />
+            <Flex
+              direction="column"
+              gap="12px"
+              p="16px"
+              width="520px"
+              sx={{ border: "1px solid", borderColor: "border.default" }}
+            >
+              <Typography variant="b1Bold" text="Header" />
+              <Typography
+                variant="b2Regular"
+                text="Flex는 컴포넌트 조합과 레이아웃 분배에 사용하는 베이스 래퍼입니다."
+                color="text.secondary"
+              />
+              <Flex gap="8px" justify="flex-end">
+                <Button text="Cancel" variant="outlined" color="normal" />
+                <Button text="Confirm" />
+              </Flex>
+            </Flex>
+          </Box>
         </Flex>
       </Box>
     )
   },
 }
 
-export const WrapAndGapDemo: Story = {
+export const SemanticElements: Story = {
   render: () => {
-    const [wrap, setWrap] = useState<FlexProps["wrap"]>("nowrap")
-    const [gap, setGap] = useState<FlexProps["gap"]>("8px")
-
     return (
-      <Flex p="20px" direction="column" width={"90%"}>
-        <Typography variant="h3" text="Wrap + Gap (Interactive)" mb="12px" />
-
-        <Flex gap="8px" mb="12px">
-          <Box>
-            <Typography variant="b3Regular" text="wrap" mb="6px" color="#666666" />
-            <Flex gap="8px">
-              <Box
-                as="button"
-                onClick={() => setWrap("nowrap")}
-                sx={{
-                  padding: "6px 10px",
-                  borderRadius: "10px",
-                  border: "1px solid #e5e7eb",
-                  backgroundColor: wrap === "nowrap" ? "#111827" : "#ffffff",
-                  color: wrap === "nowrap" ? "#ffffff" : "#111827",
-                  cursor: "pointer",
-                }}
-              >
-                nowrap
-              </Box>
-              <Box
-                as="button"
-                onClick={() => setWrap("wrap")}
-                sx={{
-                  padding: "6px 10px",
-                  borderRadius: "10px",
-                  border: "1px solid #e5e7eb",
-                  backgroundColor: wrap === "wrap" ? "#111827" : "#ffffff",
-                  color: wrap === "wrap" ? "#ffffff" : "#111827",
-                  cursor: "pointer",
-                }}
-              >
-                wrap
-              </Box>
-              <Box
-                as="button"
-                onClick={() => setWrap("wrap-reverse")}
-                sx={{
-                  padding: "6px 10px",
-                  borderRadius: "10px",
-                  border: "1px solid #e5e7eb",
-                  backgroundColor: wrap === "wrap-reverse" ? "#111827" : "#ffffff",
-                  color: wrap === "wrap-reverse" ? "#ffffff" : "#111827",
-                  cursor: "pointer",
-                }}
-              >
-                wrap-reverse
-              </Box>
-            </Flex>
+      <Flex
+        as="section"
+        direction="column"
+        gap="12px"
+        width="640px"
+        p="16px"
+        sx={{ border: "1px solid", borderColor: "border.default" }}
+      >
+        <Typography variant="h3" text="Semantic Flex Section" />
+        <Flex as="article" gap="12px" p="12px" sx={{ backgroundColor: "background.default" }}>
+          <Box p="12px" sx={{ border: "1px solid", borderColor: "border.default" }}>
+            Article A
           </Box>
-
-          <Box ml="12px">
-            <Typography variant="b3Regular" text="gap" mb="6px" color="#666666" />
-            <Flex gap="8px">
-              {["0px", "8px", "12px", "16px", 8, 12].map((v) => (
-                <Box
-                  key={String(v)}
-                  as="button"
-                  onClick={() => setGap(v)}
-                  sx={{
-                    padding: "6px 10px",
-                    borderRadius: "10px",
-                    border: "1px solid #e5e7eb",
-                    backgroundColor: String(gap) === String(v) ? "#111827" : "#ffffff",
-                    color: String(gap) === String(v) ? "#ffffff" : "#111827",
-                    cursor: "pointer",
-                  }}
-                >
-                  {String(v)}
-                </Box>
-              ))}
-            </Flex>
+          <Box p="12px" sx={{ border: "1px solid", borderColor: "border.default" }}>
+            Article B
           </Box>
-        </Flex>
-
-        <Flex
-          wrap={wrap}
-          gap={gap}
-          width="100%"
-          sx={{
-            border: "1px dashed #cbd5e1",
-            borderRadius: "12px",
-            padding: "12px",
-            backgroundColor: "#fafafa",
-          }}
-        >
-          {Array.from({ length: 18 }).map((_, i) => (
-            <Item key={i} label={`Item ${i + 1}`} />
-          ))}
         </Flex>
       </Flex>
     )

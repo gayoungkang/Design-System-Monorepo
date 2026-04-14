@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { theme } from "../../tokens/theme"
 import { circularIndeterminate, indeterminateAnimation } from "../../tokens/keyframes"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -7,7 +6,7 @@ import Box from "../Box/Box"
 import { styled } from "../../tokens/customStyled"
 
 export type ProgressProps = BaseMixinProps & {
-  type?: "bar" | "Circular"
+  type?: "bar" | "circular"
   variant?: "determinate" | "indeterminate"
   value?: number
   color?: string
@@ -20,51 +19,52 @@ export type ProgressProps = BaseMixinProps & {
  *
  * ! Progress
  *
- * * 진행 상태를 표시하는 Progress 컴포넌트입니다. (bar / Circular 타입 지원)
- * * `type`에 따라 Bar(가로) 또는 Circular(SVG 원형)로 렌더링됩니다.
- * * `variant`에 따라 determinate(값 기반) / indeterminate(무한 로딩) 모드로 동작합니다.
- * * determinate 모드에서는 `value`(0~100)를 기준으로 내부 `animatedValue`를 증가시켜 부드럽게 반영합니다.
+ * * 진행 상태를 bar 또는 circular 형태로 표현하는 공용 프로그레스 컴포넌트
+ * * type과 variant 조합에 따라 determinate/indeterminate 진행 UI를 분기 렌더링한다
+ * * value는 0~100 범위로 보정되어 사용되며, determinate일 때만 실제 진행률과 aria-valuenow 및 퍼센트 라벨에 반영된다
+ * * 외부 이벤트 훅은 없으며, 전달받은 BaseMixinProps를 루트 래퍼에 그대로 위임해 레이아웃 스타일을 확장할 수 있다
  *
  * * 동작 규칙
- *   * determinate:
- *     * `value`까지 requestAnimationFrame 기반으로 `animatedValue`를 1씩 증가시켜 진행률을 표현합니다.
- *     * Bar 타입은 width(%), Circular 타입은 strokeDashoffset으로 진행률을 표시합니다.
- *   * indeterminate:
- *     * Bar 타입은 `indeterminateAnimation`으로 무한 이동 애니메이션을 수행합니다.
- *     * Circular 타입은 `circularIndeterminate`로 원형 회전/진행 애니메이션을 수행합니다.
- *   * `variant`가 determinate가 아니면 `animatedValue`는 0으로 초기화됩니다.
+ *   * 주요 분기 조건 및 처리 우선순위
+ *     * type이 "circular"이면 원형 진행 UI를 렌더링하고, 그 외에는 bar 진행 UI를 렌더링한다
+ *     * variant가 "determinate"이면 value 기반 진행률을 표시하고, "indeterminate"이면 애니메이션 기반 진행 상태만 표시한다
+ *     * label은 존재하더라도 variant가 "determinate"일 때만 중앙 퍼센트 텍스트로 렌더링된다
+ *   * 이벤트 처리 방식(onClick, onChange, onDoubleClick 등)
+ *     * 자체 이벤트 처리 로직은 없으며, 표시 전용 컴포넌트로 동작한다
+ *   * disabled 상태에서 차단되는 동작
+ *     * disabled 개념은 없으며, type/variant/value 조합에 따라 표시 방식만 달라진다
  *
  * * 레이아웃/스타일 관련 규칙
- *   * Bar:
- *     * Track은 `height`, `backgroundColor`를 사용하고 borderRadius + overflow hidden으로 클리핑합니다.
- *     * determinate Bar는 width 전환(0.4s)으로 부드럽게 변화합니다.
- *     * indeterminate Bar는 absolute 배치 + keyframes 애니메이션으로 표현됩니다.
- *   * Circular:
- *     * `size`를 wrapper 및 svg width/height로 사용합니다.
- *     * radius(18) 고정, circumference 기반 dasharray/dashoffset을 계산합니다.
- *   * Label:
- *     * `label`이 있고 determinate일 때만 표시되며, 중앙 absolute 배치로 렌더링됩니다.
+ *   * bar 타입은 Wrapper 내부 Track을 기준으로 진행 막대를 렌더링하며, Track은 relative/overflow hidden 구조를 사용한다
+ *   * determinate bar는 width를 safeValue%로 계산하고 width transition으로 변화가 반영된다
+ *   * indeterminate bar는 absolute 배치 후 indeterminateAnimation으로 반복 이동한다
+ *   * circular 타입은 size를 기준으로 정사각 래퍼와 SVG 크기를 결정한다
+ *   * 원형 진행률은 strokeWidth=4 기준으로 radius/circumference/dashOffset을 계산해 표현한다
+ *   * determinate circle은 stroke-dashoffset transition으로 값 변화를 표현하고, indeterminate circle은 circularIndeterminate 애니메이션을 반복 적용한다
+ *   * 라벨은 bar/circular 모두 CenterLabel을 통해 중앙 절대 배치된다
  *
  * * 데이터 처리 규칙
- *   * 입력 props 계약:
- *     * `type`: "bar" | "Circular" (기본 "bar")
- *     * `variant`: "determinate" | "indeterminate" (기본 "indeterminate")
- *     * `value`: determinate 진행률 값 (기본 0)
- *     * `color`, `backgroundColor`, `height`, `size`는 스타일 제어용 옵션입니다.
- *   * 내부 계산:
- *     * `animatedValue`는 determinate에서만 value까지 증가하며, Circular은 dashOffset을 계산합니다.
- *   * 서버/클라이언트 제어:
- *     * 진행률 값(`value`)은 외부 제어값을 사용하고, 시각적 부드러움만 내부 애니메이션으로 보정합니다.
+ *   * 입력 props 계약(필수/선택)
+ *     * type, variant, value, color, height, size, label, backgroundColor는 모두 선택값이다
+ *     * BaseMixinProps를 함께 지원하여 spacing/size/sx 등 공통 스타일 props를 전달할 수 있다
+ *   * 내부 계산 로직 요약(보정, fallback, formatter 등)
+ *     * value는 Math.max/Math.min으로 0~100 범위로 보정된 safeValue를 사용한다
+ *     * circular 타입에서는 size 문자열을 parseInt로 숫자화한 numericSize를 기준으로 중심 좌표와 반지름을 계산한다
+ *     * width 기본값은 bar에서 100%로 동작하고, color/backgroundColor/height/size는 기본 테마값 또는 기본 문자열 값으로 fallback 된다
+ *     * label 문자열 자체는 표시 조건에만 사용되고, 실제 렌더링 텍스트는 항상 `${safeValue}%` 형식이다
+ *   * 서버 제어/클라이언트 제어 여부
+ *     * 서버 통신이나 외부 제어 로직은 없으며, props 기반으로 렌더링만 수행하는 클라이언트 표시 컴포넌트이다
  *
  * @module Progress
- * bar / Circular 형태의 진행률 UI를 제공하며 determinate/indeterminate 로딩 상태를 표시합니다.
+ * 진행률 값을 선형 또는 원형 UI로 표시하고,
+ * determinate/indeterminate 상태에 따라 실제 진행률 또는 로딩 애니메이션을 시각적으로 제공하는 컴포넌트
  *
  * @usage
- * <Progress type="bar" variant="determinate" value={60} />
- * <Progress type="Circular" variant="indeterminate" />
+ * <Progress
+ *   {...props}
+ * />
  *
 /---------------------------------------------------------------------------**/
-
 const Progress = ({
   type = "bar",
   variant = "indeterminate",
@@ -76,105 +76,96 @@ const Progress = ({
   label,
   ...others
 }: ProgressProps) => {
-  const [animatedValue, setAnimatedValue] = useState(0)
+  const safeValue = Math.max(0, Math.min(100, value))
 
-  // * determinate일 경우 value까지 부드럽게 증가 애니메이션, 아니면 0으로 초기화
-  useEffect(() => {
-    if (variant === "determinate") {
-      const step = () => {
-        setAnimatedValue((prev) => {
-          const nextValue = Math.min(value, prev + 1)
-          if (nextValue < value) requestAnimationFrame(step)
-          return nextValue
-        })
-      }
-
-      step()
-      return
-    }
-
-    setAnimatedValue(0)
-  }, [value, variant])
-
-  // * Circular 타입: stroke-dashoffset으로 진행률 표현 + indeterminate 애니메이션 지원
-  if (type === "Circular") {
-    const radius = 18
+  if (type === "circular") {
+    const numericSize = parseInt(size)
+    const strokeWidth = 4
+    const radius = (numericSize - strokeWidth) / 2
     const circumference = 2 * Math.PI * radius
-    const dashOffset = circumference - (animatedValue / 100) * circumference
+    const dashOffset = circumference - (safeValue / 100) * circumference
 
     return (
-      <CircularWrapper size={size} {...others}>
-        <svg width={size} height={size} viewBox="0 0 40 40">
-          <circle cx="20" cy="20" r={radius} fill="none" stroke={backgroundColor} strokeWidth="4" />
+      <CircularWrapper
+        size={size}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={variant === "determinate" ? safeValue : undefined}
+        {...others}
+      >
+        <svg width={size} height={size}>
+          <circle
+            cx={numericSize / 2}
+            cy={numericSize / 2}
+            r={radius}
+            fill="none"
+            stroke={backgroundColor}
+            strokeWidth={strokeWidth}
+          />
+
           {variant === "indeterminate" ? (
             <IndeterminateCircle
-              cx="20"
-              cy="20"
+              cx={numericSize / 2}
+              cy={numericSize / 2}
               r={radius}
               fill="none"
               stroke={color}
-              strokeWidth="4"
+              strokeWidth={strokeWidth}
               strokeDasharray={circumference}
-              strokeLinecap="round"
             />
           ) : (
-            <circle
-              cx="20"
-              cy="20"
+            <DeterminateCircle
+              cx={numericSize / 2}
+              cy={numericSize / 2}
               r={radius}
               fill="none"
               stroke={color}
-              strokeWidth="4"
+              strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={dashOffset}
-              strokeLinecap="round"
-              style={{ transition: "stroke-dashoffset 0.4s ease-in-out" }}
             />
           )}
         </svg>
 
         {label && variant === "determinate" && (
-          <Typography
-            text={`${Math.round(animatedValue)}%`}
-            variant="b1Regular"
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          />
+          <CenterLabel>
+            <Typography text={`${safeValue}%`} variant="b1Regular" />
+          </CenterLabel>
         )}
       </CircularWrapper>
     )
   }
 
   return (
-    <Box width="100%" {...others}>
+    <Wrapper {...others}>
       {label && variant === "determinate" && (
-        <Typography
-          text={`${Math.round(animatedValue)}%`}
-          variant="b1Regular"
-          mb="4px"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
+        <CenterLabel>
+          <Typography text={`${safeValue}%`} variant="b1Regular" />
+        </CenterLabel>
       )}
 
       <Track $bg={backgroundColor} $height={height}>
         {variant === "determinate" ? (
-          <Bar $color={color} $value={animatedValue} />
+          <Bar $color={color} $value={safeValue} />
         ) : (
           <IndeterminateBar $color={color} />
         )}
       </Track>
-    </Box>
+    </Wrapper>
   )
 }
+
+const Wrapper = styled(Box)`
+  position: relative;
+`
+
+const CenterLabel = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`
 
 const Track = styled.div<{ $bg: string; $height: string }>`
   background-color: ${(props) => props.$bg};
@@ -189,7 +180,7 @@ const Bar = styled.div<{ $color: string; $value: number }>`
   background-color: ${(props) => props.$color};
   height: 100%;
   width: ${(props) => props.$value}%;
-  transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease;
 `
 
 const IndeterminateBar = styled.div<{ $color: string }>`
@@ -204,6 +195,10 @@ const CircularWrapper = styled.div<{ size: string }>`
   display: inline-block;
   width: ${(props) => props.size};
   height: ${(props) => props.size};
+`
+
+const DeterminateCircle = styled.circle`
+  transition: stroke-dashoffset 0.4s ease;
 `
 
 const IndeterminateCircle = styled.circle`

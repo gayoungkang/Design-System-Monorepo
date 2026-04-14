@@ -1,149 +1,104 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useState } from "react"
-import Link from "./Link"
-import type { LinkProps } from "./Link"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
-import Button from "../Button/Button"
-import { Typography } from "../Typography/Typography"
+import Link from "./Link"
+import Icon from "../Icon/Icon"
 
 const meta: Meta<typeof Link> = {
-  title: "Components/Link",
+  title: "Navigation/Link",
   component: Link,
-  parameters: { layout: "fullscreen" },
-  argTypes: {
-    typographyProps: { control: false },
-    onClick: { control: false },
-  },
   args: {
-    children: "Link",
+    children: "상세보기",
+    href: "/detail",
     underline: "always",
     disabled: false,
-    href: "https://example.com",
-    color: "",
-    hoverColor: "",
+  },
+  argTypes: {
+    children: {
+      control: "text",
+    },
+    href: {
+      control: "text",
+    },
+    underline: {
+      control: "radio",
+      options: ["none", "hover", "always"],
+    },
+    color: {
+      control: "color",
+    },
+    hoverColor: {
+      control: "color",
+    },
+    disabled: {
+      control: "boolean",
+    },
   },
 }
+
 export default meta
+
 type Story = StoryObj<typeof Link>
 
 export const Playground: Story = {
   render: (args) => {
-    const [disabled, setDisabled] = useState<boolean>(!!args.disabled)
-    const [underline, setUnderline] = useState<LinkProps["underline"]>(args.underline ?? "always")
-    const [colorMode, setColorMode] = useState<"default" | "custom" | "custom-hover">("default")
-
-    const resolved = (() => {
-      if (colorMode === "custom") return { color: "#7C3AED", hoverColor: "" }
-      if (colorMode === "custom-hover") return { color: "#0EA5E9", hoverColor: "#22C55E" }
-      return { color: "", hoverColor: "" }
-    })()
-
-    return (
-      <Box p="20px">
-        <Typography variant="h3" text="Link Playground" mb="12px" />
-
-        <Flex gap="8px" align="center" mb="12px" wrap="wrap">
-          <Button
-            text={`disabled: ${disabled ? "true" : "false"}`}
-            variant="outlined"
-            color="normal"
-            onClick={() => setDisabled((p) => !p)}
-          />
-
-          <Button
-            text={`underline: ${underline}`}
-            variant="outlined"
-            color="normal"
-            onClick={() =>
-              setUnderline((u) => (u === "none" ? "hover" : u === "hover" ? "always" : "none"))
-            }
-          />
-
-          <Button
-            text={`colorMode: ${colorMode}`}
-            variant="outlined"
-            color="normal"
-            onClick={() =>
-              setColorMode((m) =>
-                m === "default" ? "custom" : m === "custom" ? "custom-hover" : "default",
-              )
-            }
-          />
-        </Flex>
-
-        <Flex direction="column" gap="10px">
-          <Link
-            {...(args as LinkProps)}
-            disabled={disabled}
-            underline={underline}
-            color={resolved.color || undefined}
-            hoverColor={resolved.hoverColor || undefined}
-            onClick={() => {}}
-          />
-
-          <Typography
-            variant="b3Regular"
-            text={`disabled=${disabled}, underline=${underline}, colorMode=${colorMode}`}
-            color="#666666"
-          />
-        </Flex>
-      </Box>
-    )
+    return <Link {...args} />
   },
 }
 
-export const UnderlineVariants: Story = {
+export const AllCases: Story = {
   render: () => {
-    const variants: LinkProps["underline"][] = ["none", "hover", "always"]
-
     return (
-      <Box p="20px">
-        <Typography variant="h3" text="underline variants" mb="12px" />
+      <Flex direction="column" gap={20}>
+        <Box>
+          <Link href="/detail">기본 링크</Link>
+        </Box>
 
-        <Flex direction="column" gap="10px">
-          {variants.map((v) => (
-            <Flex key={v} gap="12px" align="center" wrap="wrap">
-              <Typography variant="b2Regular" text={v ?? ""} width="90px" />
-              <Link href="https://example.com" underline={v}>
-                Example link
-              </Link>
-              <Link href="https://example.com" underline={v} color="#0EA5E9">
-                Colored link
-              </Link>
-              <Link href="https://example.com" underline={v} color="#0EA5E9" hoverColor="#22C55E">
-                Colored + hoverColor
-              </Link>
+        <Box>
+          <Link href="/detail" underline="hover">
+            Hover Underline
+          </Link>
+        </Box>
+
+        <Box>
+          <Link href="/detail" underline="none">
+            Underline 없음
+          </Link>
+        </Box>
+
+        <Box>
+          <Link href="/detail" color="#111827" hoverColor="#2563eb">
+            커스텀 컬러 링크
+          </Link>
+        </Box>
+
+        <Box>
+          <Link href="/detail" disabled>
+            비활성 링크
+          </Link>
+        </Box>
+
+        <Box>
+          <Link href="/detail">
+            <Flex align="center" gap={6}>
+              <Icon name="StatusInfo" size={16} />
+              <span>커스텀 노드 링크</span>
             </Flex>
-          ))}
-        </Flex>
-      </Box>
-    )
-  },
-}
-
-export const Disabled: Story = {
-  render: () => {
-    return (
-      <Box p="20px">
-        <Typography variant="h3" text="disabled" mb="12px" />
-
-        <Flex direction="column" gap="10px">
-          <Link href="https://example.com" disabled>
-            Disabled (href blocked)
           </Link>
+        </Box>
 
-          <Link disabled underline="hover" color="#0EA5E9">
-            Disabled (custom color)
+        <Box width="140px">
+          <Link
+            href="/detail"
+            typographyProps={{
+              ellipsis: true,
+              as: "span",
+            }}
+          >
+            아주 긴 링크 텍스트가 잘리는지 확인합니다
           </Link>
-
-          <Typography
-            variant="b3Regular"
-            text={`disabled links are aria-disabled and removed from tab order`}
-            color="#666666"
-          />
-        </Flex>
-      </Box>
+        </Box>
+      </Flex>
     )
   },
 }

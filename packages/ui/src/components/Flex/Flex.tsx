@@ -3,6 +3,11 @@ import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 
+type ExtraHTMLProps = HTMLAttributes<HTMLDivElement> & {
+  [key: `data-${string}`]: string | number | undefined
+  [key: `aria-${string}`]: string | number | undefined
+}
+
 export type FlexProps = HTMLAttributes<HTMLDivElement> &
   BaseMixinProps & {
     as?: keyof JSX.IntrinsicElements
@@ -12,7 +17,7 @@ export type FlexProps = HTMLAttributes<HTMLDivElement> &
     align?: CSSProperties["alignItems"]
     wrap?: CSSProperties["flexWrap"]
     gap?: string | number
-    extraProps?: Record<string, any>
+    extraProps?: ExtraHTMLProps
     isActive?: boolean
   }
 /**---------------------------------------------------------------------------/
@@ -43,7 +48,7 @@ export type FlexProps = HTMLAttributes<HTMLDivElement> &
  *   * 입력 props 계약
  *     * `as`는 IntrinsicElements 키로 제한되며, 실제 렌더 태그를 변경
  *     * `children`은 flex 컨테이너 내부 콘텐츠로 렌더링
- *     * `extraProps`는 타입상 제한이 적은 확장 포인트로, 호출부가 필요한 속성을 주입하는 용도
+ *     * `extraProps`는 div HTMLAttributes 범위 내 확장 속성을 주입하는 용도
  *   * 내부 계산 로직
  *     * gap만 number/string 분기하여 px 문자열로 정규화
  *

@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Flex from "../Flex/Flex"
@@ -10,7 +9,7 @@ export type LabelProps = BaseMixinProps & {
   textAlign?: "left" | "right"
   placement?: "left" | "right"
   required?: boolean
-  typographyProps?: Partial<TypographyProps>
+  typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>
 }
 /**---------------------------------------------------------------------------/
  *
@@ -41,9 +40,9 @@ export type LabelProps = BaseMixinProps & {
  *     * textAlign: 정렬 기준("left"|"right"), 기본 "left"
  *     * placement: required 마크 위치("left"|"right"), 기본 "right"
  *     * required: required 마크 노출 여부, 기본 false
- *     * typographyProps: 라벨 Typography 커스터마이징(옵션)
+ *     * typographyProps: text/variant/color를 제외한 Typography 옵션 커스터마이징(옵션)
  *   * 내부 계산 로직 요약
- *     * textAlign → justifyContent로 변환(useMemo)
+ *     * textAlign → justifyContent로 변환
  *     * renderRequiredMark(side)로 required/placement 조건에 따른 (*) 렌더링 제어
  *   * 클라이언트 제어 컴포넌트 (서버 제어 없음)
  *
@@ -70,9 +69,7 @@ const Label = ({
   const theme = useTheme()
 
   // * textAlign(left/right)을 Flex justifyContent 값으로 변환
-  const justify = useMemo(() => {
-    return textAlign === "right" ? "flex-end" : "flex-start"
-  }, [textAlign])
+  const justify = textAlign === "right" ? "flex-end" : "flex-start"
 
   // * required 표시(*) 렌더링
   const renderRequiredMark = (side: "left" | "right") => {
@@ -83,6 +80,7 @@ const Label = ({
         text="*"
         variant="b1Medium"
         color={theme.colors.error[500]}
+        aria-hidden="true"
         {...(side === "left" ? { mr: 2 } : { ml: 2 })}
       />
     )
