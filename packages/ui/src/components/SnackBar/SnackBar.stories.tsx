@@ -1,254 +1,172 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { useEffect, useMemo, useState } from "react"
-import SnackBar, { SnackBarProps } from "./SnackBar"
-import Flex from "../Flex/Flex"
-import Box from "../Box/Box"
-import { Typography } from "../Typography/Typography"
-import Button from "../Button/Button"
+import { useState } from "react"
+import SnackBar from "./SnackBar"
 import { useSnackBarStore } from "../../stores/useSnackBarStore"
-
-type DirectionalPlacement =
-  | "top"
-  | "bottom"
-  | "left"
-  | "right"
-  | "top-start"
-  | "top-end"
-  | "bottom-start"
-  | "bottom-end"
-  | "left-start"
-  | "left-end"
-  | "right-start"
-  | "right-end"
-
-type StatusUiType = "success" | "error" | "warning" | "info"
-
-type EnqueueOptions = Omit<SnackBarProps, "id" | "message">
+import Button from "../Button/Button"
+import Flex from "../Flex/Flex"
 
 const meta: Meta<typeof SnackBar> = {
-  title: "Components/SnackBar",
+  title: "Feedback/SnackBar",
   component: SnackBar,
-  parameters: {
-    layout: "fullscreen",
-  },
-  argTypes: {
-    id: { control: false },
-    message: { control: { type: "text" } },
-    status: { control: { type: "radio" }, options: ["success", "error", "warning", "info"] },
-    autoHideDuration: { control: { type: "number" } },
-    placement: {
-      control: { type: "select" },
-      options: [
-        "top",
-        "bottom",
-        "left",
-        "right",
-        "top-start",
-        "top-end",
-        "bottom-start",
-        "bottom-end",
-        "left-start",
-        "left-end",
-        "right-start",
-        "right-end",
-      ],
-    },
-    iconSize: { control: { type: "text" } },
-    closeIconSize: { control: { type: "text" } },
-  },
-  args: {
-    id: "storybook-snackbar",
-    message: "저장이 완료되었습니다.",
-    status: "success",
-    autoHideDuration: 2500,
-    placement: "bottom-end",
-    iconSize: 16,
-    closeIconSize: 16,
-  },
 }
 
 export default meta
+
 type Story = StoryObj<typeof SnackBar>
 
-const placements: DirectionalPlacement[] = [
-  "top",
-  "bottom",
-  "left",
-  "right",
-  "top-start",
-  "top-end",
-  "bottom-start",
-  "bottom-end",
-  "left-start",
-  "left-end",
-  "right-start",
-  "right-end",
-]
+/**
+ * Playground
+ */
+export const Playground: Story = {
+  render: () => {
+    const { snackbars } = useSnackBarStore()
+    const [count, setCount] = useState(0)
 
-const statuses: StatusUiType[] = ["success", "error", "warning", "info"]
+    const push = (status?: any) => {
+      const id = String(Date.now())
 
-const getAllSnackbarIds = () => useSnackBarStore.getState().snackbars.map((s) => s.id)
+      useSnackBarStore.setState({
+        snackbars: [
+          ...snackbars,
+          {
+            id,
+            message: `메시지 ${count}`,
+            status,
+            autoHideDuration: 3000,
+            placement: "top-end",
+          },
+        ],
+      })
 
-const DemoController = (args: SnackBarProps) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackBarStore()
-  const [message, setMessage] = useState(args.message)
-  const [status, setStatus] = useState<StatusUiType>((args.status ?? "success") as StatusUiType)
-  const [placement, setPlacement] = useState<DirectionalPlacement>(
-    (args.placement ?? "bottom-end") as DirectionalPlacement,
-  )
-  const [autoHideDuration, setAutoHideDuration] = useState<number>(args.autoHideDuration ?? 2500)
-
-  useEffect(() => {
-    setMessage(args.message)
-  }, [args.message])
-
-  useEffect(() => {
-    setStatus((args.status ?? "success") as StatusUiType)
-  }, [args.status])
-
-  useEffect(() => {
-    setPlacement((args.placement ?? "bottom-end") as DirectionalPlacement)
-  }, [args.placement])
-
-  useEffect(() => {
-    setAutoHideDuration(args.autoHideDuration ?? 2500)
-  }, [args.autoHideDuration])
-
-  const fire = () => {
-    const options: EnqueueOptions = {
-      status,
-      placement,
-      autoHideDuration,
-      iconSize: (args as SnackBarProps).iconSize,
-      closeIconSize: (args as SnackBarProps).closeIconSize,
+      setCount((prev) => prev + 1)
     }
-    enqueueSnackbar(message, options)
-  }
 
-  const fireMany = () => {
-    for (let i = 0; i < 5; i++) {
-      const options: EnqueueOptions = {
-        status,
-        placement,
-        autoHideDuration: autoHideDuration + i * 300,
-        iconSize: (args as SnackBarProps).iconSize,
-        closeIconSize: (args as SnackBarProps).closeIconSize,
-      }
-      enqueueSnackbar(`${message} (${i + 1})`, options)
-    }
-  }
-
-  const closeAll = () => {
-    const ids = getAllSnackbarIds()
-    ids.forEach((id) => closeSnackbar(id))
-  }
-
-  return (
-    <Box sx={{ padding: "24px" }}>
-      <SnackBar.List />
-
-      <Flex direction="column" gap="12px" width="520px">
-        <Typography text="SnackBar Playground" variant="h3" />
-        <Flex gap="8px" wrap="wrap">
-          <Button text="Open" onClick={fire} />
-          <Button variant="outlined" text="Open x5" onClick={fireMany} />
-          <Button variant="text" text="Close All" onClick={closeAll} />
+    return (
+      <Flex direction="column" gap={12}>
+        <Flex gap={8}>
+          <Button onClick={() => push("success")} text="Success" />
+          <Button onClick={() => push("error")} text="Error" />
+          <Button onClick={() => push("warning")} text="Warning" />
+          <Button onClick={() => push("info")} text="Info" />
         </Flex>
 
-        <Box sx={{ padding: "12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-          <Flex direction="column" gap="10px">
-            <Typography text={`message: ${message}`} variant="b2Regular" />
-            <Typography text={`status: ${status}`} variant="b2Regular" />
-            <Typography text={`placement: ${placement}`} variant="b2Regular" />
-            <Typography text={`autoHideDuration: ${autoHideDuration}`} variant="b2Regular" />
-          </Flex>
-        </Box>
-
-        <Box sx={{ padding: "12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-          <Typography text="Args로 제어 후 Open 버튼으로 실제 동작 확인" variant="b2Regular" />
-        </Box>
+        <SnackBar.List />
       </Flex>
-    </Box>
-  )
+    )
+  },
 }
 
-export const Playground: Story = {
-  render: (args) => <DemoController {...(args as SnackBarProps)} />,
-}
-
+/**
+ * Variants
+ */
 export const Variants: Story = {
-  render: (args) => {
-    const { enqueueSnackbar, closeSnackbar } = useSnackBarStore()
+  render: () => {
+    const { snackbars } = useSnackBarStore()
 
-    const closeAll = () => {
-      const ids = getAllSnackbarIds()
-      ids.forEach((id) => closeSnackbar(id))
-    }
+    const push = (status: any) => {
+      const id = String(Date.now())
 
-    const fire = (placement: DirectionalPlacement, status: StatusUiType) => {
-      const options: EnqueueOptions = {
-        status,
-        placement,
-        autoHideDuration: args.autoHideDuration,
-        iconSize: (args as SnackBarProps).iconSize,
-        closeIconSize: (args as SnackBarProps).closeIconSize,
-      }
-      enqueueSnackbar(`${status.toUpperCase()} @ ${placement}`, options)
-    }
-
-    const fireAll = () => {
-      placements.forEach((p) => {
-        statuses.forEach((s, i) => {
-          const options: EnqueueOptions = {
-            status: s,
-            placement: p,
-            autoHideDuration: (args.autoHideDuration ?? 2500) + i * 200,
-            iconSize: (args as SnackBarProps).iconSize,
-            closeIconSize: (args as SnackBarProps).closeIconSize,
-          }
-          enqueueSnackbar(`${s.toUpperCase()} @ ${p}`, options)
-        })
+      useSnackBarStore.setState({
+        snackbars: [
+          ...snackbars,
+          {
+            id,
+            message: status,
+            status,
+            autoHideDuration: 3000,
+            placement: "top-end",
+          },
+        ],
       })
     }
 
     return (
-      <Box sx={{ padding: "24px" }}>
+      <Flex gap={8}>
+        <Button onClick={() => push("success")} text="Success" />
+        <Button onClick={() => push("error")} text="Error" />
+        <Button onClick={() => push("warning")} text="Warning" />
+        <Button onClick={() => push("info")} text="Info" />
         <SnackBar.List />
+      </Flex>
+    )
+  },
+}
 
-        <Flex direction="column" gap="14px" width="920px">
-          <Flex gap="8px" wrap="wrap">
-            <Button text="Open All (placements x statuses)" onClick={fireAll} />
-            <Button variant="outlined" text="Close All" onClick={closeAll} />
-          </Flex>
+/**
+ * Placement
+ */
+export const Placement: Story = {
+  render: () => {
+    const placements = [
+      "top",
+      "bottom",
+      "left",
+      "right",
+      "top-start",
+      "top-end",
+      "bottom-start",
+      "bottom-end",
+    ] as const
 
-          <Box sx={{ padding: "12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-            <Typography
-              text="각 버튼 클릭 시 해당 placement/status로 실제 Snackbar가 생성됩니다."
-              variant="b2Regular"
-            />
-          </Box>
+    const { snackbars } = useSnackBarStore()
 
-          <Flex direction="column" gap="10px">
-            {placements.map((p) => (
-              <Box
-                key={p}
-                sx={{
-                  padding: "12px",
-                  borderRadius: "12px",
-                  backgroundColor: "grayscale.white",
-                }}
-              >
-                <Typography text={`Placement: ${p}`} variant="b2Regular" />
-                <Flex gap="8px" wrap="wrap" mt={8}>
-                  {statuses.map((s) => (
-                    <Button key={s} text={s} variant="outlined" onClick={() => fire(p, s)} />
-                  ))}
-                </Flex>
-              </Box>
-            ))}
-          </Flex>
+    const push = (placement: any) => {
+      const id = String(Date.now())
+
+      useSnackBarStore.setState({
+        snackbars: [
+          ...snackbars,
+          {
+            id,
+            message: placement,
+            placement,
+            autoHideDuration: 3000,
+          },
+        ],
+      })
+    }
+
+    return (
+      <Flex direction="column" gap={8}>
+        <Flex wrap="wrap" gap={8}>
+          {placements.map((p) => (
+            <Button key={p} onClick={() => push(p)} text={p} />
+          ))}
         </Flex>
-      </Box>
+
+        <SnackBar.List />
+      </Flex>
+    )
+  },
+}
+
+/**
+ * Persistent (autoHide 없음)
+ */
+export const Persistent: Story = {
+  render: () => {
+    const { snackbars } = useSnackBarStore()
+
+    const push = () => {
+      const id = String(Date.now())
+
+      useSnackBarStore.setState({
+        snackbars: [
+          ...snackbars,
+          {
+            id,
+            message: "자동 닫힘 없음",
+            placement: "bottom-end",
+          },
+        ],
+      })
+    }
+
+    return (
+      <Flex gap={8}>
+        <Button onClick={push} text="Push" />
+        <SnackBar.List />
+      </Flex>
     )
   },
 }

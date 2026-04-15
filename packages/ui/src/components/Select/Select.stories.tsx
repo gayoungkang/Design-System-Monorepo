@@ -1,105 +1,43 @@
-// Select.stories.tsx
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useEffect, useMemo, useState } from "react"
-import Select, { SelectOptionType, SelectValue, SelectProps } from "./Select"
-import Box from "../Box/Box"
+import { useState } from "react"
+import Select, { SelectOptionType } from "./Select"
 import Flex from "../Flex/Flex"
-import { Typography } from "../Typography/Typography"
-import { theme } from "../../tokens/theme"
+import Box from "../Box/Box"
 
-type SingleValue = string
-type MultiValue = string[]
-
-const baseOptions: SelectOptionType[] = [
-  { value: "", label: "선택 안 함" },
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "orange", label: "Orange" },
-  { value: "grape", label: "Grape" },
+const fruitOptions: SelectOptionType<string>[] = [
+  { value: "apple", label: "사과" },
+  { value: "banana", label: "바나나" },
+  { value: "grape", label: "포도" },
+  { value: "orange", label: "오렌지" },
 ]
 
-const multiOptions: SelectOptionType[] = [
-  { value: "ALL", label: "전체", isAllOption: true },
-  { value: "alpha", label: "Alpha" },
-  { value: "beta", label: "Beta" },
-  { value: "gamma", label: "Gamma" },
-  { value: "delta", label: "Delta" },
+const categoryOptions: SelectOptionType<string>[] = [
+  { value: "all", label: "전체", isAllOption: true },
+  { value: "design", label: "디자인", chipColor: "normal" },
+  { value: "frontend", label: "프론트엔드", chipColor: "primary" },
+  { value: "backend", label: "백엔드", chipColor: "secondary" },
 ]
-
-const actionButtonStyle: React.CSSProperties = {
-  padding: "6px 10px",
-  borderRadius: 8,
-  border: `1px solid ${theme.colors.border.default}`,
-  background: theme.colors.grayscale.white,
-  cursor: "pointer",
-  fontSize: 12,
-}
 
 const meta: Meta<typeof Select> = {
-  title: "Components/Select",
+  title: "Form/Select",
   component: Select,
-  parameters: { layout: "centered" },
   args: {
     variant: "outlined",
-    multipleType: "default",
-    label: "Select",
-    options: baseOptions,
+    label: "카테고리",
+    options: fruitOptions,
     placeholder: "선택",
     size: "M",
     disabled: false,
     readOnly: false,
-    required: false,
     error: false,
-    helperText: "에러 메시지",
-    autoFocus: false,
     isLoading: false,
+    multipleType: "default",
     labelPlacement: "top",
-    color: undefined,
-    popperProps: undefined,
-    labelProps: undefined,
-    typographyProps: undefined,
-    value: undefined,
-    defaultValue: undefined,
-    onChange: undefined,
-    onBlur: undefined,
-    onFocus: undefined,
-  } satisfies Partial<SelectProps>,
+  },
   argTypes: {
-    variant: { control: { type: "radio" }, options: ["outlined", "filled", "standard"] },
-    multipleType: { control: { type: "radio" }, options: ["default", "chip", "multiple"] },
-    label: { control: "text" },
-    options: { control: false },
-    value: { control: false },
-    defaultValue: { control: false },
-    onChange: { control: false },
-    onBlur: { control: false },
-    onFocus: { control: false },
-    error: { control: "boolean" },
-    helperText: { control: "text" },
-    disabled: { control: "boolean" },
-    placeholder: { control: "text" },
-    size: { control: { type: "radio" }, options: ["S", "M", "L"] },
-    color: { control: "text" },
-    required: { control: "boolean" },
-    readOnly: { control: "boolean" },
-    autoFocus: { control: "boolean" },
-    isLoading: { control: "boolean" },
-    labelProps: { control: false },
-    typographyProps: { control: false },
-    labelPlacement: {
-      control: { type: "select" },
-      options: [
-        "top",
-        "top-start",
-        "top-end",
-        "bottom",
-        "bottom-start",
-        "bottom-end",
-        "left",
-        "right",
-      ],
-    },
-    popperProps: { control: false },
+    onChange: { action: "change" },
+    onBlur: { action: "blur" },
+    onFocus: { action: "focus" },
   },
 }
 
@@ -107,377 +45,203 @@ export default meta
 
 type Story = StoryObj<typeof Select>
 
-export const Playground: Story = {
-  render: (args) => {
-    const isMulti = args.multipleType === "chip" || args.multipleType === "multiple"
-
-    const [single, setSingle] = useState<SelectValue<SingleValue>>("")
-    const [multi, setMulti] = useState<SelectValue<MultiValue>>(["alpha", "gamma"])
-
-    useEffect(() => {
-      if (!isMulti) return
-      if (!Array.isArray(multi)) setMulti([])
-    }, [isMulti, multi])
-
-    const options = useMemo(() => (isMulti ? multiOptions : baseOptions), [isMulti])
-
-    const currentValue: SelectValue<SingleValue | MultiValue> = isMulti ? multi : single
-
-    const setPresetSingle = (v: SingleValue) => setSingle(v)
-    const clearSingle = () => setSingle("")
-    const setPresetMulti = (v: MultiValue) => setMulti(v)
-    const clearMulti = () => setMulti([])
+export const SingleSelect: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | undefined>()
 
     return (
-      <Box
-        width="760px"
-        p={16}
-        sx={{ border: `1px solid ${theme.colors.border.default}`, borderRadius: 12 }}
-      >
-        <Flex direction="column" gap="12px">
-          <Typography
-            variant="b2Regular"
-            text="Playground (값 변경/리셋/프리셋 + 실제 선택 인터랙션)"
-          />
-
-          <Flex gap="8px" sx={{ flexWrap: "wrap" }}>
-            {!isMulti ? (
-              <>
-                <button style={actionButtonStyle} onClick={() => setPresetSingle("apple")}>
-                  Set: apple
-                </button>
-                <button style={actionButtonStyle} onClick={() => setPresetSingle("banana")}>
-                  Set: banana
-                </button>
-                <button style={actionButtonStyle} onClick={() => setPresetSingle("")}>
-                  Set: empty("")
-                </button>
-                <button style={actionButtonStyle} onClick={clearSingle}>
-                  Reset
-                </button>
-              </>
-            ) : (
-              <>
-                <button style={actionButtonStyle} onClick={() => setPresetMulti(["alpha"])}>
-                  Set: ["alpha"]
-                </button>
-                <button
-                  style={actionButtonStyle}
-                  onClick={() => setPresetMulti(["alpha", "beta", "gamma"])}
-                >
-                  Set: ["alpha","beta","gamma"]
-                </button>
-                <button
-                  style={actionButtonStyle}
-                  onClick={() => setPresetMulti(["alpha", "beta", "gamma", "delta"])}
-                >
-                  Set: all(except ALL)
-                </button>
-                <button style={actionButtonStyle} onClick={clearMulti}>
-                  Reset
-                </button>
-              </>
-            )}
-          </Flex>
-
-          <Select<any>
-            {...args}
-            options={options}
-            value={currentValue as any}
-            onChange={(v) => {
-              if (isMulti) setMulti(v as SelectValue<MultiValue>)
-              else setSingle(v as SelectValue<SingleValue>)
-            }}
-          />
-
-          <Box
-            p={12}
-            sx={{
-              border: `1px solid ${theme.colors.border.default}`,
-              borderRadius: 10,
-              backgroundColor: theme.colors.grayscale[50],
-            }}
-          >
-            <Typography
-              variant="b3Regular"
-              color={theme.colors.text.secondary}
-              text={`현재 값(JSON): ${JSON.stringify(currentValue)}`}
-            />
-            <Typography
-              mt={6}
-              variant="b3Regular"
-              color={theme.colors.text.secondary}
-              text={`모드: ${isMulti ? "MULTI" : "SINGLE"} / multipleType=${args.multipleType}`}
-            />
-          </Box>
-        </Flex>
+      <Box width="320px">
+        <Select<string>
+          multiple={false}
+          label="과일"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+          placeholder="과일 선택"
+        />
       </Box>
     )
   },
 }
 
-export const AllCases: Story = {
+export const MultipleDefault: Story = {
   render: () => {
-    const [vOutlined, setVOutlined] = useState<SelectValue<SingleValue>>("")
-    const [vFilled, setVFilled] = useState<SelectValue<SingleValue>>("apple")
-    const [vStandard, setVStandard] = useState<SelectValue<SingleValue>>("banana")
-
-    const [vMultiDefault, setVMultiDefault] = useState<SelectValue<MultiValue>>(["alpha", "gamma"])
-    const [vMultiChip, setVMultiChip] = useState<SelectValue<MultiValue>>(["beta", "delta"])
-    const [vMultiAll, setVMultiAll] = useState<SelectValue<MultiValue>>([])
+    const [value, setValue] = useState<string[]>(["frontend"])
 
     return (
-      <Box
-        width="980px"
-        p={16}
-        sx={{ border: `1px solid ${theme.colors.border.default}`, borderRadius: 12 }}
-      >
-        <Flex direction="column" gap="18px">
-          <Typography
-            variant="b2Regular"
-            text="AllCases (각 케이스 모두 실제 값 변경됨 + 값 표시)"
-          />
-
-          <Flex gap="16px">
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Outlined / S"
-                variant="outlined"
-                size="S"
-                options={baseOptions}
-                value={vOutlined}
-                onChange={setVOutlined}
-                placeholder="선택"
-                labelPlacement="top"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vOutlined)}`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Filled / M"
-                variant="filled"
-                size="M"
-                options={baseOptions}
-                value={vFilled}
-                onChange={setVFilled}
-                placeholder="선택"
-                labelPlacement="top"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vFilled)}`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Standard / L"
-                variant="standard"
-                size="L"
-                options={baseOptions}
-                value={vStandard}
-                onChange={setVStandard}
-                placeholder="선택"
-                labelPlacement="top"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vStandard)}`}
-              />
-            </Box>
-          </Flex>
-
-          <Flex gap="16px">
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Disabled"
-                variant="outlined"
-                size="M"
-                options={baseOptions}
-                value={"apple"}
-                disabled
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: "apple" (고정)`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<SingleValue>
-                label="ReadOnly"
-                variant="outlined"
-                size="M"
-                options={baseOptions}
-                value={"banana"}
-                readOnly
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: "banana" (고정)`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Error + HelperText"
-                variant="outlined"
-                size="M"
-                options={baseOptions}
-                value={vOutlined}
-                onChange={setVOutlined}
-                error
-                helperText="필수 항목입니다."
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vOutlined)}`}
-              />
-            </Box>
-          </Flex>
-
-          <Flex gap="16px">
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Loading"
-                variant="outlined"
-                size="M"
-                options={baseOptions}
-                value={"apple"}
-                isLoading
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: "apple" (고정)`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Label Left"
-                variant="outlined"
-                size="M"
-                options={baseOptions}
-                value={vFilled}
-                onChange={setVFilled}
-                labelPlacement="left"
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vFilled)}`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<SingleValue>
-                label="Label Bottom"
-                variant="outlined"
-                size="M"
-                options={baseOptions}
-                value={vStandard}
-                onChange={setVStandard}
-                labelPlacement="bottom"
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vStandard)}`}
-              />
-            </Box>
-          </Flex>
-
-          <Typography
-            variant="b2Regular"
-            text="Multiple (default / chip / all option) - 모두 클릭으로 값 변경됨"
-          />
-
-          <Flex gap="16px">
-            <Box width="300px">
-              <Select<MultiValue>
-                label="multipleType=default"
-                variant="outlined"
-                size="M"
-                options={multiOptions}
-                value={vMultiDefault}
-                onChange={setVMultiDefault}
-                multipleType="default"
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vMultiDefault)}`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<MultiValue>
-                label="multipleType=chip"
-                variant="outlined"
-                size="M"
-                options={multiOptions}
-                value={vMultiChip}
-                onChange={setVMultiChip}
-                multipleType="chip"
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vMultiChip)}`}
-              />
-            </Box>
-
-            <Box width="300px">
-              <Select<MultiValue>
-                label="All Option Toggle"
-                variant="outlined"
-                size="M"
-                options={multiOptions}
-                value={vMultiAll}
-                onChange={setVMultiAll}
-                multipleType="multiple"
-                placeholder="선택"
-              />
-              <Typography
-                mt={6}
-                variant="b3Regular"
-                color={theme.colors.text.secondary}
-                text={`값: ${JSON.stringify(vMultiAll)}`}
-              />
-            </Box>
-          </Flex>
-        </Flex>
+      <Box width="360px">
+        <Select<string>
+          multiple
+          label="직무"
+          options={categoryOptions}
+          value={value}
+          onChange={setValue}
+          multipleType="default"
+          placeholder="직무 선택"
+        />
       </Box>
+    )
+  },
+}
+
+export const MultipleChip: Story = {
+  render: () => {
+    const [value, setValue] = useState<string[]>(["frontend", "backend"])
+
+    return (
+      <Box width="420px">
+        <Select<string>
+          multiple
+          label="기술 스택"
+          options={categoryOptions}
+          value={value}
+          onChange={setValue}
+          multipleType="chip"
+          placeholder="기술 선택"
+        />
+      </Box>
+    )
+  },
+}
+
+export const States: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | undefined>("banana")
+    const [multiValue, setMultiValue] = useState<string[]>(["design"])
+
+    return (
+      <Flex direction="column" gap="16px" width="420px">
+        <Select<string>
+          multiple={false}
+          label="Loading"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+          isLoading
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Disabled"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+          disabled
+        />
+
+        <Select<string>
+          multiple={false}
+          label="ReadOnly"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+          readOnly
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Error"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+          error
+          helperText="필수 선택 항목입니다."
+        />
+
+        <Select<string>
+          multiple
+          label="Multiple Error"
+          options={categoryOptions}
+          value={multiValue}
+          onChange={setMultiValue}
+          multipleType="chip"
+          error
+          helperText="하나 이상 선택해 주세요."
+        />
+      </Flex>
+    )
+  },
+}
+
+export const LabelPlacementCases: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | undefined>("orange")
+
+    return (
+      <Flex direction="column" gap="20px" width="360px">
+        <Select<string>
+          multiple={false}
+          label="Top"
+          labelPlacement="top"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Bottom"
+          labelPlacement="bottom"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Left"
+          labelPlacement="left"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Right"
+          labelPlacement="right"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+      </Flex>
+    )
+  },
+}
+
+export const Variants: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | undefined>("grape")
+
+    return (
+      <Flex direction="column" gap="16px" width="360px">
+        <Select<string>
+          multiple={false}
+          label="Outlined"
+          variant="outlined"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Filled"
+          variant="filled"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+
+        <Select<string>
+          multiple={false}
+          label="Standard"
+          variant="standard"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+      </Flex>
     )
   },
 }

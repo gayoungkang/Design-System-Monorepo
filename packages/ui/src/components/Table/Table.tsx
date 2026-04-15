@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import type { JSX } from "react"
+import type { CSSProperties, JSX, MouseEvent as ReactMouseEvent, ComponentProps } from "react"
 import Pagination from "../Pagination/Pagination"
 import { Typography } from "../Typography/Typography"
 import type {
@@ -97,17 +97,14 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     columnConfig,
     data = [],
 
-    // * server-controlled (single source of truth)
     query,
     totalCount,
     rowsPerPageOptions = [10, 25, 50, 100],
     onQueryChange,
 
-    // * view-only row events
     onRowClick,
     rowActions,
 
-    // * layout
     sticky = true,
     height = 300,
     emptyRowText,
@@ -118,26 +115,30 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     summaryRow,
     customTableHeader,
 
-    // * toolbar
     toolbar,
 
-    // * export (server job only)
     exportEnabled = false,
     exportItems,
     excludeExportTypes,
     onExport,
     exportContext,
 
-    // * virtualization
     virtualized,
 
     ...baseProps
   } = props
 
-  // * totalCount를 음수가 되지 않도록 안전하게 정규화
+  type TableThAlign = ComponentProps<typeof TableTh>["align"]
+  type PaginationType = ComponentProps<typeof Pagination>["type"]
+  type TableToolbarProps = ComponentProps<typeof TableToolBar>
+  type TableRowProps = ComponentProps<typeof TableRow>
+  type TableSummaryRowProps = ComponentProps<typeof TableSummaryRow>
+  type ExportHandler = NonNullable<TableProps<T>["onExport"]>
+  type ExportContextArg = Parameters<ExportHandler>[1]
+  type ExportTypeArg = Parameters<ExportHandler>[0]
+
   const safeTotalCount = useMemo(() => Math.max(0, Number(totalCount ?? 0) || 0), [totalCount])
 
-  // * rowsPerPageOptions를 운영 제한(최대 200) 내에서 정규화
   const safeRowsPerPageOptions = useMemo(() => {
     const lim = 200
     const out = (rowsPerPageOptions ?? [])
@@ -146,25 +147,21 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     return out.length ? out : [Math.min(100, lim)]
   }, [rowsPerPageOptions])
 
-  // * query.rowsPerPage를 기본 옵션 및 최대 제한 기준으로 안전하게 정규화
   const safeRowsPerPage = useMemo(() => {
     const fallback = safeRowsPerPageOptions[0] ?? 10
     return clampRowsPerPage(query?.rowsPerPage ?? fallback, 200)
   }, [query?.rowsPerPage, safeRowsPerPageOptions])
 
-  // * totalCount/rowsPerPage 기반 페이지 수 계산(최소 1)
   const pageCount = useMemo(() => {
     if (safeTotalCount <= 0) return 1
     return Math.max(1, Math.ceil(safeTotalCount / safeRowsPerPage))
   }, [safeTotalCount, safeRowsPerPage])
 
-  // * query.page 값을 유효 범위(1..pageCount)로 보정한 안전 페이지 값
   const safePage = useMemo(
     () => clamp(Math.max(1, Number(query?.page ?? 1) || 1), 1, pageCount),
     [query?.page, pageCount],
   )
 
-  // * query 기본 값(page/rowsPerPage/keyword)을 정규화해 서버 제어 계약을 유지
   useEffect(() => {
     const nextKeyword = String(query?.keyword ?? "")
     if (
@@ -179,9 +176,8 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
         keyword: nextKeyword,
       })
     }
-  }, [safePage, safeRowsPerPage])
+  }, [onQueryChange, query, safePage, safeRowsPerPage])
 
-  // * 부분 변경(partial)을 받아 서버 쿼리를 안전하게 정규화하고 onQueryChange로 단일 통지
   const emitQuery = (partial: Partial<ServerTableQuery>) => {
     if (disabled) return
 
@@ -209,26 +205,20 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     })
   }
 
-  // ---------------------------------------------------------------------------
-  // * Column widths + drag resize (RAF)
-  // ---------------------------------------------------------------------------
+  const parseWidthInput = (width: ColumnProps<T>["width"]) =>
+    parseWidthToPx(width as Parameters<typeof parseWidthToPx>[0])
 
-  // * 컬럼 width를 px 단위 배열로 관리(초기값은 columnConfig.width 또는 기본 160)
   const [colPx, setColPx] = useState<number[]>(() =>
-    (columnConfig as ColumnProps<T>[]).map((c) => parseWidthToPx(c.width as any) ?? 160),
+    columnConfig.map((c) => parseWidthInput(c.width) ?? 160),
   )
 
-  // * 컬럼 개수가 변경되면 기존 폭을 최대한 유지하면서 신규 컬럼 폭을 보정
   useEffect(() => {
     setColPx((prev) => {
       if (prev.length === columnConfig.length) return prev
-      return (columnConfig as ColumnProps<T>[]).map(
-        (c, i) => prev[i] ?? parseWidthToPx(c.width as any) ?? 160,
-      )
+      return columnConfig.map((c, i) => prev[i] ?? parseWidthInput(c.width) ?? 160)
     })
   }, [columnConfig])
 
-  // * 드래그 상태(활성/컬럼 인덱스/시작 좌표/시작 폭)를 ref로 유지
   const dragRef = useRef<{ active: boolean; colIndex: number; startX: number; startW: number }>({
     active: false,
     colIndex: -1,
@@ -236,11 +226,9 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     startW: 0,
   })
 
-  // * 리사이즈 업데이트를 RAF로 묶기 위한 ref
   const rafResizeRef = useRef<number | null>(null)
   const pendingResizeRef = useRef<{ colIndex: number; width: number } | null>(null)
 
-  // * mousemove/mouseup을 전역에 바인딩해 컬럼 드래그 리사이즈를 처리
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       if (!dragRef.current.active) return
@@ -269,9 +257,11 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
 
     window.addEventListener("mousemove", onMove)
     window.addEventListener("mouseup", onUp)
+
     return () => {
       window.removeEventListener("mousemove", onMove)
       window.removeEventListener("mouseup", onUp)
+
       if (rafResizeRef.current !== null) {
         window.cancelAnimationFrame(rafResizeRef.current)
         rafResizeRef.current = null
@@ -279,37 +269,32 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     }
   }, [])
 
-  // * 특정 컬럼의 리사이즈를 시작하는 핸들러 생성기
-  const startResize = (colIndex: number) => (e: React.MouseEvent<HTMLDivElement>) => {
+  const startResize = (colIndex: number) => (e: ReactMouseEvent<HTMLDivElement>) => {
     if (disabled) return
     e.preventDefault()
     e.stopPropagation()
-    dragRef.current = { active: true, colIndex, startX: e.clientX, startW: colPx[colIndex] ?? 160 }
+
+    dragRef.current = {
+      active: true,
+      colIndex,
+      startX: e.clientX,
+      startW: colPx[colIndex] ?? 160,
+    }
   }
 
-  // * 현재 컬럼 폭(px) 기반 grid-template-columns 문자열 생성(+ rowActions가 있으면 action columns 추가)
   const gridColumns = useMemo(() => {
     const base = colPx.map((w) => `${w}px`).join(" ")
-    const actionCols = (rowActions?.length ?? 0) > 0 ? rowActions!.map(() => `80px`).join(" ") : ""
+    const actionCols = (rowActions?.length ?? 0) > 0 ? rowActions!.map(() => "80px").join(" ") : ""
     return actionCols ? `${base} ${actionCols}` : base
   }, [colPx, rowActions])
 
-  // ---------------------------------------------------------------------------
-  // * Scroll sync (header translateX) + virtualization range
-  // ---------------------------------------------------------------------------
-
-  // * 바디 스크롤 요소 ref
   const bodyScrollRef = useRef<HTMLDivElement | null>(null)
-
-  // * 스크롤 이벤트를 RAF로 묶어 상태 업데이트 비용을 제한
   const rafScrollRef = useRef<number | null>(null)
 
-  // * header/body 동기화를 위한 scrollLeft, virtualization 계산을 위한 scrollTop/viewportH 상태
   const [scrollLeft, setScrollLeft] = useState(0)
   const [scrollTop, setScrollTop] = useState(0)
   const [viewportH, setViewportH] = useState(0)
 
-  // * body 스크롤 및 리사이즈 변경을 추적해 scroll 상태를 동기화
   useEffect(() => {
     const el = bodyScrollRef.current
     if (!el) return
@@ -333,6 +318,7 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     el.addEventListener("scroll", onScroll, { passive: true })
 
     let ro: ResizeObserver | null = null
+
     if (typeof ResizeObserver !== "undefined") {
       ro = new ResizeObserver(() => sync())
       ro.observe(el)
@@ -341,9 +327,11 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     }
 
     return () => {
-      el.removeEventListener("scroll", onScroll as any)
+      el.removeEventListener("scroll", onScroll)
+
       if (ro) ro.disconnect()
       else window.removeEventListener("resize", sync)
+
       if (rafScrollRef.current !== null) {
         window.cancelAnimationFrame(rafScrollRef.current)
         rafScrollRef.current = null
@@ -351,13 +339,11 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     }
   }, [])
 
-  // * virtualization이 enabled일 때만 가상 스크롤 옵션을 활성화
   const vOpt: VirtualizedOptions | undefined = virtualized?.enabled ? virtualized : undefined
   const rowHeight = vOpt?.rowHeight ?? 0
   const overscan = vOpt?.overscan ?? 6
-  const totalRowsCount = data?.length ?? 0
+  const totalRowsCount = data.length
 
-  // * 스크롤/뷰포트/rowHeight 기준으로 가상 렌더 구간 및 padding 계산
   const virtualRange = useMemo(() => {
     if (!vOpt || rowHeight <= 0) return { start: 0, end: totalRowsCount, padTop: 0, padBottom: 0 }
 
@@ -372,63 +358,63 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     const padBottom = Math.max(0, (totalRowsCount - end) * rowHeight)
 
     return { start, end, padTop, padBottom }
-  }, [vOpt, rowHeight, overscan, scrollTop, viewportH, totalRowsCount])
+  }, [overscan, rowHeight, scrollTop, totalRowsCount, vOpt, viewportH])
 
-  // * 가상 스크롤 사용 시 slice로 visibleRows만 추출
   const visibleRows = useMemo(() => {
-    if (!vOpt) return data ?? []
-    return (data ?? []).slice(virtualRange.start, virtualRange.end)
-  }, [vOpt, data, virtualRange.start, virtualRange.end])
+    if (!vOpt) return data
+    return data.slice(virtualRange.start, virtualRange.end)
+  }, [data, vOpt, virtualRange.end, virtualRange.start])
 
-  // * 컬럼 sort 플래그/방향을 TableTh에 전달할 값으로 정규화
   const getSortValue = (colSort?: boolean, colSortDirection?: SortDirection) => {
     if (!colSort) return undefined
     return colSortDirection ?? "ASC"
   }
 
-  // * export 요청 시 서버 작업용 ctx를 구성해 onExport로 전달
   const handleExport = (type: ExportType) => {
     if (!exportEnabled || disabled) return
     if (!onExport) return
 
-    const baseCtx =
+    const baseCtx: Record<string, unknown> =
       exportContext && typeof exportContext === "object"
         ? (exportContext as Record<string, unknown>)
-        : ({} as Record<string, unknown>)
+        : {}
 
-    onExport(
-      type as any,
-      {
-        ...baseCtx,
-        page: safePage,
-        rowsPerPage: safeRowsPerPage,
-        keyword: String(query.keyword ?? ""),
-        sort: query.sort,
-        filters: query.filters,
-      } as any,
-    )
+    const nextContext: ExportContextArg = {
+      ...baseCtx,
+      page: safePage,
+      rowsPerPage: safeRowsPerPage,
+      keyword: String(query.keyword ?? ""),
+      sort: query.sort,
+      filters: query.filters,
+    } as ExportContextArg
+
+    onExport(type as ExportTypeArg, nextContext)
   }
 
-  // * summary row 표시 여부(서버 집계 데이터가 있을 때만)
-  const summaryEnabled = Boolean(summaryRow?.enabled && (summaryRow as any)?.data?.length)
+  const summaryData =
+    summaryRow &&
+    typeof summaryRow === "object" &&
+    "data" in summaryRow &&
+    Array.isArray(summaryRow.data)
+      ? summaryRow.data
+      : undefined
+
+  const summaryEnabled = Boolean(summaryRow?.enabled && (summaryData?.length ?? 0) > 0)
   const summaryRowHeight = 32
 
-  // * 페이지네이션 라벨 생성을 위한 from/to 계산
   const fromTo = useMemo(() => {
     if (safeTotalCount <= 0) return { from: 0, to: 0 }
     const from = (safePage - 1) * safeRowsPerPage + 1
     const to = Math.min(safeTotalCount, safePage * safeRowsPerPage)
     return { from, to }
-  }, [safeTotalCount, safePage, safeRowsPerPage])
+  }, [safePage, safeRowsPerPage, safeTotalCount])
 
-  // * Pagination에 표시할 라벨 문자열 계산
   const paginationLabel = useMemo(
     () => `${fromTo.from}–${fromTo.to} of ${safeTotalCount}`,
     [fromTo.from, fromTo.to, safeTotalCount],
   )
 
-  // * header를 body scrollLeft에 맞춰 translateX로 동기화하기 위한 style
-  const headerInnerStyle: React.CSSProperties = useMemo(
+  const headerInnerStyle: CSSProperties = useMemo(
     () => ({
       transform: `translateX(${-scrollLeft}px)`,
       willChange: "transform",
@@ -436,22 +422,22 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     [scrollLeft],
   )
 
-  // * 헤더 렌더러(스크롤 동기화 + sortable/resizable 헤더 구성)
   const renderHeader = () => {
     return (
       <Box sx={{ position: "relative", overflow: "hidden" }}>
         <div style={headerInnerStyle}>
-          <TableHead sticky={sticky} top={"0px"}>
+          <TableHead sticky={sticky} top="0px">
             {customTableHeader ?? null}
+
             <TableTr columns={gridColumns} disabled={disabled}>
-              {(columnConfig as ColumnProps<T>[]).map((col, idx) => {
+              {columnConfig.map((col, idx) => {
                 const sortValue = getSortValue(col.sort, col.sortDirection)
                 const sortEnabled = !disabled && col.sort && col.onSortChange
 
                 return (
                   <TableTh
                     key={`${tableKey}_th_${String(col.title)}_${idx}`}
-                    align={col.textAlign as any}
+                    align={col.textAlign as TableThAlign}
                     sort={sortEnabled ? sortValue : undefined}
                     onSortChange={
                       sortEnabled
@@ -468,10 +454,10 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
               })}
 
               {(rowActions?.length ?? 0) > 0
-                ? rowActions!.map((a) => (
+                ? rowActions!.map((action) => (
                     <TableTh
-                      key={`${tableKey}_th_action_${a.key}`}
-                      align="center"
+                      key={`${tableKey}_th_action_${action.key}`}
+                      align={"center" as TableThAlign}
                       sx={{ userSelect: "none" }}
                     >
                       {""}
@@ -485,15 +471,13 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     )
   }
 
-  // * 바디 영역에서 데이터 행만 렌더링(가상 스크롤 padding 포함)
   const renderBodyRowsOnly = () => {
-    // * 데이터가 없으면 empty row(단일 행 colSpan) 렌더링
-    if ((data ?? []).length === 0) {
+    if (data.length === 0) {
       return (
         <TableTr columns={gridColumns} disabled={disabled}>
           <TableTd
-            colSpan={(columnConfig?.length ?? 0) + (rowActions?.length ?? 0)}
-            align="center"
+            colSpan={columnConfig.length + (rowActions?.length ?? 0)}
+            align={"center" as ComponentProps<typeof TableTd>["align"]}
             disabled={disabled}
           >
             <Typography
@@ -510,13 +494,12 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
       <>
         {vOpt ? <div style={{ height: virtualRange.padTop }} /> : null}
 
-        {(visibleRows ?? []).map((row, ri) => {
-          // * virtualization 사용 시 실제 index를 보정
+        {visibleRows.map((row, ri) => {
           const realIndex = vOpt ? virtualRange.start + ri : ri
 
-          // * row key 후보를 순서대로 탐색(없으면 index 기반 fallback)
-          const keyCandidate: any =
-            (row as any)?.id ?? (row as any)?.key ?? (row as any)?._id ?? (row as any)?.rowId
+          const rowRecord = row as Record<string, unknown>
+          const keyCandidate = rowRecord.id ?? rowRecord.key ?? rowRecord._id ?? rowRecord.rowId
+
           const rowKey =
             keyCandidate !== undefined && keyCandidate !== null
               ? String(keyCandidate)
@@ -525,14 +508,14 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
           return (
             <TableRow
               key={`${tableKey}_row_${rowKey}`}
-              columnConfig={columnConfig as any}
-              data={row as any}
+              columnConfig={columnConfig as TableRowProps["columnConfig"]}
+              data={row as TableRowProps["data"]}
               index={realIndex}
               tableKey={tableKey}
               disabled={disabled}
               columns={gridColumns}
-              onRowClick={onRowClick as any}
-              rowActions={rowActions as any}
+              onRowClick={onRowClick as TableRowProps["onRowClick"]}
+              rowActions={rowActions as TableRowProps["rowActions"]}
             />
           )
         })}
@@ -542,7 +525,6 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     )
   }
 
-  // * 툴바 렌더 여부를 기능 플래그 기준으로 결정
   const shouldRenderToolbar =
     Boolean(toolbar?.searchEnabled) ||
     Boolean(toolbar?.filterEnabled) ||
@@ -551,28 +533,26 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
 
   return (
     <>
-      {/* * 툴바 렌더링(검색/필터/컬럼표시/내보내기) */}
       {shouldRenderToolbar ? (
         <TableToolBar
-          {...(toolbar as any)}
+          {...((toolbar ?? {}) as Partial<TableToolbarProps>)}
           disabled={disabled}
           title={toolbar?.title}
           searchValue={String(query.keyword ?? "")}
           onSearchChange={(v) => emitQuery({ keyword: v, page: 1 })}
           exportEnabled={exportEnabled}
-          exportItems={exportItems as any}
-          excludeExportTypes={excludeExportTypes as any}
-          onExport={onExport ? (type: any, ctx: unknown) => handleExport(type) : undefined}
+          exportItems={exportItems}
+          excludeExportTypes={excludeExportTypes}
+          onExport={onExport ? (type) => handleExport(type) : undefined}
           exportContext={exportContext}
         />
       ) : null}
 
-      {/* * 테이블 컨테이너 + 헤더/바디(스크롤) + summary row */}
       <TableContainer {...baseProps}>
         <Flex
           direction="column"
           height={height}
-          width={"100%"}
+          width="100%"
           sx={{
             minHeight: 0,
             background: theme.colors.grayscale.white,
@@ -591,13 +571,12 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
             <Box>
               {renderBodyRowsOnly()}
 
-              {/* * summary row는 서버 집계 데이터가 있을 때만 stickyBottom으로 렌더링 */}
               {summaryEnabled ? (
                 <TableSummaryRow
                   tableKey={tableKey}
-                  columns={columnConfig as any}
-                  rows={[] as any}
-                  config={summaryRow as any}
+                  columns={columnConfig as TableSummaryRowProps["columns"]}
+                  rows={[] as TableSummaryRowProps["rows"]}
+                  config={summaryRow as TableSummaryRowProps["config"]}
                   disabled={disabled}
                   gridColumns={gridColumns}
                   stickyBottom
@@ -609,12 +588,11 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
         </Flex>
       </TableContainer>
 
-      {/* * 하단 패널( rowsPerPage / totalRows / pagination ) */}
       <Flex
         align="center"
         justify="space-between"
         mt={2}
-        p={"2px 5px"}
+        p="2px 5px"
         bgColor={theme.colors.grayscale.white}
         sx={{
           position: "relative",
@@ -623,7 +601,6 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
         }}
       >
         <Flex align="center" gap={4}>
-          {/* * rowsPerPage 선택 UI */}
           {rowsPer ? (
             <TableRowsPerPage
               rowsPerPage={safeRowsPerPage}
@@ -636,14 +613,12 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
             />
           ) : null}
 
-          {/* * 총 행 수 표시 */}
           {totalRows ? <TableTotalRows ml={4} totalRows={safeTotalCount} /> : null}
         </Flex>
 
-        {/* * 페이지네이션 UI */}
         {pagination ? (
           <Pagination
-            type={pagination as any}
+            type={pagination as PaginationType}
             disabled={disabled}
             count={safeTotalCount}
             page={safePage}

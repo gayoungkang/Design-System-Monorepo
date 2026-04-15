@@ -1,16 +1,7 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+import { forwardRef, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import Flex from "../Flex/Flex"
 import Box from "../Box/Box"
-import { theme } from "../../tokens/theme"
 import { BaseMixin } from "../../tokens/baseMixin"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
@@ -24,7 +15,10 @@ export type ResizablePanelProps = BaseMixinProps & {
   minSize?: number
   maxSize?: number
   initialSize?: number
-  borderRadius?: string
+
+  size?: number
+  onResize?: (size: number) => void
+
   children: ReactNode
 }
 
@@ -33,194 +27,115 @@ const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min)
  *
  * ! ResizablePanel
  *
- * * 드래그로 패널의 한 축 크기(width/height)를 조절하는 리사이저 패널 컴포넌트입니다.
- * * `direction`에 따라 수직 리사이즈(가로 폭 조절) 또는 수평 리사이즈(세로 높이 조절)로 동작합니다.
- * * 내부 `size` 상태를 유지하며, 포인터 드래그 중 requestAnimationFrame으로 업데이트를 스로틀링합니다.
- * * `minSize`/`maxSize`/`initialSize` 변경에 따라 현재 size를 보정(clamp)하고, initialSize 변경은 “외부 초기화”로 재적용합니다.
+ * * 드래그 가능한 리사이저를 통해 패널의 너비 또는 높이를 조절하는 레이아웃 패널 컴포넌트
+ * * direction에 따라 vertical은 width, horizontal은 height를 조절하며, children은 내부 콘텐츠 영역에 그대로 렌더링된다
+ * * controlled(size prop 제공)와 uncontrolled(initialSize 기반 내부 state) 두 방식 모두 지원한다
+ * * 리사이즈 중 계산된 크기는 minSize~maxSize 범위로 항상 보정되며, 변경 시 onResize 콜백을 호출한다
  *
  * * 동작 규칙
- *   * 크기 범위:
- *     * 모든 size 계산은 `clamp(v, minSize, maxSize)`로 제한됩니다.
- *   * 초기/외부 변경 반영:
- *     * mount 시 `initialSize`를 clamp하여 size 초기화합니다.
- *     * `minSize`/`maxSize` 변경 시 현재 size를 재-clamp하여 범위 밖 값만 보정합니다.
- *     * `initialSize` 변경 시 clamp된 값으로 size를 재설정(외부 초기화 의도)합니다.
- *   * 드래그 처리(포인터 이벤트):
- *     * PointerDown(좌클릭): pointer capture 설정 → `isDragging=true` → 마지막 포인터 좌표 저장 → RAF 스케줄.
- *     * PointerMove: dragging 중이면 마지막 포인터 좌표만 갱신하고 RAF 스케줄.
- *     * PointerUp/Cancel: dragging 종료, 마지막 포인터 좌표 초기화, pointer capture 해제 시도(실패는 무시).
- *   * RAF 스케줄링:
- *     * 드래그 중 move 이벤트를 `requestAnimationFrame` 1프레임에 1회로 제한합니다.
- *     * lastPointerRef에 누적된 최종 좌표로 `computeNextSize`를 계산 후 `setSize(next)`를 수행합니다.
- *   * 언마운트 정리:
- *     * 예약된 RAF가 있으면 cancel하고 ref를 초기화합니다.
+ *   * 주요 분기 조건 및 처리 우선순위
+ *     * size prop이 전달되면 controlled 모드로 동작하고, 없으면 internal state를 사용하는 uncontrolled 모드로 동작한다
+ *     * 실제 적용 크기(size)는 controlled면 controlledSize, 아니면 internal 값을 사용한다
+ *     * uncontrolled 모드에서는 initialSize/minSize/maxSize 변경 시 내부 크기를 clamp 후 재설정한다
+ *     * direction이 "vertical"이면 clientX 기준으로 width를 계산하고, 그 외에는 clientY 기준으로 height를 계산한다
+ *   * 이벤트 처리 방식(onClick, onChange, onDoubleClick 등)
+ *     * 리사이저 영역에서 pointerdown이 발생하면 좌클릭(button===0)일 때만 드래그를 시작한다
+ *     * 드래그 중 window pointermove 이벤트로 현재 포인터 위치와 panelRef 기준 rect를 이용해 새 크기를 계산한다
+ *     * pointerup 시 window에 등록한 pointermove/pointerup 리스너를 제거해 드래그를 종료한다
+ *     * 크기 변경 시 uncontrolled 모드에서는 내부 state를 갱신하고, 모든 모드에서 onResize를 호출한다
+ *   * disabled 상태에서 차단되는 동작
+ *     * disabled 개념은 없으며, 좌클릭이 아닌 pointerdown은 무시된다
  *
  * * 레이아웃/스타일 관련 규칙
- *   * 패널 스타일:
- *     * vertical: `width: ${size}px`, `height: 100%`
- *     * horizontal: `height: ${size}px`, `width: 100%`
- *     * PanelRoot는 overflow hidden + relative 포지셔닝으로 리사이저를 절대 배치합니다.
- *   * 리사이저(Resizer):
- *     * vertical: 우측 고정(right: 0) + `width: SIZE(8px)` + `cursor: ew-resize`
- *     * horizontal: 하단 고정(bottom: 0) + `height: SIZE(8px)` + `cursor: ns-resize`
- *     * dragging 중에는 primary[200] 색상의 focus-ring 형태 box-shadow를 표시합니다.
- *     * hover 시 border-color를 primary[200]으로 강조합니다.
- *   * 그립(Grip):
- *     * 리사이저 중앙 정렬(absolute + translate)로 표시됩니다.
- *     * vertical은 세로 막대(좌/우 border), horizontal은 가로 막대(상/하 border)로 표현됩니다.
- *   * borderRadius:
- *     * `borderRadius`가 있으면 그대로 사용합니다.
- *     * 없으면 direction에 따라 우측/하단만 라운딩되도록 기본 radius를 계산합니다.
+ *   * PanelRoot는 direction에 따라 vertical이면 width=size,height=100%, horizontal이면 height=size,width=100%를 sx로 적용한다
+ *   * PanelRoot는 position: relative를 항상 적용해 리사이저를 내부 절대 배치 기준으로 사용한다
+ *   * 내부 콘텐츠는 Box(width="100%", height="100%")로 감싸 패널 크기를 그대로 채운다
+ *   * Resizer는 absolute + z-index(RESIZABLEPANEL)로 배치되며:
+ *     * vertical이면 right:0, width:8px, height:100%, cursor: ew-resize
+ *     * horizontal이면 bottom:0, height:8px, width:100%, cursor: ns-resize
+ *   * Grip은 Resizer 내부 중앙(top/left 50%, translate(-50%, -50%))에 배치된다
  *
  * * 데이터 처리 규칙
- *   * 입력 props 계약:
- *     * `direction`: "vertical" | "horizontal" (기본 vertical)
- *     * `minSize`/`maxSize`: size 제한값, `initialSize`: 초기/리셋 기준값
- *     * `borderRadius`: 패널 라운딩 커스터마이즈
- *   * 내부 계산:
- *     * `computeNextSize(clientX, clientY)`는 panel rect 기준으로
- *       * vertical: `clientX - rect.left`
- *       * horizontal: `clientY - rect.top`
- *       값을 계산 후 clamp 합니다.
- *   * 서버/클라이언트 제어:
- *     * 크기 상태는 컴포넌트 내부에서 관리되며, 외부에서는 props 변경(initialSize/min/max)으로만 간접 제어됩니다.
+ *   * 입력 props 계약(필수/선택)
+ *     * children은 필수이며, direction/minSize/maxSize/initialSize/size/onResize는 선택값이다
+ *     * BaseMixinProps를 함께 지원하여 spacing/size/sx 등 공통 스타일 props를 전달할 수 있다
+ *   * 내부 계산 로직 요약(보정, fallback, formatter 등)
+ *     * clamp 함수로 모든 크기 값을 min~max 범위로 제한한다
+ *     * uncontrolled 초기값은 useState(initialSize)로 시작하지만, 이후 effect에서 initialSize/min/max 기준으로 다시 보정된다
+ *     * 드래그 중 새 크기는 panel의 좌상단(rect.left/top)을 기준으로 포인터 좌표 차이로 계산된다
+ *   * 서버 제어/클라이언트 제어 여부
+ *     * 서버 통신이나 외부 데이터 제어는 없으며, 포인터 이벤트 기반으로 동작하는 클라이언트 레이아웃 제어 컴포넌트이다
  *
  * @module ResizablePanel
- * 포인터 드래그로 패널의 한 축 크기를 조절하는 리사이저 패널 UI를 제공합니다.
+ * 패널의 한 축 크기를 드래그로 조절할 수 있도록 제공하며,
+ * controlled/uncontrolled 방식 모두에서 min/max 범위를 지키는 리사이즈 레이아웃 패널 역할을 수행한다
  *
  * @usage
- * <ResizablePanel direction="vertical" minSize={200} maxSize={900} initialSize={320}>
- *   {children}
- * </ResizablePanel>
+ * <ResizablePanel
+ *   {...props}
+ * />
  *
 /---------------------------------------------------------------------------**/
-
 const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(
-  (
-    {
-      direction = "vertical",
-      minSize = 100,
-      maxSize = 800,
-      initialSize = 300,
-      borderRadius,
-      children,
-      ...others
-    },
-    ref,
-  ) => {
+  ({
+    direction = "vertical",
+    minSize = 100,
+    maxSize = 800,
+    initialSize = 300,
+    size: controlledSize,
+    onResize,
+    children,
+    ...others
+  }) => {
     const panelRef = useRef<HTMLDivElement | null>(null)
-    const rafRef = useRef<number | null>(null)
-    const lastPointerRef = useRef<{ x: number; y: number } | null>(null)
 
-    const [size, setSize] = useState(() => clamp(initialSize, minSize, maxSize))
-    const [isDragging, setIsDragging] = useState(false)
+    const isControlled = controlledSize !== undefined
+    const [internal, setInternal] = useState(initialSize)
+
+    const size = isControlled ? controlledSize : internal
+
+    const setSize = (next: number) => {
+      if (!isControlled) setInternal(next)
+      onResize?.(next)
+    }
 
     useEffect(() => {
-      setSize((prev) => clamp(prev, minSize, maxSize))
-    }, [minSize, maxSize])
+      if (!isControlled) {
+        setInternal(clamp(initialSize, minSize, maxSize))
+      }
+    }, [initialSize, minSize, maxSize, isControlled])
 
-    useEffect(() => {
-      setSize(clamp(initialSize, minSize, maxSize))
-    }, [initialSize, minSize, maxSize])
+    const handlePointerDown = (e: React.PointerEvent) => {
+      if (e.button !== 0) return
 
-    useImperativeHandle(ref, () => panelRef.current as HTMLDivElement, [])
-
-    const panelStyle = useMemo(() => {
-      return direction === "vertical"
-        ? ({ width: `${size}px`, height: "100%" } as const)
-        : ({ height: `${size}px`, width: "100%" } as const)
-    }, [direction, size])
-
-    const computeNextSize = useCallback(
-      (clientX: number, clientY: number) => {
-        if (!panelRef.current) return null
+      const move = (ev: PointerEvent) => {
+        if (!panelRef.current) return
         const rect = panelRef.current.getBoundingClientRect()
 
-        if (direction === "vertical") {
-          const next = clientX - rect.left
-          return clamp(next, minSize, maxSize)
-        }
+        const next = direction === "vertical" ? ev.clientX - rect.left : ev.clientY - rect.top
 
-        const next = clientY - rect.top
-        return clamp(next, minSize, maxSize)
-      },
-      [direction, minSize, maxSize],
-    )
-
-    const flushRaf = useCallback(() => {
-      if (!lastPointerRef.current) return
-      const { x, y } = lastPointerRef.current
-      const next = computeNextSize(x, y)
-      if (next == null) return
-      setSize(next)
-    }, [computeNextSize])
-
-    const scheduleRaf = useCallback(() => {
-      if (rafRef.current != null) return
-      rafRef.current = window.requestAnimationFrame(() => {
-        rafRef.current = null
-        flushRaf()
-      })
-    }, [flushRaf])
-
-    const handlePointerDown = useCallback(
-      (e: React.PointerEvent<HTMLDivElement>) => {
-        if (e.button !== 0) return
-        e.preventDefault()
-        e.currentTarget.setPointerCapture(e.pointerId)
-        setIsDragging(true)
-        lastPointerRef.current = { x: e.clientX, y: e.clientY }
-        scheduleRaf()
-      },
-      [scheduleRaf],
-    )
-
-    const handlePointerMove = useCallback(
-      (e: React.PointerEvent<HTMLDivElement>) => {
-        if (!isDragging) return
-        lastPointerRef.current = { x: e.clientX, y: e.clientY }
-        scheduleRaf()
-      },
-      [isDragging, scheduleRaf],
-    )
-
-    const stopDragging = useCallback((e?: React.PointerEvent<HTMLDivElement>) => {
-      setIsDragging(false)
-      lastPointerRef.current = null
-      if (e) {
-        try {
-          e.currentTarget.releasePointerCapture(e.pointerId)
-        } catch {
-          console.log("stopDragging::error")
-        }
+        setSize(clamp(next, minSize, maxSize))
       }
-    }, [])
 
-    useEffect(() => {
-      return () => {
-        if (rafRef.current != null) {
-          window.cancelAnimationFrame(rafRef.current)
-          rafRef.current = null
-        }
+      const up = () => {
+        window.removeEventListener("pointermove", move)
+        window.removeEventListener("pointerup", up)
       }
-    }, [])
 
-    const resolvedRadius = useMemo(() => {
-      if (borderRadius) return borderRadius
-      if (direction === "vertical") return `0 ${theme.borderRadius[4]} ${theme.borderRadius[4]} 0`
-      return `0 0 ${theme.borderRadius[4]} ${theme.borderRadius[4]}`
-    }, [borderRadius, direction])
+      window.addEventListener("pointermove", move)
+      window.addEventListener("pointerup", up)
+    }
 
     return (
       <PanelRoot
         ref={panelRef}
-        $borderRadius={resolvedRadius}
+        role="separator"
+        aria-orientation={direction === "vertical" ? "vertical" : "horizontal"}
         sx={{
-          ...panelStyle,
-          backgroundColor: "transparent",
-          overflow: "hidden",
+          ...(direction === "vertical"
+            ? { width: size, height: "100%" }
+            : { height: size, width: "100%" }),
           position: "relative",
-          flexDirection: "column",
         }}
         {...others}
       >
@@ -228,15 +143,7 @@ const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(
           {children}
         </Box>
 
-        <Resizer
-          direction={direction}
-          $borderRadius={resolvedRadius}
-          $dragging={isDragging}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={stopDragging}
-          onPointerCancel={stopDragging}
-        >
+        <Resizer direction={direction} onPointerDown={handlePointerDown}>
           <Grip direction={direction} />
         </Resizer>
       </PanelRoot>
@@ -244,51 +151,18 @@ const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(
   },
 )
 
-const PanelRoot = styled(Flex)<BaseMixinProps & { $borderRadius: string }>`
+const PanelRoot = styled(Flex)`
   ${BaseMixin}
-  border-radius: ${({ $borderRadius }) => $borderRadius};
 `
 
-const Resizer = styled.div<{
-  direction: DirectionType
-  $borderRadius: string
-  $dragging: boolean
-}>`
+const Resizer = styled.div<{ direction: DirectionType }>`
   position: absolute;
   z-index: ${RESIZABLEPANEL};
-  background-color: ${({ theme }) => theme.colors.background.default};
-  border: 1px solid ${({ theme }) => theme.colors.border.default};
-  border-radius: 8px;
-  flex-shrink: 0;
-  touch-action: none;
 
   ${({ direction }) =>
     direction === "vertical"
-      ? `
-        right: 0;
-        top: 0;
-        width: ${SIZE}px;
-        height: 100%;
-        cursor: ew-resize;
-      `
-      : `
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: ${SIZE}px;
-        cursor: ns-resize;
-      `}
-
-  ${({ theme, $dragging }) =>
-    $dragging
-      ? `
-        box-shadow: 0 0 0 2px ${theme.colors.primary[200]};
-      `
-      : ""}
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.primary[200]};
-  }
+      ? `right:0;width:${SIZE}px;height:100%;cursor:ew-resize;`
+      : `bottom:0;height:${SIZE}px;width:100%;cursor:ns-resize;`}
 `
 
 const Grip = styled.div<{ direction: DirectionType }>`
@@ -296,21 +170,7 @@ const Grip = styled.div<{ direction: DirectionType }>`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  ${({ direction }) =>
-    direction === "vertical"
-      ? `
-        width: ${SIZE / 2.5}px;
-        height: 28px;
-        border-left: 1px solid ${theme.colors.grayscale[200]};
-        border-right: 1px solid ${theme.colors.grayscale[200]};
-      `
-      : `
-        width: 28px;
-        height: ${SIZE / 2.5}px;
-        border-top: 1px solid ${theme.colors.grayscale[200]};
-        border-bottom: 1px solid ${theme.colors.grayscale[200]};
-      `}
 `
 
+ResizablePanel.displayName = "ResizablePanel"
 export default ResizablePanel

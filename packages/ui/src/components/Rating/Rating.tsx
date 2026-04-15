@@ -402,5 +402,6 @@ const IconFill = styled.span<{ $color: string; $width: string }>`
   color: ${({ $color }) => $color};
   display: inline-flex;
 `
+Rating.displayName = "Rating"
 
 export default Rating

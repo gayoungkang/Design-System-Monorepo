@@ -1,125 +1,182 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { useMemo, useState } from "react"
-import SwitchButton, { SwitchButtonProps } from "./SwitchButton"
+import { useState } from "react"
+import SwitchButton from "./SwitchButton"
 import Flex from "../Flex/Flex"
-import Box from "../Box/Box"
-import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof SwitchButton> = {
-  title: "Components/SwitchButton",
+  title: "Inputs/SwitchButton",
   component: SwitchButton,
-  parameters: {
-    layout: "centered",
-  },
-  argTypes: {
-    checked: { control: false },
-    onChange: { control: false },
-    disabled: { control: { type: "boolean" } },
-    size: { control: { type: "radio" }, options: ["S", "M", "L"] },
-    color: { control: { type: "text" } },
-    label: { control: { type: "text" } },
-    labelPlacment: { control: { type: "radio" }, options: ["left", "right", "top", "bottom"] },
-    labelPlacement: { control: { type: "radio" }, options: ["left", "right", "top", "bottom"] },
-    typographyProps: { control: false },
-  },
   args: {
+    checked: false,
     disabled: false,
     size: "M",
     color: "primary",
-    label: "Switch",
-    labelPlacment: "right",
-    labelPlacement: undefined,
-    typographyProps: undefined,
+    label: "알림",
+    labelPlacement: "right",
+  },
+  argTypes: {
+    checked: { control: "boolean" },
+    disabled: { control: "boolean" },
+    size: {
+      control: "select",
+      options: ["S", "M", "L"],
+    },
+    color: {
+      control: "text",
+    },
+    label: {
+      control: "text",
+    },
+    labelPlacment: {
+      control: "select",
+      options: ["top", "bottom", "left", "right"],
+    },
+    labelPlacement: {
+      control: "select",
+      options: ["top", "bottom", "left", "right"],
+    },
+    onChange: { action: "changed" },
+    typographyProps: { control: false },
   },
 }
 
 export default meta
+
 type Story = StoryObj<typeof SwitchButton>
 
-const Controlled = (args: SwitchButtonProps) => {
-  const [checked, setChecked] = useState<boolean>(true)
+export const Playground: Story = {
+  render: (args) => {
+    const [checked, setChecked] = useState<boolean>(Boolean(args.checked))
 
-  return (
-    <Flex direction="column" gap="12px" width="520px">
-      <Flex justify="space-between" align="center">
-        <Typography text="Playground" variant="h3" />
-      </Flex>
-
+    return (
       <SwitchButton
         {...args}
         checked={checked}
-        onChange={(next) => {
-          setChecked(next)
+        onChange={(nextChecked) => {
+          setChecked(nextChecked)
+          args.onChange?.(nextChecked)
         }}
       />
-
-      <Box sx={{ padding: "10px 12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-        <Typography text={`checked: ${String(checked)}`} variant="b2Regular" />
-      </Box>
-
-      <Typography
-        text="키보드: Tab → Space/Enter 토글"
-        variant="b3Regular"
-        color="text.secondary"
-      />
-    </Flex>
-  )
+    )
+  },
 }
 
-export const Playground: Story = {
-  render: (args) => <Controlled {...(args as SwitchButtonProps)} />,
-}
-
-export const Variants: Story = {
-  render: (args) => {
-    const common = args as SwitchButtonProps
-
-    const placements = useMemo(() => ["left", "right", "top", "bottom"] as const, [])
+export const Sizes: Story = {
+  render: () => {
+    const [small, setSmall] = useState(false)
+    const [medium, setMedium] = useState(true)
+    const [large, setLarge] = useState(false)
 
     return (
-      <Flex direction="column" gap="22px" width="920px">
-        <Typography text="Sizes" variant="h3" />
-        <Flex gap="18px" align="center" wrap="wrap">
-          <Controlled {...common} size="S" label="Size S" />
-          <Controlled {...common} size="M" label="Size M" />
-          <Controlled {...common} size="L" label="Size L" />
-        </Flex>
+      <Flex direction="column" gap={16}>
+        <SwitchButton checked={small} onChange={setSmall} size="S" label="Small" />
+        <SwitchButton checked={medium} onChange={setMedium} size="M" label="Medium" />
+        <SwitchButton checked={large} onChange={setLarge} size="L" label="Large" />
+      </Flex>
+    )
+  },
+}
 
-        <Typography text="States" variant="h3" />
-        <Flex gap="18px" align="center" wrap="wrap">
-          <Controlled {...common} label="Enabled" disabled={false} />
-          <Controlled {...common} label="Disabled" disabled />
-        </Flex>
+export const Colors: Story = {
+  render: () => {
+    const [primary, setPrimary] = useState(true)
+    const [secondary, setSecondary] = useState(true)
+    const [normal, setNormal] = useState(true)
+    const [custom, setCustom] = useState(true)
 
-        <Typography text="Colors (token / custom)" variant="h3" />
-        <Flex gap="18px" align="center" wrap="wrap">
-          <Controlled {...common} label="primary" color="primary" />
-          <Controlled {...common} label="secondary" color="secondary" />
-          <Controlled {...common} label="normal" color="normal" />
-          <Controlled {...common} label="#FF5A5A" color="#FF5A5A" />
-        </Flex>
-
-        <Typography
-          text="Label placement (labelPlacement 우선, 없으면 labelPlacment)"
-          variant="h3"
+    return (
+      <Flex direction="column" gap={16}>
+        <SwitchButton checked={primary} onChange={setPrimary} color="primary" label="Primary" />
+        <SwitchButton
+          checked={secondary}
+          onChange={setSecondary}
+          color="secondary"
+          label="Secondary"
         />
-        <Flex direction="column" gap="12px">
-          {placements.map((p) => (
-            <Flex key={p} gap="18px" align="center" wrap="wrap">
-              <Controlled
-                {...common}
-                label={`placement: ${p}`}
-                labelPlacement={p}
-                labelPlacment={undefined}
-              />
-              <Controlled
-                {...common}
-                label={`legacy: ${p}`}
-                labelPlacment={p}
-                labelPlacement={undefined}
-              />
-            </Flex>
-          ))}
+        <SwitchButton checked={normal} onChange={setNormal} color="normal" label="Normal" />
+        <SwitchButton checked={custom} onChange={setCustom} color="#7c3aed" label="Custom" />
+      </Flex>
+    )
+  },
+}
+
+export const LabelPlacements: Story = {
+  render: () => {
+    const [top, setTop] = useState(false)
+    const [bottom, setBottom] = useState(true)
+    const [left, setLeft] = useState(false)
+    const [right, setRight] = useState(true)
+
+    return (
+      <Flex direction="column" gap={20}>
+        <SwitchButton checked={top} onChange={setTop} label="Top" labelPlacement="top" />
+        <SwitchButton
+          checked={bottom}
+          onChange={setBottom}
+          label="Bottom"
+          labelPlacement="bottom"
+        />
+        <SwitchButton checked={left} onChange={setLeft} label="Left" labelPlacement="left" />
+        <SwitchButton checked={right} onChange={setRight} label="Right" labelPlacement="right" />
+      </Flex>
+    )
+  },
+}
+
+export const Disabled: Story = {
+  render: () => {
+    const [enabled, setEnabled] = useState(true)
+
+    return (
+      <Flex direction="column" gap={16}>
+        <SwitchButton checked={enabled} onChange={setEnabled} label="Enabled" />
+        <SwitchButton checked={false} onChange={() => {}} disabled label="Disabled Off" />
+        <SwitchButton checked onChange={() => {}} disabled label="Disabled On" />
+      </Flex>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  render: () => {
+    const [case1, setCase1] = useState(false)
+    const [case2, setCase2] = useState(true)
+    const [case3, setCase3] = useState(false)
+    const [case4, setCase4] = useState(true)
+
+    return (
+      <Flex direction="column" gap={24}>
+        <Flex gap={24} wrap="wrap">
+          <SwitchButton checked={case1} onChange={setCase1} size="S" label="S / right" />
+          <SwitchButton
+            checked={case2}
+            onChange={setCase2}
+            size="M"
+            color="secondary"
+            label="M / left"
+            labelPlacement="left"
+          />
+          <SwitchButton
+            checked={case3}
+            onChange={setCase3}
+            size="L"
+            color="#0ea5e9"
+            label="L / top"
+            labelPlacement="top"
+          />
+          <SwitchButton
+            checked={case4}
+            onChange={setCase4}
+            size="M"
+            color="normal"
+            label="M / bottom"
+            labelPlacement="bottom"
+          />
+        </Flex>
+
+        <Flex gap={24} wrap="wrap">
+          <SwitchButton checked={false} onChange={() => {}} disabled label="Disabled Off" />
+          <SwitchButton checked onChange={() => {}} disabled label="Disabled On" />
         </Flex>
       </Flex>
     )

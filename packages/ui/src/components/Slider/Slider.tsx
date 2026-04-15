@@ -3,9 +3,11 @@ import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { theme } from "../../tokens/theme"
 import Icon from "../Icon/Icon"
-import Label from "../Label/Label"
+import Label, { LabelProps } from "../Label/Label"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
+import { IconName } from "../Icon/icon-types"
+import type { MouseEvent as ReactMouseEvent } from "react"
 
 export type SliderValue = number | [number, number]
 
@@ -19,9 +21,9 @@ export type SliderProps = BaseMixinProps & {
   disabled?: boolean
   track?: "normal" | "inset" | "none"
   label?: string
-  labelProps?: any
-  startIcon?: string
-  endIcon?: string
+  labelProps?: LabelProps
+  startIcon?: IconName
+  endIcon?: IconName
   iconSize?: number | string
 }
 
@@ -235,9 +237,9 @@ export const Slider = ({
 
   // * Thumb 드래그 시작 핸들러 (Range 슬라이더는 thumbIndex 기준)
   const startDragging = useCallback(
-    (thumbIndex: number) => (e: any) => {
+    (thumbIndex: number) => (e: ReactMouseEvent<HTMLDivElement>) => {
       if (disabled) return
-      e?.preventDefault?.()
+      e.preventDefault()
 
       const move = (event: MouseEvent) => {
         const newValue = getValueFromPosition(event.pageX)
@@ -277,9 +279,9 @@ export const Slider = ({
 
   // * Rail 클릭 시 가장 가까운 Thumb를 이동
   const handleRailMouseDown = useCallback(
-    (e: any) => {
+    (e: ReactMouseEvent<HTMLDivElement>) => {
       if (disabled) return
-      e?.preventDefault?.()
+      e.preventDefault()
 
       const newVal = getValueFromPosition(e.pageX)
 
@@ -301,7 +303,6 @@ export const Slider = ({
     },
     [disabled, getValueFromPosition, isRange, commitChange, commitEnd, normalizeByMode, sortRange],
   )
-
   const trackLeft = useMemo(() => {
     if (!isRange) return 0
     const [a] = normalizedInternal as [number, number]
@@ -325,9 +326,7 @@ export const Slider = ({
       {label && <Label text={label} placement="right" required={false} {...labelProps} mb={6} />}
 
       <Flex align="center" gap="8px" width="100%">
-        {startIcon && (
-          <Icon name={startIcon as any} size={iconSize} color={theme.colors.grayscale[300]} />
-        )}
+        {startIcon && <Icon name={startIcon} size={iconSize} color={theme.colors.grayscale[300]} />}
 
         <RailContainer ref={railRef} onMouseDown={handleRailMouseDown} $disabled={disabled}>
           <Rail />
@@ -359,9 +358,7 @@ export const Slider = ({
           ))}
         </RailContainer>
 
-        {endIcon && (
-          <Icon name={endIcon as any} size={iconSize} color={theme.colors.grayscale[300]} />
-        )}
+        {endIcon && <Icon name={endIcon} size={iconSize} color={theme.colors.grayscale[300]} />}
       </Flex>
     </Wrapper>
   )

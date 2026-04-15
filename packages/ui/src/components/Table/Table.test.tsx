@@ -18,7 +18,7 @@ const allRows: TableRowData[] = Array.from({ length: 120 }, (_, index) => ({
   team: ["Frontend", "Backend", "Design"][index % 3],
 }))
 
-const baseColumnConfig: ColumnProps<TableRowData>[] = [
+const columnConfig: ColumnProps<TableRowData>[] = [
   {
     key: "id",
     title: "ID",
@@ -40,6 +40,15 @@ const baseColumnConfig: ColumnProps<TableRowData>[] = [
     width: 180,
   },
 ]
+
+const meta: Meta<typeof Table<TableRowData>> = {
+  title: "Data Display/Table",
+  component: Table<TableRowData>,
+}
+
+export default meta
+
+type Story = StoryObj<typeof Table<TableRowData>>
 
 const filterRows = (rows: TableRowData[], keyword: string) => {
   const safeKeyword = keyword.trim().toLowerCase()
@@ -71,15 +80,6 @@ const sortRows = (rows: TableRowData[], query: ServerTableQuery) => {
   return next
 }
 
-const meta: Meta<typeof Table<TableRowData>> = {
-  title: "Data Display/Table",
-  component: Table<TableRowData>,
-}
-
-export default meta
-
-type Story = StoryObj<typeof Table<TableRowData>>
-
 export const Playground: Story = {
   render: () => {
     const [query, setQuery] = useState<ServerTableQuery>({
@@ -93,7 +93,6 @@ export const Playground: Story = {
       const sorted = sortRows(filtered, query)
       const start = (query.page - 1) * query.rowsPerPage
       const end = start + query.rowsPerPage
-
       return {
         total: sorted.length,
         rows: sorted.slice(start, end),
@@ -103,7 +102,7 @@ export const Playground: Story = {
     return (
       <Table<TableRowData>
         tableKey="playground"
-        columnConfig={baseColumnConfig}
+        columnConfig={columnConfig}
         data={visibleRows.rows}
         query={query}
         totalCount={visibleRows.total}
@@ -136,7 +135,7 @@ export const WithToolbar: Story = {
     return (
       <Table<TableRowData>
         tableKey="toolbar"
-        columnConfig={baseColumnConfig}
+        columnConfig={columnConfig}
         data={visibleRows.rows}
         query={query}
         totalCount={visibleRows.total}
@@ -162,7 +161,7 @@ export const EmptyState: Story = {
     return (
       <Table<TableRowData>
         tableKey="empty"
-        columnConfig={baseColumnConfig}
+        columnConfig={columnConfig}
         data={[]}
         query={query}
         totalCount={0}
@@ -193,7 +192,7 @@ export const Virtualized: Story = {
     return (
       <Table<TableRowData>
         tableKey="virtualized"
-        columnConfig={baseColumnConfig}
+        columnConfig={columnConfig}
         data={visibleRows.rows}
         query={query}
         totalCount={visibleRows.total}
@@ -234,7 +233,7 @@ export const Disabled: Story = {
     return (
       <Table<TableRowData>
         tableKey="disabled"
-        columnConfig={baseColumnConfig}
+        columnConfig={columnConfig}
         data={visibleRows.rows}
         query={query}
         totalCount={visibleRows.total}
@@ -262,8 +261,8 @@ export const AllCases: Story = {
       },
     })
 
-    const columnConfig = useMemo<ColumnProps<TableRowData>[]>(() => {
-      return baseColumnConfig.map((column) => {
+    const columns = useMemo<ColumnProps<TableRowData>[]>(() => {
+      return columnConfig.map((column) => {
         if (!["id", "name", "age"].includes(String(column.key))) return column
 
         return {
@@ -299,7 +298,7 @@ export const AllCases: Story = {
     return (
       <Table<TableRowData>
         tableKey="all-cases"
-        columnConfig={columnConfig}
+        columnConfig={columns}
         data={visibleRows.rows}
         query={query}
         totalCount={visibleRows.total}

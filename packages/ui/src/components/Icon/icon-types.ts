@@ -33,6 +33,8 @@ export const IconNames = [
   "StatusWarning",
   "Time",
   "ViewColumn",
+  "VolumeDown",
+  "VolumeUp",
   "reset"
 ] as const;
 

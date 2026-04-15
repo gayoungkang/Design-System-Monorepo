@@ -1,157 +1,258 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { useEffect, useMemo, useState } from "react"
-import Slider, { SliderProps, SliderValue } from "./Slider"
-import Flex from "../Flex/Flex"
+import { useState } from "react"
+import Slider from "./Slider"
 import Box from "../Box/Box"
-import { Typography } from "../Typography/Typography"
-import Button from "../Button/Button"
+import Flex from "../Flex/Flex"
 
 const meta: Meta<typeof Slider> = {
-  title: "Components/Slider",
+  title: "Input/Slider",
   component: Slider,
-  parameters: {
-    layout: "centered",
-  },
-  argTypes: {
-    value: { control: false },
-    onChange: { action: "onChange" },
-    onChangeEnd: { action: "onChangeEnd" },
-    min: { control: { type: "number" } },
-    max: { control: { type: "number" } },
-    step: { control: { type: "number" } },
-    disabled: { control: { type: "boolean" } },
-    track: { control: { type: "radio" }, options: ["normal", "inset", "none"] },
-    label: { control: { type: "text" } },
-    labelProps: { control: false },
-    startIcon: { control: { type: "text" } },
-    endIcon: { control: { type: "text" } },
-    iconSize: { control: { type: "text" } },
-  },
   args: {
-    value: 50,
     min: 0,
     max: 100,
     step: 1,
     disabled: false,
     track: "normal",
     label: "Slider",
-    startIcon: "",
-    endIcon: "",
     iconSize: 16,
+  },
+  argTypes: {
+    onChange: { action: "change" },
+    onChangeEnd: { action: "changeEnd" },
   },
 }
 
 export default meta
+
 type Story = StoryObj<typeof Slider>
 
-const isRangeValue = (v: SliderValue): v is [number, number] => Array.isArray(v)
+export const Playground: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<number>(30)
 
-const Controlled = (args: SliderProps) => {
-  const [mode, setMode] = useState<"single" | "range">(
-    isRangeValue(args.value) ? "range" : "single",
-  )
-
-  const initial = useMemo<SliderValue>(() => {
-    if (mode === "range")
-      return isRangeValue(args.value) ? args.value : ([20, 80] as [number, number])
-    return isRangeValue(args.value) ? args.value[0] : (args.value as number)
-  }, [args.value, mode])
-
-  const [val, setVal] = useState<SliderValue>(initial)
-
-  useEffect(() => {
-    setVal(initial)
-  }, [initial])
-
-  const setSingle = () => {
-    setMode("single")
-    setVal((prev) => (isRangeValue(prev) ? prev[0] : prev))
-  }
-
-  const setRange = () => {
-    setMode("range")
-    setVal((prev) => (isRangeValue(prev) ? prev : ([20, 80] as [number, number])))
-  }
-
-  return (
-    <Flex direction="column" gap="12px" width="520px">
-      <Flex align="center" justify="space-between">
-        <Typography text="Mode" variant="b2Regular" />
-        <Flex gap="8px">
-          <Button text="Single" onClick={setSingle} />
-          <Button variant="outlined" text="Range" onClick={setRange} />
-        </Flex>
-      </Flex>
-
-      <Flex direction="column" gap="8px">
+    return (
+      <Box width="360px">
         <Slider
           {...args}
-          value={val}
+          value={value}
           onChange={(next) => {
-            setVal(next)
-            args.onChange?.(next)
+            if (Array.isArray(next)) return
+            setValue(next)
           }}
           onChangeEnd={(next) => {
-            args.onChangeEnd?.(next)
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+        />
+      </Box>
+    )
+  },
+}
+
+export const Single: Story = {
+  render: () => {
+    const [value, setValue] = useState<number>(40)
+
+    return (
+      <Box width="360px">
+        <Slider
+          label="Single Slider"
+          value={value}
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+        />
+      </Box>
+    )
+  },
+}
+
+export const Range: Story = {
+  render: () => {
+    const [value, setValue] = useState<[number, number]>([20, 80])
+
+    return (
+      <Box width="360px">
+        <Slider
+          label="Range Slider"
+          value={value}
+          onChange={(next) => {
+            if (!Array.isArray(next)) return
+            setValue(next as [number, number])
+          }}
+          onChangeEnd={(next) => {
+            if (!Array.isArray(next)) return
+            setValue(next as [number, number])
+          }}
+        />
+      </Box>
+    )
+  },
+}
+
+export const Variants: Story = {
+  render: () => {
+    const [normalValue, setNormalValue] = useState<number>(30)
+    const [insetValue, setInsetValue] = useState<number>(55)
+    const [noneValue, setNoneValue] = useState<number>(70)
+
+    return (
+      <Flex direction="column" gap="20px" width="360px">
+        <Slider
+          label="Normal Track"
+          value={normalValue}
+          track="normal"
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setNormalValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setNormalValue(next)
           }}
         />
 
-        <Box sx={{ padding: "8px 10px", borderRadius: "10px", backgroundColor: "grayscale.50" }}>
-          <Typography
-            text={`value: ${Array.isArray(val) ? `[${val[0]}, ${val[1]}]` : val}`}
-            variant="b2Regular"
-          />
-        </Box>
+        <Slider
+          label="Inset Track"
+          value={insetValue}
+          track="inset"
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setInsetValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setInsetValue(next)
+          }}
+        />
+
+        <Slider
+          label="No Track"
+          value={noneValue}
+          track="none"
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setNoneValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setNoneValue(next)
+          }}
+        />
       </Flex>
-    </Flex>
-  )
+    )
+  },
 }
 
-export const Playground: Story = {
-  render: (args) => <Controlled {...(args as SliderProps)} />,
-}
-
-export const AllCases: Story = {
-  render: (args) => {
-    const common = args as SliderProps
+export const WithIcons: Story = {
+  render: () => {
+    const [value, setValue] = useState<number>(50)
 
     return (
-      <Flex direction="column" gap="18px" width="720px">
-        <Typography text="Single" variant="h3" />
-        <Flex direction="column" gap="12px">
-          <Controlled {...common} value={40} label="Default" />
-          <Controlled {...common} value={40} label="Track inset" track="inset" />
-          <Controlled {...common} value={40} label="Track none" track="none" />
-          <Controlled {...common} value={40} label="Disabled" disabled />
-          <Controlled
-            {...common}
-            value={40}
-            label="With icons"
-            startIcon={"chevron-left"}
-            endIcon={"chevron-right"}
-            iconSize={16}
-          />
-          <Controlled {...common} value={40} label="Step 5" step={5} />
-          <Controlled {...common} value={40} label="Min/Max (10~60)" min={10} max={60} />
-        </Flex>
+      <Box width="360px">
+        <Slider
+          label="Volume"
+          value={value}
+          startIcon="VolumeDown"
+          endIcon="VolumeUp"
+          iconSize={18}
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+        />
+      </Box>
+    )
+  },
+}
 
-        <Typography text="Range" variant="h3" />
-        <Flex direction="column" gap="12px">
-          <Controlled {...common} value={[20, 80]} label="Default" />
-          <Controlled {...common} value={[20, 80]} label="Track inset" track="inset" />
-          <Controlled {...common} value={[20, 80]} label="Track none" track="none" />
-          <Controlled {...common} value={[20, 80]} label="Disabled" disabled />
-          <Controlled
-            {...common}
-            value={[20, 80]}
-            label="With icons"
-            startIcon={"minus"}
-            endIcon={"plus"}
-            iconSize={16}
-          />
-          <Controlled {...common} value={[20, 80]} label="Step 10" step={10} />
-          <Controlled {...common} value={[20, 80]} label="Min/Max (10~60)" min={10} max={60} />
-        </Flex>
+export const States: Story = {
+  render: () => {
+    const [value, setValue] = useState<number>(35)
+    const [rangeValue, setRangeValue] = useState<[number, number]>([25, 75])
+
+    return (
+      <Flex direction="column" gap="20px" width="360px">
+        <Slider
+          label="Default"
+          value={value}
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+        />
+
+        <Slider label="Disabled" value={60} disabled />
+
+        <Slider
+          label="Disabled Range"
+          value={rangeValue}
+          disabled
+          onChange={(next) => {
+            if (!Array.isArray(next)) return
+            setRangeValue(next as [number, number])
+          }}
+          onChangeEnd={(next) => {
+            if (!Array.isArray(next)) return
+            setRangeValue(next as [number, number])
+          }}
+        />
+      </Flex>
+    )
+  },
+}
+
+export const StepCases: Story = {
+  render: () => {
+    const [value, setValue] = useState<number>(20)
+    const [rangeValue, setRangeValue] = useState<[number, number]>([10, 50])
+
+    return (
+      <Flex direction="column" gap="20px" width="360px">
+        <Slider
+          label="Step 10"
+          min={0}
+          max={100}
+          step={10}
+          value={value}
+          onChange={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+          onChangeEnd={(next) => {
+            if (Array.isArray(next)) return
+            setValue(next)
+          }}
+        />
+
+        <Slider
+          label="Range Step 5"
+          min={0}
+          max={100}
+          step={5}
+          value={rangeValue}
+          onChange={(next) => {
+            if (!Array.isArray(next)) return
+            setRangeValue(next as [number, number])
+          }}
+          onChangeEnd={(next) => {
+            if (!Array.isArray(next)) return
+            setRangeValue(next as [number, number])
+          }}
+        />
       </Flex>
     )
   },
