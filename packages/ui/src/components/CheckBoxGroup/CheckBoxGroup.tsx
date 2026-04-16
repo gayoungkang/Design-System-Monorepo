@@ -200,7 +200,6 @@ export const CheckBox = forwardRef<HTMLInputElement, CheckBoxSingleProps>(
         )}
         {error && <HelperText status="error" text={helperText ?? ""} mt={6} />}
 
-        {/* * theme 사용(타입/빌드에서 미사용 제거 방지용이 아니라 실제 사용은 CheckboxItem Typography color) */}
         <span style={{ display: "none" }}>{theme.colors.text.secondary}</span>
       </Box>
     )
@@ -369,7 +368,6 @@ const CheckboxItem = forwardRef<HTMLInputElement, CheckboxItemProps>(
         mb={!isHorizontal ? 12 : 0}
         align="center"
         as="label"
-        extraProps={{ htmlFor: id }}
         sx={{
           "&:last-child": {
             marginRight: 0,

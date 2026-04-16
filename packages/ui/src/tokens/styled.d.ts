@@ -1,7 +1,13 @@
-import 'styled-components'
-import type { ThemeVariantType, ColorsType, ZindexType, FontsType, ShadowsType, BorderRadiusType } from './theme'
+import "styled-components"
+import type {
+  ColorsType,
+  ZindexType,
+  FontsType,
+  ShadowsType,
+  BorderRadiusType,
+} from "./tokens/theme"
 
-declare module 'styled-components' {
+declare module "styled-components" {
   export interface DefaultTheme {
     zIndex: ZindexType
     colors: ColorsType

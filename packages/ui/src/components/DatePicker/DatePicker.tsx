@@ -15,7 +15,7 @@ import Popper from "../Popper/Popper"
 import TextField from "../TextField/TextField"
 import Divider from "../Divider/Divider"
 import type { LabelProps } from "../Label/Label"
-import { IconName } from "../Icon/icon-types"
+import type { IconName } from "../Icon/icon-types"
 
 export type DateType = "Date" | "Time" | "Month" | "DateTime" | "Year"
 export type DatePickerMode = "Single" | "Range"

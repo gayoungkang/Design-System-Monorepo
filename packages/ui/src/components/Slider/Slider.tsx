@@ -3,10 +3,11 @@ import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { theme } from "../../tokens/theme"
 import Icon from "../Icon/Icon"
-import Label, { LabelProps } from "../Label/Label"
+import Label from "../Label/Label"
+import type { LabelProps } from "../Label/Label"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
-import { IconName } from "../Icon/icon-types"
+import type { IconName } from "../Icon/icon-types"
 import type { MouseEvent as ReactMouseEvent } from "react"
 
 export type SliderValue = number | [number, number]

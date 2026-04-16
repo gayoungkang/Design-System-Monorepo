@@ -20,11 +20,14 @@ const clampElevation = (elevation: number, max: number) => {
 const resolveRadius = (theme: DefaultTheme, radius: BorderRadiusKey | number | string): string => {
   if (typeof radius === "string") return radius
 
-  if (radius in theme.borderRadius) {
+  if (
+    (typeof radius === "number" || typeof radius === "string") &&
+    Object.prototype.hasOwnProperty.call(theme.borderRadius, radius)
+  ) {
     return theme.borderRadius[radius as BorderRadiusKey]
   }
 
-  return `${radius}px`
+  return `${String(radius)}px`
 }
 /**---------------------------------------------------------------------------/
  *

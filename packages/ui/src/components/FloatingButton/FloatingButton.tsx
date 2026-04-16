@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { DefaultTheme, useTheme } from "styled-components"
+import { useTheme, type DefaultTheme } from "styled-components"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import Icon, { type IconProps } from "../Icon/Icon"
