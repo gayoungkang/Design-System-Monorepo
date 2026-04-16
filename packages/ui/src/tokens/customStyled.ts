@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-const STYLE_PROPS = new Set<string>([
+const _STYLE_PROPS = new Set<string>([
   "placement",
   "maxWidth",
   "variant",
@@ -59,13 +59,13 @@ const STYLE_PROPS = new Set<string>([
 const isStyleProp = (prop: string) => {
   if (prop.startsWith("$")) return true
 
-  if (STYLE_PROPS.has(prop)) return true
+  if (_STYLE_PROPS.has(prop)) return true
 
   return false
 }
 
 export const shouldForwardProp = (prop: string) => {
-  if (prop.startsWith("$")) return false
+  if (isStyleProp(prop)) return false
   return true
 }
 

@@ -8,7 +8,7 @@ import TableFilter from "./TableFilter"
 import Badge from "../../Badge/Badge"
 import { Typography } from "../../Typography/Typography"
 import { theme } from "../../../tokens/theme"
-import TableExport from "./TableExport"
+import TableExport, { type ExportType } from "./TableExport"
 
 export type TableToolBarProps<TExtraExportType extends string = never> = {
   title?: string
@@ -22,9 +22,9 @@ export type TableToolBarProps<TExtraExportType extends string = never> = {
 
   // export (단일 진입점: type만 올림. ctx는 Table.tsx가 단일 구성)
   exportEnabled?: boolean
-  exportItems?: { type: any; label: string; icon?: string }[]
-  excludeExportTypes?: any[]
-  onExport?: (type: any) => void
+  exportItems?: { type: ExportType<TExtraExportType>; label: string; icon?: string }[]
+  excludeExportTypes?: ExportType<TExtraExportType>[]
+  onExport?: (type: ExportType<TExtraExportType>) => void
 
   // columns visible
   columnVisibilityEnabled?: boolean
@@ -147,7 +147,7 @@ const TableToolBar = <TExtraExportType extends string = never>({
   const isFilterControlled = typeof filterOpen === "boolean"
 
   // * controlled/uncontrolled 여부에 따라 실제 사용 open 값을 단일 값으로 정규화
-  const effectiveFilterOpen = isFilterControlled ? (filterOpen as boolean) : uncontrolledFilterOpen
+  const effectiveFilterOpen = isFilterControlled ? filterOpen : uncontrolledFilterOpen
 
   // * filter open 상태 변경 시 disabled/feature enabled 및 controlled/uncontrolled 규약을 지켜 안전하게 반영
   const setFilterOpenSafe = (next: boolean) => {

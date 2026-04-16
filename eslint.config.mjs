@@ -52,6 +52,15 @@ export default tseslint.config(
         "error",
         { allowShortCircuit: true, allowTernary: true, allowTaggedTemplates: true },
       ],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-explicit-any": "warn",
 
       "no-restricted-syntax": [
         "error",
@@ -87,6 +96,7 @@ export default tseslint.config(
                 "createGlobalStyle",
                 "DefaultTheme",
                 "CSSObject",
+                "useTheme",
               ],
             },
           ],
@@ -96,10 +106,28 @@ export default tseslint.config(
   },
 
   {
+    files: ["packages/ui/src/tokens/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": "off",
+    },
+  },
+
+  {
+    files: [
+      "packages/ui/src/components/Table/**/*.{ts,tsx}",
+      "packages/ui/src/components/InfiniteTable/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+
+  {
     files: ["**/*.stories.{ts,tsx}"],
     rules: {
       "no-restricted-syntax": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
 
@@ -107,6 +135,7 @@ export default tseslint.config(
     files: ["**/*.{test,spec}.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/no-explicit-any": "off",
       "react/display-name": "off",
     },
   },

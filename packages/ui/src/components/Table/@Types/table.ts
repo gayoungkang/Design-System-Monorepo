@@ -40,6 +40,20 @@ export type VirtualizedOptions = {
   overscan?: number
 }
 
+// * 요약 행 셀 아이템 타입
+export type SummaryRowItem<T extends Record<string, unknown>> = {
+  key: keyof T | string
+  value?: ReactNode
+  colSpan?: number
+  align?: TableCellAlign | "start" | "end"
+}
+
+// * 요약 행 한 줄(line) 구성 타입
+export type SummaryRowLine<T extends Record<string, unknown>> = {
+  key?: string
+  items: SummaryRowItem<T>[]
+}
+
 // * 테이블 컬럼 정의(표시/렌더/정렬 트리거/비활성) 타입
 export type ColumnProps<T extends Record<string, unknown>> = {
   key: keyof T
@@ -70,12 +84,12 @@ export type TableRowAction<T extends Record<string, unknown>> = {
 export type SummaryRowProps<T extends Record<string, unknown>> = {
   enabled?: boolean
   sticky?: boolean
-  rows: any[]
+  rows: SummaryRowLine<T>[]
   data?: Record<string, number>[]
 }
 
 // * 테이블 툴바(검색/내보내기/컬럼 표시/필터) 구성 타입
-export type TableToolbarProps<TExtraExportType extends string = never> = {
+export type TableToolbarProps<_TExtraExportType extends string = never> = {
   title?: string
 
   searchEnabled?: boolean
@@ -84,9 +98,9 @@ export type TableToolbarProps<TExtraExportType extends string = never> = {
   onSearchChange?: (value: string) => void
 
   exportEnabled?: boolean
-  exportItems?: { type: any; label: string; icon?: string }[]
-  excludeExportTypes?: any[]
-  onExport?: (type: any, ctx: unknown) => void
+  exportItems?: { type: _TExtraExportType; label: string; icon?: string }[]
+  excludeExportTypes?: _TExtraExportType[]
+  onExport?: (type: _TExtraExportType, ctx: unknown) => void
   exportContext?: unknown
 
   columnVisibilityEnabled?: boolean
@@ -94,7 +108,10 @@ export type TableToolbarProps<TExtraExportType extends string = never> = {
   visibleColumnKeys?: string[]
   defaultVisibleColumnKeys?: string[]
   onVisibleColumnKeysChange?: (keys: string[]) => void
-  onHiddenColumnKeysChange?: (hiddenKeys: string[], hiddenColumns: any[]) => void
+  onHiddenColumnKeysChange?: (
+    hiddenKeys: string[],
+    hiddenColumns: { key: string; title: string; hideable?: boolean }[],
+  ) => void
   columnsSkeletonEnabled?: boolean
   columnsSkeletonCount?: number
 
@@ -102,7 +119,7 @@ export type TableToolbarProps<TExtraExportType extends string = never> = {
   filterActiveCount?: number
   filterOpen?: boolean
   onFilterOpenChange?: (open: boolean) => void
-  filterDrawerVariant?: any
+  filterDrawerVariant?: unknown
   filterDrawerPlacement?: AxisPlacement
   filterDrawerWidth?: number | string
   filterDrawerHeight?: number | string
@@ -156,9 +173,9 @@ export type TableProps<
 
   // export (server job only)
   exportEnabled?: boolean
-  exportItems?: any[]
-  excludeExportTypes?: any[]
-  onExport?: (type: any, ctx: unknown) => void
+  exportItems?: { type: TExtraExportType; label: string; icon?: string }[]
+  excludeExportTypes?: TExtraExportType[]
+  onExport?: (type: TExtraExportType, ctx: unknown) => void
   exportContext?: unknown
 
   // virtualization
