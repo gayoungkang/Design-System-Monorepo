@@ -13,7 +13,7 @@
     "icons:build": "yarn icons:types && yarn icons:sprite",
     "sync:icons": "yarn icons:copy:web",
     "dev": "yarn sync:icons && yarn workspace web dev",
-    "build": "yarn sync:icons && yarn workspaces foreach -pt run build",
+    "build": "yarn sync:icons && yarn workspaces foreach -A -p -t run build",
     "postinstall": "tsx scripts/copy-icon-sprite-to-web.ts",
     "storybook": "yarn icons:build && yarn workspace @acme/ui storybook",
     "preview": "yarn workspace web preview",
