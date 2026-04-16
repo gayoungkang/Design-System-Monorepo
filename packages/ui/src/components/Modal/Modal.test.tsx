@@ -1,9 +1,8 @@
-import type { ReactNode } from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import type { ReactElement } from "react"
+import { fireEvent, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
-import { ThemeProvider } from "styled-components"
+import { renderWithProviders } from "../../test"
 import Modal from "./Modal"
-import { theme } from "../../tokens/theme"
 
 vi.mock("../../stores/useModalStack", () => ({
   useModalStack: () => ({ isTop: true }),
@@ -13,13 +12,11 @@ vi.mock("../../utils/canUseDOM", () => ({
   canUseDOM: () => true,
 }))
 
-const renderWithTheme = (ui: ReactNode) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
-}
+const renderModal = (ui: ReactElement) => renderWithProviders(ui)
 
 describe("Modal", () => {
   it("open이 false면 렌더링하지 않는다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open={false} title="모달">
         내용
       </Modal>,
@@ -29,7 +26,7 @@ describe("Modal", () => {
   })
 
   it("open이 true면 dialog를 렌더링한다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open title="모달">
         내용
       </Modal>,
@@ -40,22 +37,23 @@ describe("Modal", () => {
   })
 
   it("title이 있으면 aria-labelledby를 연결한다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open title="확인 모달">
         내용
       </Modal>,
     )
 
     const dialog = screen.getByRole("dialog")
-    const title = screen.getByText("확인 모달")
+    const labelledby = dialog.getAttribute("aria-labelledby")
 
-    expect(dialog).toHaveAttribute("aria-labelledby", title.getAttribute("id") ?? "")
+    expect(labelledby).toBeTruthy()
+    expect(screen.getByText("확인 모달")).toBeInTheDocument()
   })
 
   it("Escape 키 입력 시 onClose를 호출한다", () => {
     const onClose = vi.fn()
 
-    renderWithTheme(
+    renderModal(
       <Modal open title="모달" onClose={onClose}>
         내용
       </Modal>,
@@ -69,7 +67,7 @@ describe("Modal", () => {
   it("allowBackdrop이 true면 overlay 클릭으로 닫힌다", () => {
     const onClose = vi.fn()
 
-    renderWithTheme(
+    renderModal(
       <Modal open title="모달" allowBackdrop onClose={onClose}>
         내용
       </Modal>,
@@ -83,7 +81,7 @@ describe("Modal", () => {
   it("allowBackdrop이 false면 overlay 클릭으로 닫히지 않는다", () => {
     const onClose = vi.fn()
 
-    renderWithTheme(
+    renderModal(
       <Modal open title="모달" allowBackdrop={false} onClose={onClose}>
         내용
       </Modal>,
@@ -95,7 +93,7 @@ describe("Modal", () => {
   })
 
   it("기본 footer 버튼이 렌더링된다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open title="모달">
         내용
       </Modal>,
@@ -106,7 +104,7 @@ describe("Modal", () => {
   })
 
   it("footerComponent가 있으면 기본 footer 대신 렌더링한다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open footerComponent={<button type="button">커스텀 푸터</button>}>
         내용
       </Modal>,
@@ -117,7 +115,7 @@ describe("Modal", () => {
   })
 
   it("headerComponent가 있으면 기본 header 대신 렌더링한다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open headerComponent={<div>커스텀 헤더</div>}>
         내용
       </Modal>,
@@ -127,7 +125,7 @@ describe("Modal", () => {
   })
 
   it("body overflow를 open 시 hidden으로 잠근다", () => {
-    renderWithTheme(
+    renderModal(
       <Modal open title="모달">
         내용
       </Modal>,

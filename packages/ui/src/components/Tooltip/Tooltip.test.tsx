@@ -1,10 +1,15 @@
+import type { ReactElement } from "react"
 import { describe, it, expect } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { renderWithProviders } from "../../test"
 import Tooltip from "./Tooltip"
+
+const renderTooltip = (ui: ReactElement) => renderWithProviders(ui)
 
 describe("Tooltip", () => {
   it("children를 렌더링한다", () => {
-    render(
+    renderTooltip(
       <Tooltip content="tooltip text">
         <button>trigger</button>
       </Tooltip>,
@@ -14,7 +19,7 @@ describe("Tooltip", () => {
   })
 
   it("hover 시 tooltip이 열린다", () => {
-    render(
+    renderTooltip(
       <Tooltip content="tooltip text">
         <button>trigger</button>
       </Tooltip>,
@@ -28,7 +33,7 @@ describe("Tooltip", () => {
   })
 
   it("mouse leave 시 tooltip이 닫힌다", () => {
-    render(
+    renderTooltip(
       <Tooltip content="tooltip text">
         <button>trigger</button>
       </Tooltip>,
@@ -44,7 +49,7 @@ describe("Tooltip", () => {
   })
 
   it("focus 시 tooltip이 열린다", () => {
-    render(
+    renderTooltip(
       <Tooltip content="tooltip text">
         <button>trigger</button>
       </Tooltip>,
@@ -58,7 +63,7 @@ describe("Tooltip", () => {
   })
 
   it("blur 시 tooltip이 닫힌다", () => {
-    render(
+    renderTooltip(
       <Tooltip content="tooltip text">
         <button>trigger</button>
       </Tooltip>,
@@ -74,7 +79,7 @@ describe("Tooltip", () => {
   })
 
   it("content가 없으면 열리지 않는다", () => {
-    render(
+    renderTooltip(
       <Tooltip content="">
         <button>trigger</button>
       </Tooltip>,

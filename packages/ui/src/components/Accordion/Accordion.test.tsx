@@ -1,11 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { ThemeProvider } from "styled-components"
-import { theme } from "../../tokens/theme"
+import type React from "react"
+import { vi } from "vitest"
 import Accordion from "./Accordion"
+import { renderWithProviders } from "../../test"
 
 const renderAccordion = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Accordion", () => {
@@ -61,12 +62,10 @@ describe("Accordion", () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
 
-    const { rerender } = render(
-      <ThemeProvider theme={theme}>
-        <Accordion summary="제어형" expanded={false} onChange={onChange}>
-          제어형 내용
-        </Accordion>
-      </ThemeProvider>,
+    const { rerender } = renderAccordion(
+      <Accordion summary="제어형" expanded={false} onChange={onChange}>
+        제어형 내용
+      </Accordion>,
     )
 
     const button = screen.getByRole("button", { name: "제어형" })
@@ -78,11 +77,9 @@ describe("Accordion", () => {
     expect(button).toHaveAttribute("aria-expanded", "false")
 
     rerender(
-      <ThemeProvider theme={theme}>
-        <Accordion summary="제어형" expanded onChange={onChange}>
-          제어형 내용
-        </Accordion>
-      </ThemeProvider>,
+      <Accordion summary="제어형" expanded onChange={onChange}>
+        제어형 내용
+      </Accordion>,
     )
 
     expect(screen.getByText("제어형 내용")).toBeInTheDocument()

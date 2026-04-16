@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
+import { describe, expect, it, vi } from "vitest"
 import { ThemeProvider } from "styled-components"
 import Link from "./Link"
 import { theme } from "@acme/ui"
@@ -70,7 +71,7 @@ describe("Link", () => {
     )
 
     const link = screen.getByText("상세보기").closest("a")
-    expect(link).toHaveStyle({ textDecoration: "underline" })
+    expect(link).toHaveStyle("text-decoration: underline")
   })
 
   it("underline=none이면 underline 스타일을 가지지 않는다", () => {
@@ -81,7 +82,7 @@ describe("Link", () => {
     )
 
     const link = screen.getByText("상세보기").closest("a")
-    expect(link).toHaveStyle({ textDecoration: "none" })
+    expect(link).toHaveStyle("text-decoration: none")
   })
 
   it("typographyProps를 전달할 수 있다", () => {

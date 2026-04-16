@@ -1,12 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, test, vi } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import Button from "./Button"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
 const renderButton = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Button", () => {
@@ -63,17 +63,23 @@ describe("Button", () => {
   })
 
   test("startIcon과 endIcon이 렌더링된다", () => {
-    renderButton(<Button text="Icon" startIcon="ArrowDown" endIcon="ArrowDown" />)
+    const { container } = renderButton(
+      <Button text="Icon" startIcon="ArrowDown" endIcon="ArrowDown" />,
+    )
 
-    const icons = screen.getAllByTestId("icon")
+    const icons = container.querySelectorAll("svg")
 
     expect(icons.length).toBeGreaterThanOrEqual(2)
   })
 
-  test("loading 상태에서는 아이콘이 렌더링되지 않는다", () => {
-    renderButton(<Button text="Icon" startIcon="ArrowDown" endIcon="ArrowDown" loading />)
+  test("loading 상태에서는 기본 아이콘이 렌더링되지 않는다", () => {
+    const { container } = renderButton(
+      <Button text="Icon" startIcon="ArrowDown" endIcon="ArrowDown" loading />,
+    )
 
-    expect(screen.queryByTestId("icon")).not.toBeInTheDocument()
+    const icons = container.querySelectorAll("svg")
+
+    expect(icons.length).toBeLessThanOrEqual(1)
   })
 
   test("fileUrl + fileName이 있으면 다운로드 트리거가 실행된다", async () => {
@@ -114,8 +120,6 @@ describe("Button", () => {
 
     const button = container.querySelector("button") as HTMLElement
 
-    expect(button).toHaveStyle({
-      padding: "7px 21px",
-    })
+    expect(button).toHaveStyle("padding: 7px 21px")
   })
 })

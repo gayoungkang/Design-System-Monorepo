@@ -1,10 +1,9 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, test, vi } from "vitest"
-import { ThemeProvider } from "styled-components"
-import { theme } from "../../tokens/theme"
 import AlertModal from "./AlertModal"
 import { useAlertStore } from "../../stores/useAlertStore"
+import { renderWithProviders } from "../../test"
 
 vi.mock("../../stores/useAlertStore")
 
@@ -52,11 +51,7 @@ const createStoreState = (
 const renderModal = (storeState: Partial<AlertModalStoreState> = {}) => {
   mockedUseAlertStore.mockReturnValue(createStoreState(storeState))
 
-  return render(
-    <ThemeProvider theme={theme}>
-      <AlertModal />
-    </ThemeProvider>,
-  )
+  return renderWithProviders(<AlertModal />)
 }
 
 describe("AlertModal", () => {
@@ -154,9 +149,12 @@ describe("AlertModal", () => {
       onConfirm,
     })
 
-    const closeButton = screen.getAllByRole("button")[0]
+    const buttons = screen.getAllByRole("button")
+    const closeButton = buttons.find((button) => button.textContent?.trim() === "")
 
-    await user.click(closeButton)
+    expect(closeButton).toBeDefined()
+
+    await user.click(closeButton as HTMLButtonElement)
 
     expect(resetAlert).toHaveBeenCalledTimes(1)
     expect(onConfirm).toHaveBeenCalledTimes(1)
@@ -177,9 +175,12 @@ describe("AlertModal", () => {
       onCancel,
     })
 
-    const closeButton = screen.getAllByRole("button")[0]
+    const buttons = screen.getAllByRole("button")
+    const closeButton = buttons.find((button) => button.textContent?.trim() === "")
 
-    await user.click(closeButton)
+    expect(closeButton).toBeDefined()
+
+    await user.click(closeButton as HTMLButtonElement)
 
     expect(resetAlert).toHaveBeenCalledTimes(1)
     expect(onCancel).toHaveBeenCalledTimes(1)

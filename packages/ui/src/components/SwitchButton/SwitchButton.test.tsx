@@ -1,11 +1,16 @@
-import { describe, it, expect } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import type { ReactElement } from "react"
 import { useState } from "react"
+import { describe, it, expect } from "vitest"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { renderWithProviders } from "../../test"
 import SwitchButton from "./SwitchButton"
+
+const renderSwitchButton = (ui: ReactElement) => renderWithProviders(ui)
 
 describe("SwitchButton", () => {
   it("label이 렌더링된다", () => {
-    render(<SwitchButton checked={false} onChange={() => {}} label="알림" />)
+    renderSwitchButton(<SwitchButton checked={false} onChange={() => {}} label="알림" />)
 
     expect(screen.getByText("알림")).toBeInTheDocument()
   })
@@ -22,7 +27,7 @@ describe("SwitchButton", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderSwitchButton(<TestComponent />)
 
     fireEvent.click(screen.getByRole("switch"))
 
@@ -41,7 +46,7 @@ describe("SwitchButton", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderSwitchButton(<TestComponent />)
 
     fireEvent.keyDown(screen.getByRole("switch"), { key: "Enter" })
 
@@ -60,7 +65,7 @@ describe("SwitchButton", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderSwitchButton(<TestComponent />)
 
     fireEvent.keyDown(screen.getByRole("switch"), { key: " " })
 
@@ -79,7 +84,7 @@ describe("SwitchButton", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderSwitchButton(<TestComponent />)
 
     fireEvent.click(screen.getByRole("switch"))
 
@@ -98,7 +103,7 @@ describe("SwitchButton", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderSwitchButton(<TestComponent />)
 
     fireEvent.keyDown(screen.getByRole("switch"), { key: "Enter" })
 
@@ -106,7 +111,7 @@ describe("SwitchButton", () => {
   })
 
   it("labelPlacement가 labelPlacment보다 우선 적용된다", () => {
-    render(
+    renderSwitchButton(
       <SwitchButton
         checked
         onChange={() => {}}
@@ -125,7 +130,9 @@ describe("SwitchButton", () => {
   })
 
   it("aria-checked가 checked 값에 맞게 반영된다", () => {
-    const { rerender } = render(<SwitchButton checked={false} onChange={() => {}} label="aria" />)
+    const { rerender } = renderSwitchButton(
+      <SwitchButton checked={false} onChange={() => {}} label="aria" />,
+    )
 
     expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "false")
 

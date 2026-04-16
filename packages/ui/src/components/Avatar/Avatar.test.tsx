@@ -1,16 +1,15 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, test } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import Avatar from "./Avatar"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
 const renderAvatar = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Avatar", () => {
   beforeEach(() => {
-    // * jsdom 이미지 로드 상태 초기화를 위해 body 정리
     document.body.innerHTML = ""
   })
 
@@ -41,37 +40,36 @@ describe("Avatar", () => {
     expect(image).toHaveAttribute("src", "/profile.png")
   })
 
-  test("이미지 로드 실패 시 이니셜 fallback으로 전환된다", () => {
+  test("이미지 로드 실패 시 이니셜 fallback으로 전환된다", async () => {
     renderAvatar(<Avatar src="/broken.png" name="Jane Doe" />)
 
     const image = screen.getByRole("img", { name: "Jane Doe" })
-    image.dispatchEvent(new Event("error"))
+    fireEvent.error(image)
 
-    expect(screen.getByText("JD")).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText("JD")).toBeInTheDocument()
+    })
+
     expect(screen.queryByRole("img", { name: "Jane Doe" })).not.toBeInTheDocument()
   })
 
-  test("src가 변경되면 에러 상태가 리셋되어 새 이미지를 다시 렌더링한다", () => {
-    const { rerender } = render(
-      <ThemeProvider theme={theme}>
-        <Avatar src="/broken.png" name="Jane Doe" />
-      </ThemeProvider>,
-    )
+  test("src가 변경되면 에러 상태가 리셋되어 새 이미지를 다시 렌더링한다", async () => {
+    const { rerender } = renderAvatar(<Avatar src="/broken.png" name="Jane Doe" />)
 
     const brokenImage = screen.getByRole("img", { name: "Jane Doe" })
-    brokenImage.dispatchEvent(new Event("error"))
+    fireEvent.error(brokenImage)
 
-    expect(screen.getByText("JD")).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText("JD")).toBeInTheDocument()
+    })
 
-    rerender(
-      <ThemeProvider theme={theme}>
-        <Avatar src="/next.png" name="Jane Doe" />
-      </ThemeProvider>,
-    )
+    rerender(<Avatar src="/next.png" name="Jane Doe" />)
 
-    const nextImage = screen.getByRole("img", { name: "Jane Doe" })
-    expect(nextImage).toBeInTheDocument()
-    expect(nextImage).toHaveAttribute("src", "/next.png")
+    await waitFor(() => {
+      const nextImage = screen.getByRole("img", { name: "Jane Doe" })
+      expect(nextImage).toBeInTheDocument()
+      expect(nextImage).toHaveAttribute("src", "/next.png")
+    })
   })
 
   test("size prop에 따라 wrapper 크기가 적용된다", () => {
@@ -79,7 +77,8 @@ describe("Avatar", () => {
 
     const wrapper = container.firstChild as HTMLElement
 
-    expect(wrapper).toHaveStyle({ width: "40px", height: "40px" })
+    expect(wrapper).toHaveStyle("width: 40px")
+    expect(wrapper).toHaveStyle("height: 40px")
   })
 
   test("bgColor와 fgColor 커스텀 값이 적용된다", () => {
@@ -88,7 +87,7 @@ describe("Avatar", () => {
     const initials = screen.getByText("JD")
     const wrapper = initials.parentElement as HTMLElement
 
-    expect(wrapper).toHaveStyle({ backgroundColor: "rgb(1, 2, 3)" })
-    expect(initials).toHaveStyle({ color: "rgb(255, 0, 0)" })
+    expect(wrapper).toHaveStyle("background-color: rgb(1, 2, 3)")
+    expect(initials).toHaveStyle("color: rgb(255, 0, 0)")
   })
 })

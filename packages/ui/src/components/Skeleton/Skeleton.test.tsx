@@ -1,15 +1,20 @@
-import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import type { ReactElement } from "react"
+import { screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { describe, expect, it } from "vitest"
+import { renderWithProviders } from "../../test"
 import Skeleton from "./Skeleton"
+
+const renderSkeleton = (ui: ReactElement) => renderWithProviders(ui)
 
 describe("Skeleton", () => {
   it("renders basic skeleton", () => {
-    const { container } = render(<Skeleton width={100} />)
-    expect(container.firstChild).toBeTruthy()
+    const { container } = renderSkeleton(<Skeleton width={100} />)
+    expect(container.firstChild).toBeInTheDocument()
   })
 
   it("renders children overlay mode", () => {
-    render(
+    renderSkeleton(
       <Skeleton>
         <div>content</div>
       </Skeleton>,
@@ -19,8 +24,8 @@ describe("Skeleton", () => {
   })
 
   it("applies circular variant", () => {
-    const { container } = render(<Skeleton variant="circular" width={40} height={40} />)
+    const { container } = renderSkeleton(<Skeleton variant="circular" width={40} height={40} />)
 
-    expect(container.firstChild).toBeTruthy()
+    expect(container.firstChild).toBeInTheDocument()
   })
 })

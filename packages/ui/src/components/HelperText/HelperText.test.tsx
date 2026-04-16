@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
+import { describe, expect, it } from "vitest"
 import { ThemeProvider } from "styled-components"
 import HelperText from "./HelperText"
 import { theme } from "@acme/ui"

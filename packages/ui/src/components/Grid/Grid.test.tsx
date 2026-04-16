@@ -1,9 +1,11 @@
 import { render, screen } from "@testing-library/react"
+import { describe, expect, it } from "vitest"
+import type { ReactNode } from "react"
 import { ThemeProvider } from "styled-components"
 import Grid from "./Grid"
 import { theme } from "@acme/ui"
 
-const renderWithTheme = (ui: React.ReactNode) => {
+const renderWithTheme = (ui: ReactNode) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
 }
 
@@ -16,10 +18,8 @@ describe("Grid", () => {
     )
 
     const grid = screen.getByTestId("grid")
-    expect(grid).toHaveStyle({
-      display: "grid",
-      gridTemplateColumns: "1fr 2fr",
-    })
+    expect(grid).toHaveStyle("display: grid")
+    expect(grid).toHaveStyle("grid-template-columns: 1fr 2fr")
   })
 
   it("gap 숫자값을 px로 변환한다", () => {
@@ -29,9 +29,7 @@ describe("Grid", () => {
       </Grid>,
     )
 
-    expect(screen.getByTestId("grid")).toHaveStyle({
-      gap: "12px",
-    })
+    expect(screen.getByTestId("grid")).toHaveStyle("gap: 12px")
   })
 
   it("gap 문자열값을 그대로 적용한다", () => {
@@ -41,9 +39,7 @@ describe("Grid", () => {
       </Grid>,
     )
 
-    expect(screen.getByTestId("grid")).toHaveStyle({
-      gap: "1rem",
-    })
+    expect(screen.getByTestId("grid")).toHaveStyle("gap: 1rem")
   })
 
   it("rowGap과 columnGap을 각각 적용한다", () => {
@@ -53,10 +49,8 @@ describe("Grid", () => {
       </Grid>,
     )
 
-    expect(screen.getByTestId("grid")).toHaveStyle({
-      rowGap: "8px",
-      columnGap: "24px",
-    })
+    expect(screen.getByTestId("grid")).toHaveStyle("row-gap: 8px")
+    expect(screen.getByTestId("grid")).toHaveStyle("column-gap: 24px")
   })
 
   it("inline이 true면 inline-grid로 렌더링한다", () => {
@@ -66,9 +60,7 @@ describe("Grid", () => {
       </Grid>,
     )
 
-    expect(screen.getByTestId("grid")).toHaveStyle({
-      display: "inline-grid",
-    })
+    expect(screen.getByTestId("grid")).toHaveStyle("display: inline-grid")
   })
 
   it("일반 div 속성을 전달한다", () => {

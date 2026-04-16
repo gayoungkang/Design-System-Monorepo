@@ -23,7 +23,7 @@
     "lint": "eslint . --ext ts,tsx",
     "build:ui": "yarn workspace @acme/ui build && yarn workspace @acme/ui build:types",
     "typecheck": "yarn workspace @acme/ui build:types && yarn workspaces foreach -Apt run typecheck",
-    "test": "yarn workspaces foreach -Apt run test:run",
+    "test": "yarn workspace @acme/ui test:run",
     "format": "prettier . --write",
     "prepare": "husky install",
     "fix:svg": "tsx scripts/fix-svg.ts",

@@ -304,6 +304,71 @@ export const Slider = ({
     },
     [disabled, getValueFromPosition, isRange, commitChange, commitEnd, normalizeByMode, sortRange],
   )
+
+  // * 키보드 입력으로 값 이동
+  const handleKeyDown = useCallback(
+    (thumbIndex: number) => (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (disabled) return
+
+      const decreaseKeys = ["ArrowLeft", "ArrowDown"]
+      const increaseKeys = ["ArrowRight", "ArrowUp"]
+
+      if (
+        !decreaseKeys.includes(e.key) &&
+        !increaseKeys.includes(e.key) &&
+        e.key !== "Home" &&
+        e.key !== "End"
+      ) {
+        return
+      }
+
+      e.preventDefault()
+
+      const safeStep = step > 0 ? step : 1
+      const safeCurrent = normalizeByMode(internalRef.current)
+
+      if (!isRange) {
+        const current = safeCurrent as number
+
+        let next = current
+        if (decreaseKeys.includes(e.key)) next = normalizeToStep(current - safeStep)
+        if (increaseKeys.includes(e.key)) next = normalizeToStep(current + safeStep)
+        if (e.key === "Home") next = normalizeToStep(min)
+        if (e.key === "End") next = normalizeToStep(max)
+
+        commitChange(next)
+        commitEnd(next)
+        return
+      }
+
+      const [a, b] = safeCurrent as [number, number]
+      const current = thumbIndex === 0 ? a : b
+
+      let nextValue = current
+      if (decreaseKeys.includes(e.key)) nextValue = normalizeToStep(current - safeStep)
+      if (increaseKeys.includes(e.key)) nextValue = normalizeToStep(current + safeStep)
+      if (e.key === "Home") nextValue = normalizeToStep(min)
+      if (e.key === "End") nextValue = normalizeToStep(max)
+
+      const nextRange = thumbIndex === 0 ? sortRange(nextValue, b) : sortRange(a, nextValue)
+
+      commitChange(nextRange)
+      commitEnd(nextRange)
+    },
+    [
+      disabled,
+      step,
+      normalizeByMode,
+      isRange,
+      normalizeToStep,
+      min,
+      max,
+      commitChange,
+      commitEnd,
+      sortRange,
+    ],
+  )
+
   const trackLeft = useMemo(() => {
     if (!isRange) return 0
     const [a] = normalizedInternal as [number, number]
@@ -344,9 +409,17 @@ export const Slider = ({
           {thumbs.map((v, i) => (
             <Thumb
               key={i}
+              role="slider"
+              tabIndex={disabled ? -1 : 0}
+              aria-disabled={disabled}
+              aria-valuemin={min}
+              aria-valuemax={max}
+              aria-valuenow={v}
+              aria-orientation="horizontal"
               style={{ left: `${toPercent(v)}%` }}
               $disabled={disabled}
               onMouseDown={startDragging(i)}
+              onKeyDown={handleKeyDown(i)}
             >
               <ValueLabel>
                 <Typography

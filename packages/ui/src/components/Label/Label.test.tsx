@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
+import { describe, expect, it } from "vitest"
 import { ThemeProvider } from "styled-components"
 import Label from "./Label"
 import { theme } from "@acme/ui"
@@ -25,29 +26,29 @@ describe("Label", () => {
   it("required가 true이고 placement가 right면 오른쪽 별표를 렌더링한다", () => {
     const { container } = renderWithTheme(<Label text="이름" required placement="right" />)
 
-    const texts = Array.from(container.textContent ?? "")
-    expect(texts.join("")).toContain("이름*")
+    const text = container.textContent ?? ""
+    expect(text).toContain("이름*")
   })
 
   it("required가 true이고 placement가 left면 왼쪽 별표를 렌더링한다", () => {
     const { container } = renderWithTheme(<Label text="이름" required placement="left" />)
 
-    const texts = Array.from(container.textContent ?? "")
-    expect(texts.join("")).toContain("*이름")
+    const text = container.textContent ?? ""
+    expect(text).toContain("*이름")
   })
 
   it("textAlign이 right면 justify-content가 flex-end다", () => {
     const { container } = renderWithTheme(<Label text="이름" textAlign="right" />)
 
-    const root = container.firstChild
-    expect(root).toHaveStyle({ justifyContent: "flex-end" })
+    const root = container.firstChild as HTMLElement
+    expect(root).toHaveStyle("justify-content: flex-end")
   })
 
   it("textAlign이 left면 justify-content가 flex-start다", () => {
     const { container } = renderWithTheme(<Label text="이름" textAlign="left" />)
 
-    const root = container.firstChild
-    expect(root).toHaveStyle({ justifyContent: "flex-start" })
+    const root = container.firstChild as HTMLElement
+    expect(root).toHaveStyle("justify-content: flex-start")
   })
 
   it("typographyProps를 전달할 수 있다", () => {

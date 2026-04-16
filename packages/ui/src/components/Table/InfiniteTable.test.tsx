@@ -1,6 +1,9 @@
-import { describe, it, expect } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import type { ReactElement } from "react"
 import { useState } from "react"
+import { describe, it, expect } from "vitest"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { renderWithProviders } from "../../test"
 import InfiniteTable from "./InfiniteTable"
 import type { ColumnProps, ServerTableQuery } from "./@Types/table"
 
@@ -19,9 +22,11 @@ const baseData: Row[] = [
   { id: 2, name: "Bob" },
 ]
 
+const renderInfiniteTable = (ui: ReactElement) => renderWithProviders(ui)
+
 describe("InfiniteTable", () => {
   it("헤더와 데이터가 렌더링된다", () => {
-    render(
+    renderInfiniteTable(
       <InfiniteTable<Row>
         tableKey="users"
         columnConfig={columns}
@@ -38,7 +43,7 @@ describe("InfiniteTable", () => {
   })
 
   it("데이터가 없으면 emptyRowText를 렌더링한다", () => {
-    render(
+    renderInfiniteTable(
       <InfiniteTable<Row>
         tableKey="empty"
         columnConfig={columns}
@@ -75,7 +80,7 @@ describe("InfiniteTable", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderInfiniteTable(<TestComponent />)
 
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "Ali" },
@@ -87,7 +92,7 @@ describe("InfiniteTable", () => {
   it("onRowClick이 전달되면 행 클릭 시 호출된다", () => {
     let clickedRowId = 0
 
-    render(
+    renderInfiniteTable(
       <InfiniteTable<Row>
         tableKey="row-click"
         columnConfig={columns}
@@ -106,7 +111,7 @@ describe("InfiniteTable", () => {
   })
 
   it("loading과 hasMore가 true이면 progressbar가 렌더링된다", () => {
-    render(
+    renderInfiniteTable(
       <InfiniteTable<Row>
         tableKey="loading"
         columnConfig={columns}
@@ -122,7 +127,7 @@ describe("InfiniteTable", () => {
   })
 
   it("totalCount가 없으면 data.length 기준 total rows를 표시한다", () => {
-    render(
+    renderInfiniteTable(
       <InfiniteTable<Row>
         tableKey="total"
         columnConfig={columns}
@@ -159,12 +164,9 @@ describe("InfiniteTable", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderInfiniteTable(<TestComponent />)
 
-    fireEvent.change(screen.getByRole("textbox"), {
-      target: { value: "Blocked" },
-    })
-
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
     expect(screen.getByTestId("keyword")).toHaveTextContent("")
   })
 })

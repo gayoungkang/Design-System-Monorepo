@@ -87,10 +87,12 @@ const StyledDivider = styled.hr<
     $flexItem: boolean
   } & BaseMixinProps
 >`
-  ${BaseMixin}
   margin: 0;
   padding: 0;
   border: 0;
+
+  ${BaseMixin}
+
   background-color: ${({ $color }) => $color};
 
   ${({ $direction, $thickness, height, $flexItem }) =>

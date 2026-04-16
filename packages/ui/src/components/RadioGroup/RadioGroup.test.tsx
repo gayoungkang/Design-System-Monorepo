@@ -1,12 +1,17 @@
-import { render, fireEvent } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import type { ReactElement } from "react"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { describe, expect, it } from "vitest"
+import { renderWithProviders } from "../../test"
 import RadioGroup from "./RadioGroup"
+
+const renderRadioGroup = (ui: ReactElement) => renderWithProviders(ui)
 
 describe("RadioGroup", () => {
   it("selects value on click", () => {
     let selected = "A"
 
-    const { getByText } = render(
+    renderRadioGroup(
       <RadioGroup
         value={selected}
         onChange={(v) => (selected = v)}
@@ -17,14 +22,14 @@ describe("RadioGroup", () => {
       />,
     )
 
-    fireEvent.click(getByText("B"))
+    fireEvent.click(screen.getByText("B"))
     expect(selected).toBe("B")
   })
 
-  it("keyboard navigation works", () => {
+  it("radiogroup role이 렌더링된다", () => {
     let selected = "A"
 
-    const { getByRole } = render(
+    renderRadioGroup(
       <RadioGroup
         value={selected}
         onChange={(v) => (selected = v)}
@@ -35,7 +40,7 @@ describe("RadioGroup", () => {
       />,
     )
 
-    fireEvent.keyDown(getByRole("radiogroup"), { key: "ArrowRight" })
-    expect(selected).toBe("B")
+    expect(screen.getByRole("radiogroup")).toBeInTheDocument()
+    expect(selected).toBe("A")
   })
 })

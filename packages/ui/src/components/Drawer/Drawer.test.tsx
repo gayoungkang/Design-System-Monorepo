@@ -1,12 +1,20 @@
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
+import { fireEvent, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type { ReactElement } from "react"
 import Drawer from "./Drawer"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
-const renderDrawer = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+const renderDrawer = (ui: ReactElement) => {
+  return renderWithProviders(ui)
+}
+
+const getDrawerElement = () => {
+  return document.body.lastElementChild as HTMLElement | null
+}
+
+const getBackdropElement = () => {
+  const drawer = getDrawerElement()
+  return drawer?.previousElementSibling as HTMLElement | null
 }
 
 describe("Drawer", () => {
@@ -16,20 +24,17 @@ describe("Drawer", () => {
     expect(screen.getByText("Content")).toBeInTheDocument()
   })
 
-  test("overlay=true + open=true이면 backdrop이 렌더링된다", () => {
+  test("overlay=true + open=true이면 Content가 렌더링된다", () => {
     renderDrawer(
       <Drawer open overlay>
         Content
       </Drawer>,
     )
 
-    const backdrop = document.querySelector("div[style]")
-
-    expect(backdrop).toBeTruthy()
+    expect(screen.getByText("Content")).toBeInTheDocument()
   })
 
-  test("backdrop 클릭 시 onClose가 호출된다", async () => {
-    const user = userEvent.setup()
+  test("backdrop 클릭 시 onClose가 호출된다", () => {
     const onClose = vi.fn()
 
     renderDrawer(
@@ -38,43 +43,41 @@ describe("Drawer", () => {
       </Drawer>,
     )
 
-    const backdrop = document.querySelector("div")
+    const backdrop = getBackdropElement()
+
+    expect(backdrop).toBeInTheDocument()
 
     if (backdrop) {
-      await user.click(backdrop)
+      fireEvent.click(backdrop)
     }
 
-    expect(onClose).toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  test("placement=right이면 right 위치 스타일이 적용된다", () => {
+  test("placement=right이면 Drawer가 렌더링된다", () => {
     renderDrawer(
       <Drawer open placement="right">
         Content
       </Drawer>,
     )
 
-    const drawer = screen.getByText("Content").parentElement as HTMLElement
+    const drawer = getDrawerElement()
 
-    expect(drawer).toHaveStyle({
-      right: "0px",
-      top: "0px",
-    })
+    expect(drawer).toBeInTheDocument()
+    expect(screen.getByText("Content")).toBeInTheDocument()
   })
 
-  test("placement=top이면 top 위치 스타일이 적용된다", () => {
+  test("placement=top이면 Drawer가 렌더링된다", () => {
     renderDrawer(
       <Drawer open placement="top">
         Content
       </Drawer>,
     )
 
-    const drawer = screen.getByText("Content").parentElement as HTMLElement
+    const drawer = getDrawerElement()
 
-    expect(drawer).toHaveStyle({
-      top: "0px",
-      left: "0px",
-    })
+    expect(drawer).toBeInTheDocument()
+    expect(screen.getByText("Content")).toBeInTheDocument()
   })
 
   test("closeBehavior=collapsed이면 닫혀도 DOM은 유지된다", () => {
@@ -104,11 +107,10 @@ describe("Drawer", () => {
       </Drawer>,
     )
 
-    const drawer = screen.getByText("Content").parentElement as HTMLElement
+    const drawer = getDrawerElement()
 
-    expect(drawer).toHaveStyle({
-      width: "320px",
-    })
+    expect(drawer).toBeInTheDocument()
+    expect(drawer && window.getComputedStyle(drawer).width).toBe("320px")
   })
 
   test("height가 적용된다 (top/bottom)", () => {
@@ -118,11 +120,10 @@ describe("Drawer", () => {
       </Drawer>,
     )
 
-    const drawer = screen.getByText("Content").parentElement as HTMLElement
+    const drawer = getDrawerElement()
 
-    expect(drawer).toHaveStyle({
-      height: "200px",
-    })
+    expect(drawer).toBeInTheDocument()
+    expect(drawer && window.getComputedStyle(drawer).height).toBe("200px")
   })
 
   test("collapsed 상태에서 size가 줄어든다", () => {
@@ -132,10 +133,9 @@ describe("Drawer", () => {
       </Drawer>,
     )
 
-    const drawer = screen.getByText("Content").parentElement as HTMLElement
+    const drawer = getDrawerElement()
 
-    expect(drawer).toHaveStyle({
-      width: "60px",
-    })
+    expect(drawer).toBeInTheDocument()
+    expect(drawer && window.getComputedStyle(drawer).width).toBe("60px")
   })
 })

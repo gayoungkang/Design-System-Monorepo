@@ -1,5 +1,8 @@
+import type { ReactElement } from "react"
 import { describe, it, expect } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { renderWithProviders } from "../../test"
 import ToggleButton from "./ToggleButton"
 import type { ToggleButtonItem } from "./ToggleButton"
 
@@ -11,9 +14,11 @@ const buttons: ToggleButtonItem<Value>[] = [
   { label: "C", value: "c" },
 ]
 
+const renderToggleButton = (ui: ReactElement) => renderWithProviders(ui)
+
 describe("ToggleButton", () => {
   it("버튼들이 렌더링된다", () => {
-    render(<ToggleButton buttons={buttons} selectedValue="a" onClick={() => {}} />)
+    renderToggleButton(<ToggleButton buttons={buttons} selectedValue="a" onClick={() => {}} />)
 
     expect(screen.getByText("A")).toBeInTheDocument()
     expect(screen.getByText("B")).toBeInTheDocument()
@@ -21,7 +26,7 @@ describe("ToggleButton", () => {
   })
 
   it("선택된 값이 aria-pressed=true를 가진다", () => {
-    render(<ToggleButton buttons={buttons} selectedValue="b" onClick={() => {}} />)
+    renderToggleButton(<ToggleButton buttons={buttons} selectedValue="b" onClick={() => {}} />)
 
     expect(screen.getByRole("button", { name: "B" })).toHaveAttribute("aria-pressed", "true")
   })
@@ -29,7 +34,7 @@ describe("ToggleButton", () => {
   it("클릭 시 onClick이 호출된다", () => {
     let selected: Value = "a"
 
-    render(
+    renderToggleButton(
       <ToggleButton
         buttons={buttons}
         selectedValue={selected}
@@ -47,7 +52,7 @@ describe("ToggleButton", () => {
   it("disabled 버튼은 클릭되지 않는다", () => {
     let selected: Value = "a"
 
-    render(
+    renderToggleButton(
       <ToggleButton
         buttons={[
           { label: "A", value: "a" },
@@ -66,7 +71,9 @@ describe("ToggleButton", () => {
   })
 
   it("group disabled이면 모든 버튼이 disabled된다", () => {
-    render(<ToggleButton buttons={buttons} selectedValue="a" disabled onClick={() => {}} />)
+    renderToggleButton(
+      <ToggleButton buttons={buttons} selectedValue="a" disabled onClick={() => {}} />,
+    )
 
     const allButtons = screen.getAllByRole("button")
     allButtons.forEach((btn) => {

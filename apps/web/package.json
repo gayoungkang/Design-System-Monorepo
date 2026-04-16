@@ -6,8 +6,6 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "echo \"No tests in web\"",
-    "test:run": "echo \"No tests in web\"",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
+import { describe, expect, it } from "vitest"
 import { ThemeProvider } from "styled-components"
 import Icon from "./Icon"
 import { theme } from "@acme/ui"
@@ -45,7 +46,7 @@ describe("Icon", () => {
 
     const svg = container.querySelector("svg")
 
-    expect(svg).toHaveStyle({ color: theme.colors.error[500] })
+    expect(svg).toHaveStyle(`color: ${theme.colors.error[500]}`)
   })
 
   it("paint=auto이면 fill만 적용한다", () => {

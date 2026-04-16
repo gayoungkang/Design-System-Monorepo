@@ -1,32 +1,30 @@
-import type { ReactNode } from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import type { ReactElement } from "react"
+import { fireEvent, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
-import { ThemeProvider } from "styled-components"
+import { describe, expect, it, vi } from "vitest"
 import List, { ListItem } from "./List"
-import { theme } from "@acme/ui"
+import { renderWithProviders } from "../../test"
 
-const renderWithTheme = (ui: ReactNode) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+const renderList = (ui: ReactElement) => {
+  return renderWithProviders(ui)
 }
 
 describe("List", () => {
   it("title을 렌더링한다", () => {
-    renderWithTheme(<List title="설정" items={[{ label: "프로필" }]} />)
+    renderList(<List title="설정" items={[{ label: "프로필" }]} />)
 
     expect(screen.getByText("설정")).toBeInTheDocument()
     expect(screen.getByText("프로필")).toBeInTheDocument()
   })
 
   it("separator 기본값에 따라 Divider를 렌더링한다", () => {
-    const { container } = renderWithTheme(
-      <List items={[{ label: "항목 1" }, { label: "항목 2" }]} />,
-    )
+    const { container } = renderList(<List items={[{ label: "항목 1" }, { label: "항목 2" }]} />)
 
     expect(container.querySelectorAll("hr").length).toBe(1)
   })
 
   it("item.separator가 false면 개별 구분선을 렌더링하지 않는다", () => {
-    const { container } = renderWithTheme(
+    const { container } = renderList(
       <List separator items={[{ label: "항목 1", separator: false }, { label: "항목 2" }]} />,
     )
 
@@ -34,7 +32,7 @@ describe("List", () => {
   })
 
   it("simple checkbox config를 렌더링한다", () => {
-    renderWithTheme(
+    renderList(
       <List
         items={[
           {
@@ -61,7 +59,7 @@ describe("List", () => {
 
 describe("ListItem", () => {
   it("onClick이 있으면 button으로 렌더링된다", () => {
-    renderWithTheme(<ListItem label="클릭 항목" onClick={vi.fn()} />)
+    renderList(<ListItem label="클릭 항목" onClick={vi.fn()} />)
 
     expect(screen.getByRole("button", { name: "클릭 항목" })).toBeInTheDocument()
   })
@@ -69,7 +67,7 @@ describe("ListItem", () => {
   it("disabled면 클릭되지 않는다", () => {
     const onClick = vi.fn()
 
-    renderWithTheme(<ListItem label="비활성 항목" disabled onClick={onClick} />)
+    renderList(<ListItem label="비활성 항목" disabled onClick={onClick} />)
 
     expect(screen.queryByRole("button")).not.toBeInTheDocument()
   })
@@ -77,7 +75,7 @@ describe("ListItem", () => {
   it("클릭 가능한 항목은 클릭 이벤트를 실행한다", () => {
     const onClick = vi.fn()
 
-    renderWithTheme(<ListItem label="클릭 항목" onClick={onClick} />)
+    renderList(<ListItem label="클릭 항목" onClick={onClick} />)
 
     fireEvent.click(screen.getByRole("button", { name: "클릭 항목" }))
 
@@ -85,7 +83,7 @@ describe("ListItem", () => {
   })
 
   it("selected 상태를 aria-pressed로 반영한다", () => {
-    renderWithTheme(<ListItem label="선택 항목" selected onClick={vi.fn()} />)
+    renderList(<ListItem label="선택 항목" selected onClick={vi.fn()} />)
 
     expect(screen.getByRole("button", { name: "선택 항목" })).toHaveAttribute(
       "aria-pressed",

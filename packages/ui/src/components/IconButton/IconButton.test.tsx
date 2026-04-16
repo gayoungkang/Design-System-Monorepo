@@ -1,9 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react"
+import { describe, expect, it, vi } from "vitest"
+import type { ReactNode } from "react"
 import { ThemeProvider } from "styled-components"
 import IconButton from "./IconButton"
 import { theme } from "@acme/ui"
 
-const renderWithTheme = (ui: React.ReactNode) => {
+const renderWithTheme = (ui: ReactNode) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
 }
 

@@ -1,12 +1,12 @@
 import { createRef } from "react"
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import Box from "./Box"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
 const renderBox = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Box", () => {
@@ -56,12 +56,10 @@ describe("Box", () => {
 
     const element = screen.getByTestId("styled-box")
 
-    expect(element).toHaveStyle({
-      width: "120px",
-      height: "40px",
-      padding: "12px",
-      margin: "8px",
-    })
+    expect(element).toHaveStyle("width: 120px")
+    expect(element).toHaveStyle("height: 40px")
+    expect(element).toHaveStyle("padding: 12px")
+    expect(element).toHaveStyle("margin: 8px")
   })
 
   test("sx prop으로 추가 스타일을 적용할 수 있다", () => {
@@ -80,11 +78,9 @@ describe("Box", () => {
 
     const element = screen.getByTestId("sx-box")
 
-    expect(element).toHaveStyle({
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    })
+    expect(element).toHaveStyle("display: flex")
+    expect(element).toHaveStyle("align-items: center")
+    expect(element).toHaveStyle("justify-content: center")
   })
 
   test("ref가 루트 DOM 엘리먼트에 연결된다", () => {

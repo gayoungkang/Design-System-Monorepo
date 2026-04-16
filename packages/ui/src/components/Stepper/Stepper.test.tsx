@@ -1,5 +1,8 @@
-import { describe, it, expect } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import type { ReactElement } from "react"
+import { describe, it, expect, vi } from "vitest"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { renderWithProviders } from "../../test"
 import Stepper from "./Stepper"
 
 const options = [
@@ -8,9 +11,11 @@ const options = [
   { value: "c", label: "Step C" },
 ]
 
+const renderStepper = (ui: ReactElement) => renderWithProviders(ui)
+
 describe("Stepper", () => {
   it("step label이 렌더링된다", () => {
-    render(<Stepper options={options} value={"a"} />)
+    renderStepper(<Stepper options={options} value={"a"} />)
 
     expect(screen.getByText("Step A")).toBeInTheDocument()
     expect(screen.getByText("Step B")).toBeInTheDocument()
@@ -20,7 +25,7 @@ describe("Stepper", () => {
   it("active step 이후는 linear일 때 클릭되지 않는다", () => {
     const onSelect = vi.fn()
 
-    render(<Stepper options={options} value={"a"} onSelect={onSelect} />)
+    renderStepper(<Stepper options={options} value={"a"} onSelect={onSelect} />)
 
     fireEvent.click(screen.getByText("Step C"))
 
@@ -30,7 +35,7 @@ describe("Stepper", () => {
   it("linear=false이면 모든 step 클릭 가능", () => {
     const onSelect = vi.fn()
 
-    render(<Stepper options={options} value={"a"} linear={false} onSelect={onSelect} />)
+    renderStepper(<Stepper options={options} value={"a"} linear={false} onSelect={onSelect} />)
 
     fireEvent.click(screen.getByText("Step C"))
 
@@ -45,7 +50,7 @@ describe("Stepper", () => {
       { value: "b", label: "B", disabled: true },
     ]
 
-    render(<Stepper options={disabledOptions} value={"a"} onSelect={onSelect} />)
+    renderStepper(<Stepper options={disabledOptions} value={"a"} onSelect={onSelect} />)
 
     fireEvent.click(screen.getByText("B"))
 
@@ -55,7 +60,7 @@ describe("Stepper", () => {
   it("onSelect가 올바른 value와 index를 전달한다", () => {
     const onSelect = vi.fn()
 
-    render(<Stepper options={options} value={"a"} linear={false} onSelect={onSelect} />)
+    renderStepper(<Stepper options={options} value={"a"} linear={false} onSelect={onSelect} />)
 
     fireEvent.click(screen.getByText("Step B"))
 
@@ -68,7 +73,7 @@ describe("Stepper", () => {
       { value: "b", label: "B", hidden: true },
     ]
 
-    render(<Stepper options={hiddenOptions} value={"a"} />)
+    renderStepper(<Stepper options={hiddenOptions} value={"a"} />)
 
     expect(screen.queryByText("B")).not.toBeInTheDocument()
   })

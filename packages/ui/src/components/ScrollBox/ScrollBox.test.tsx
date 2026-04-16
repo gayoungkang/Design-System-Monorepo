@@ -1,11 +1,14 @@
+import type { ReactElement } from "react"
 import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
-import { describe, expect, it } from "vitest"
+import { renderWithProviders } from "../../test"
 import ScrollBox from "./ScrollBox"
+
+const renderScrollBox = (ui: ReactElement) => renderWithProviders(ui)
 
 describe("ScrollBox", () => {
   it("renders children", () => {
-    render(
+    renderScrollBox(
       <ScrollBox>
         <div>content</div>
       </ScrollBox>,
@@ -15,33 +18,33 @@ describe("ScrollBox", () => {
   })
 
   it("applies default overflow", () => {
-    const { container } = render(
+    const { container } = renderScrollBox(
       <ScrollBox>
         <div>content</div>
       </ScrollBox>,
     )
 
     const root = container.firstChild as HTMLElement
-    expect(root).toHaveStyle({ overflow: "auto" })
-    expect(root).toHaveStyle({ overflowX: "auto" })
-    expect(root).toHaveStyle({ overflowY: "auto" })
+    expect(root).toHaveStyle("overflow: auto")
+    expect(root).toHaveStyle("overflow-x: auto")
+    expect(root).toHaveStyle("overflow-y: auto")
   })
 
   it("applies overflow axis overrides", () => {
-    const { container } = render(
+    const { container } = renderScrollBox(
       <ScrollBox overflow="hidden" overflowX="auto" overflowY="scroll">
         <div>content</div>
       </ScrollBox>,
     )
 
     const root = container.firstChild as HTMLElement
-    expect(root).toHaveStyle({ overflow: "hidden" })
-    expect(root).toHaveStyle({ overflowX: "auto" })
-    expect(root).toHaveStyle({ overflowY: "scroll" })
+    expect(root).toHaveStyle("overflow: hidden")
+    expect(root).toHaveStyle("overflow-x: auto")
+    expect(root).toHaveStyle("overflow-y: scroll")
   })
 
   it("applies width, height and size constraints", () => {
-    const { container } = render(
+    const { container } = renderScrollBox(
       <ScrollBox
         width={320}
         height={180}
@@ -55,12 +58,12 @@ describe("ScrollBox", () => {
     )
 
     const root = container.firstChild as HTMLElement
-    expect(root).toHaveStyle({ width: "320px" })
-    expect(root).toHaveStyle({ height: "180px" })
-    expect(root).toHaveStyle({ minWidth: "200px" })
-    expect(root).toHaveStyle({ minHeight: "120px" })
-    expect(root).toHaveStyle({ maxWidth: "480px" })
-    expect(root).toHaveStyle({ maxHeight: "240px" })
+    expect(root).toHaveStyle("width: 320px")
+    expect(root).toHaveStyle("height: 180px")
+    expect(root).toHaveStyle("min-width: 200px")
+    expect(root).toHaveStyle("min-height: 120px")
+    expect(root).toHaveStyle("max-width: 480px")
+    expect(root).toHaveStyle("max-height: 240px")
   })
 
   it("forwards ref to root element", () => {

@@ -77,16 +77,19 @@ const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min)
  *
 /---------------------------------------------------------------------------**/
 const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(
-  ({
-    direction = "vertical",
-    minSize = 100,
-    maxSize = 800,
-    initialSize = 300,
-    size: controlledSize,
-    onResize,
-    children,
-    ...others
-  }) => {
+  (
+    {
+      direction = "vertical",
+      minSize = 100,
+      maxSize = 800,
+      initialSize = 300,
+      size: controlledSize,
+      onResize,
+      children,
+      ...others
+    },
+    ref,
+  ) => {
     const panelRef = useRef<HTMLDivElement | null>(null)
 
     const isControlled = controlledSize !== undefined
@@ -128,13 +131,24 @@ const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(
 
     return (
       <PanelRoot
-        ref={panelRef}
+        ref={(node) => {
+          panelRef.current = node
+
+          if (typeof ref === "function") {
+            ref(node)
+            return
+          }
+
+          if (ref) {
+            ref.current = node
+          }
+        }}
         role="separator"
         aria-orientation={direction === "vertical" ? "vertical" : "horizontal"}
         sx={{
           ...(direction === "vertical"
-            ? { width: size, height: "100%" }
-            : { height: size, width: "100%" }),
+            ? { width: `${size}px`, height: "100%" }
+            : { height: `${size}px`, width: "100%" }),
           position: "relative",
         }}
         {...others}

@@ -1,12 +1,12 @@
 import { createRef } from "react"
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import Flex from "./Flex"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
 const renderFlex = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Flex", () => {
@@ -27,15 +27,13 @@ describe("Flex", () => {
 
     const element = container.firstElementChild as HTMLElement
 
-    expect(element).toHaveStyle({
-      display: "flex",
-      height: "max-content",
-      flexDirection: "row",
-      justifyContent: "flex-start",
-      alignItems: "stretch",
-      flexWrap: "nowrap",
-      gap: "0px",
-    })
+    expect(element).toHaveStyle("display: flex")
+    expect(element).toHaveStyle("height: max-content")
+    expect(element).toHaveStyle("flex-direction: row")
+    expect(element).toHaveStyle("justify-content: flex-start")
+    expect(element).toHaveStyle("align-items: stretch")
+    expect(element).toHaveStyle("flex-wrap: nowrap")
+    expect(element).toHaveStyle("gap: 0px")
   })
 
   test("direction, justify, align, wrap, gap props가 적용된다", () => {
@@ -47,13 +45,11 @@ describe("Flex", () => {
 
     const element = container.firstElementChild as HTMLElement
 
-    expect(element).toHaveStyle({
-      flexDirection: "column",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: "12px",
-    })
+    expect(element).toHaveStyle("flex-direction: column")
+    expect(element).toHaveStyle("justify-content: space-between")
+    expect(element).toHaveStyle("align-items: center")
+    expect(element).toHaveStyle("flex-wrap: wrap")
+    expect(element).toHaveStyle("gap: 12px")
   })
 
   test("gap이 문자열이면 그대로 적용된다", () => {
@@ -61,9 +57,7 @@ describe("Flex", () => {
 
     const element = container.firstElementChild as HTMLElement
 
-    expect(element).toHaveStyle({
-      gap: "1rem",
-    })
+    expect(element).toHaveStyle("gap: 1rem")
   })
 
   test("as prop으로 태그를 변경할 수 있다", () => {
@@ -109,11 +103,9 @@ describe("Flex", () => {
 
     const element = screen.getByTestId("flex-styled")
 
-    expect(element).toHaveStyle({
-      width: "240px",
-      padding: "16px",
-      margin: "8px",
-    })
+    expect(element).toHaveStyle("width: 240px")
+    expect(element).toHaveStyle("padding: 16px")
+    expect(element).toHaveStyle("margin: 8px")
   })
 
   test("ref가 루트 DOM에 연결된다", () => {

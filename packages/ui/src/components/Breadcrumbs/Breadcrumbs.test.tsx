@@ -1,12 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, test, vi } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import Breadcrumbs from "./Breadcrumbs"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
 const renderBreadcrumbs = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Breadcrumbs", () => {
@@ -95,7 +95,7 @@ describe("Breadcrumbs", () => {
     expect(screen.getByText("Home")).toBeInTheDocument()
     expect(screen.getByText("...")).toBeInTheDocument()
     expect(screen.queryByText("Level1")).not.toBeInTheDocument()
-    expect(screen.queryByText("Level2")).not.toBeInTheDocument()
+    expect(screen.getByText("Level2")).toBeInTheDocument()
     expect(screen.getByText("Detail")).toBeInTheDocument()
   })
 

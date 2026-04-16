@@ -1,6 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import type { ReactElement } from "react"
 import { useState } from "react"
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest"
+import { fireEvent, screen } from "@testing-library/react"
+import "@testing-library/jest-dom"
+import { renderWithProviders } from "../../test"
 import Tabs from "./Tabs"
 import type { TabOptionsType } from "./Tabs"
 
@@ -16,6 +19,12 @@ beforeAll(() => {
     configurable: true,
     value: ResizeObserverMock,
   })
+
+  Object.defineProperty(window.HTMLElement.prototype, "scrollIntoView", {
+    writable: true,
+    configurable: true,
+    value: vi.fn(),
+  })
 })
 
 afterAll(() => {
@@ -28,9 +37,11 @@ const baseOptions: TabOptionsType[] = [
   { label: "Tab C", value: "c" },
 ]
 
+const renderTabs = (ui: ReactElement) => renderWithProviders(ui)
+
 describe("Tabs", () => {
   it("visible 옵션만 렌더링된다", () => {
-    render(
+    renderTabs(
       <Tabs
         options={[
           { label: "Tab A", value: "a" },
@@ -60,7 +71,7 @@ describe("Tabs", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderTabs(<TestComponent />)
 
     fireEvent.click(screen.getByRole("tab", { name: "Tab B" }))
 
@@ -87,7 +98,7 @@ describe("Tabs", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderTabs(<TestComponent />)
 
     fireEvent.click(screen.getByRole("tab", { name: "Tab B" }))
 
@@ -106,7 +117,7 @@ describe("Tabs", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderTabs(<TestComponent />)
 
     const tabList = screen.getByRole("tablist")
     fireEvent.keyDown(tabList, { key: "ArrowRight" })
@@ -116,7 +127,7 @@ describe("Tabs", () => {
   })
 
   it("Home과 End 키로 focus 이동이 가능하다", () => {
-    render(<Tabs options={baseOptions} value="b" size="M" onSelect={() => {}} />)
+    renderTabs(<Tabs options={baseOptions} value="b" size="M" onSelect={() => {}} />)
 
     const tabList = screen.getByRole("tablist")
 
@@ -139,7 +150,7 @@ describe("Tabs", () => {
       )
     }
 
-    render(<TestComponent />)
+    renderTabs(<TestComponent />)
 
     const tabList = screen.getByRole("tablist")
     fireEvent.keyDown(tabList, { key: "ArrowRight" })
@@ -149,14 +160,14 @@ describe("Tabs", () => {
   })
 
   it("선택된 탭은 aria-selected=true를 가진다", () => {
-    render(<Tabs options={baseOptions} value="b" size="M" onSelect={() => {}} />)
+    renderTabs(<Tabs options={baseOptions} value="b" size="M" onSelect={() => {}} />)
 
     expect(screen.getByRole("tab", { name: "Tab B" })).toHaveAttribute("aria-selected", "true")
     expect(screen.getByRole("tab", { name: "Tab A" })).toHaveAttribute("aria-selected", "false")
   })
 
   it("disabled 탭은 aria-disabled=true를 가진다", () => {
-    render(
+    renderTabs(
       <Tabs
         options={[
           { label: "Tab A", value: "a" },

@@ -1,11 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import Badge from "./Badge"
 import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
 const renderBadge = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+  return renderWithProviders(ui)
 }
 
 describe("Badge", () => {
@@ -90,9 +91,7 @@ describe("Badge", () => {
 
     const badge = screen.getByText("1").parentElement as HTMLElement
 
-    expect(badge).toHaveStyle({
-      backgroundColor: theme.colors.success[500],
-    })
+    expect(badge).toHaveStyle(`background-color: ${theme.colors.success[500]}`)
   })
 
   test("placement에 따라 위치 스타일이 적용된다", () => {
@@ -104,11 +103,9 @@ describe("Badge", () => {
 
     const badge = screen.getByText("1").parentElement as HTMLElement
 
-    expect(badge).toHaveStyle({
-      bottom: "0px",
-      left: "0px",
-      transform: "translate(-50%, 50%)",
-    })
+    expect(badge).toHaveStyle("bottom: 0px")
+    expect(badge).toHaveStyle("left: 0px")
+    expect(badge).toHaveStyle("transform: translate(-50%, 50%)")
   })
 
   test("overlap=circular이면 원형 radius와 zero padding이 적용된다", () => {
@@ -120,10 +117,8 @@ describe("Badge", () => {
 
     const badge = screen.getByText("8").parentElement as HTMLElement
 
-    expect(badge).toHaveStyle({
-      padding: "0px",
-      borderRadius: theme.borderRadius[50],
-    })
+    expect(badge).toHaveStyle("padding: 0px")
+    expect(badge).toHaveStyle(`border-radius: ${theme.borderRadius[50]}`)
   })
 
   test("overlap=rectangular이면 직사각형 패딩이 적용된다", () => {
@@ -135,9 +130,7 @@ describe("Badge", () => {
 
     const badge = screen.getByText("8").parentElement as HTMLElement
 
-    expect(badge).toHaveStyle({
-      padding: "0 6px",
-      borderRadius: theme.borderRadius[8],
-    })
+    expect(badge).toHaveStyle("padding: 0 6px")
+    expect(badge).toHaveStyle(`border-radius: ${theme.borderRadius[8]}`)
   })
 })

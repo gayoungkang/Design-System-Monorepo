@@ -46,6 +46,9 @@ const useIntersect = (onIntersect: () => void) => {
     // * 비활성 상태이거나 ref가 아직 없으면 observer 생성하지 않음
     if (!enabled || !ref.current) return
 
+    // * 테스트/SSR 환경에서 IntersectionObserver가 없으면 관측 로직을 건너뜀
+    if (typeof IntersectionObserver === "undefined") return
+
     // * 대상 요소가 viewport에 진입했을 때 콜백 실행
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) onIntersect()

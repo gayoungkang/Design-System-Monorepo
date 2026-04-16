@@ -1,12 +1,12 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, test, vi } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type { ReactElement } from "react"
 import Chip from "./Chip"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
-const renderChip = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+const renderChip = (ui: ReactElement) => {
+  return renderWithProviders(ui)
 }
 
 describe("Chip", () => {
@@ -39,9 +39,11 @@ describe("Chip", () => {
   })
 
   test("startIcon과 endIcon이 렌더링된다", () => {
-    renderChip(<Chip label="Icons" startIcon="ArrowRight" endIcon="ArrowRight" />)
+    const { container } = renderChip(
+      <Chip label="Icons" startIcon="ArrowRight" endIcon="ArrowRight" />,
+    )
 
-    const icons = screen.getAllByTestId("icon")
+    const icons = container.querySelectorAll("svg")
 
     expect(icons.length).toBeGreaterThanOrEqual(2)
   })
@@ -74,9 +76,7 @@ describe("Chip", () => {
 
     const chip = screen.getByText("Contained").parentElement as HTMLElement
 
-    expect(chip).toHaveStyle({
-      backgroundColor: "rgb(1,2,3)",
-    })
+    expect(chip).toHaveStyle("background-color: rgb(1, 2, 3)")
   })
 
   test("variant=outlined이면 border가 적용된다", () => {
@@ -84,20 +84,19 @@ describe("Chip", () => {
 
     const chip = screen.getByText("Outlined").parentElement as HTMLElement
 
-    expect(chip).toHaveStyle({
-      border: "1px solid rgb(1,2,3)",
-    })
+    expect(chip).toHaveStyle("border-color: rgb(1, 2, 3)")
+    expect(chip).toHaveStyle("border-style: solid")
+    expect(chip).toHaveStyle("border-width: 1px")
   })
 
   test("variant=text이면 배경과 border가 없다", () => {
     renderChip(<Chip label="Text" variant="text" />)
 
     const chip = screen.getByText("Text").parentElement as HTMLElement
+    const styles = window.getComputedStyle(chip)
 
-    expect(chip).toHaveStyle({
-      backgroundColor: "transparent",
-      border: "none",
-    })
+    expect(styles.backgroundColor).toBe("rgba(0, 0, 0, 0)")
+    expect(styles.borderStyle).toBe("none")
   })
 
   test("size에 따라 padding이 변경된다", () => {
@@ -105,8 +104,6 @@ describe("Chip", () => {
 
     const chip = container.firstChild as HTMLElement
 
-    expect(chip).toHaveStyle({
-      padding: "8px 21px",
-    })
+    expect(chip).toHaveStyle("padding: 8px 21px")
   })
 })

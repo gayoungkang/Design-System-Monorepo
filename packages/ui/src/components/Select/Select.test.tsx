@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import type { ReactElement } from "react"
+import { fireEvent, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
 import { describe, expect, it, vi } from "vitest"
+import { renderWithProviders } from "../../test"
 import Select from "./Select"
 
 const fruitOptions = [
@@ -16,15 +18,17 @@ const categoryOptions = [
   { value: "backend", label: "백엔드" },
 ]
 
+const renderSelect = (ui: ReactElement) => renderWithProviders(ui)
+
 describe("Select", () => {
   it("renders placeholder when no value exists", () => {
-    render(<Select<string> label="과일" options={fruitOptions} placeholder="선택해 주세요" />)
+    renderSelect(<Select<string> label="과일" options={fruitOptions} placeholder="선택해 주세요" />)
 
     expect(screen.getByText("선택해 주세요")).toBeInTheDocument()
   })
 
   it("opens listbox by keyboard", () => {
-    render(<Select<string> label="과일" options={fruitOptions} />)
+    renderSelect(<Select<string> label="과일" options={fruitOptions} />)
 
     const combobox = screen.getByRole("combobox")
     fireEvent.keyDown(combobox, { key: "Enter" })
@@ -35,10 +39,10 @@ describe("Select", () => {
   it("selects single option", () => {
     const handleChange = vi.fn()
 
-    render(<Select<string> label="과일" options={fruitOptions} onChange={handleChange} />)
+    renderSelect(<Select<string> label="과일" options={fruitOptions} onChange={handleChange} />)
 
     const combobox = screen.getByRole("combobox")
-    fireEvent.mouseDown(combobox)
+    fireEvent.mouseDown(combobox, { detail: 1 })
     fireEvent.click(screen.getByText("바나나"))
 
     expect(handleChange).toHaveBeenCalledWith("banana")
@@ -47,7 +51,7 @@ describe("Select", () => {
   it("selects multiple options", () => {
     const handleChange = vi.fn()
 
-    render(
+    renderSelect(
       <Select<string>
         multiple
         label="카테고리"
@@ -58,7 +62,7 @@ describe("Select", () => {
     )
 
     const combobox = screen.getByRole("combobox")
-    fireEvent.mouseDown(combobox)
+    fireEvent.mouseDown(combobox, { detail: 1 })
     fireEvent.click(screen.getByText("디자인"))
 
     expect(handleChange).toHaveBeenCalledWith(["design"])
@@ -67,7 +71,7 @@ describe("Select", () => {
   it("toggles all option in multiple mode", () => {
     const handleChange = vi.fn()
 
-    render(
+    renderSelect(
       <Select<string>
         multiple
         label="카테고리"
@@ -78,7 +82,7 @@ describe("Select", () => {
     )
 
     const combobox = screen.getByRole("combobox")
-    fireEvent.mouseDown(combobox)
+    fireEvent.mouseDown(combobox, { detail: 1 })
     fireEvent.click(screen.getByText("전체"))
 
     expect(handleChange).toHaveBeenCalledWith(["design", "frontend", "backend"])
@@ -87,7 +91,7 @@ describe("Select", () => {
   it("deletes chip in chip multiple mode", () => {
     const handleChange = vi.fn()
 
-    render(
+    renderSelect(
       <Select<string>
         multiple
         label="카테고리"
@@ -105,16 +109,16 @@ describe("Select", () => {
   })
 
   it("does not open when disabled", () => {
-    render(<Select<string> label="과일" options={fruitOptions} disabled />)
+    renderSelect(<Select<string> label="과일" options={fruitOptions} disabled />)
 
     const combobox = screen.getByRole("combobox")
-    fireEvent.mouseDown(combobox)
+    fireEvent.mouseDown(combobox, { detail: 1 })
 
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument()
   })
 
   it("shows helper text when error exists", () => {
-    render(
+    renderSelect(
       <Select<string> label="과일" options={fruitOptions} error helperText="필수 항목입니다." />,
     )
 

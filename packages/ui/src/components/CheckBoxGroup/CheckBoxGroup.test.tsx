@@ -1,17 +1,17 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, test, vi } from "vitest"
-import { ThemeProvider } from "styled-components"
+import type React from "react"
 import CheckBoxGroup, { CheckBox } from "./CheckBoxGroup"
-import { theme } from "../../tokens/theme"
+import { renderWithProviders } from "../../test"
 
-const renderWithTheme = (ui: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
+const renderCheckBox = (ui: React.ReactElement) => {
+  return renderWithProviders(ui)
 }
 
 describe("CheckBox (Single)", () => {
   test("checked 상태에 따라 체크된다", () => {
-    renderWithTheme(<CheckBox checked label="Single" />)
+    renderCheckBox(<CheckBox checked label="Single" />)
 
     const input = screen.getByRole("checkbox")
 
@@ -22,7 +22,7 @@ describe("CheckBox (Single)", () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
 
-    renderWithTheme(<CheckBox checked={false} onChange={onChange} label="Single" />)
+    renderCheckBox(<CheckBox checked={false} onChange={onChange} label="Single" />)
 
     const input = screen.getByRole("checkbox")
 
@@ -32,7 +32,7 @@ describe("CheckBox (Single)", () => {
   })
 
   test("indeterminate 상태가 적용된다", () => {
-    renderWithTheme(<CheckBox checked={false} indeterminate label="Single" />)
+    renderCheckBox(<CheckBox checked={false} indeterminate label="Single" />)
 
     const input = screen.getByRole("checkbox") as HTMLInputElement
 
@@ -43,7 +43,7 @@ describe("CheckBox (Single)", () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
 
-    renderWithTheme(<CheckBox disabled onChange={onChange} label="Single" />)
+    renderCheckBox(<CheckBox disabled onChange={onChange} label="Single" />)
 
     const input = screen.getByRole("checkbox")
 
@@ -61,13 +61,13 @@ describe("CheckBoxGroup", () => {
   ]
 
   test("data 기반으로 체크박스를 렌더링한다", () => {
-    renderWithTheme(<CheckBoxGroup data={data} />)
+    renderCheckBox(<CheckBoxGroup data={data} />)
 
     expect(screen.getAllByRole("checkbox")).toHaveLength(3)
   })
 
   test("value에 포함된 값은 체크된다", () => {
-    renderWithTheme(<CheckBoxGroup data={data} value={["a", "c"]} />)
+    renderCheckBox(<CheckBoxGroup data={data} value={["a", "c"]} />)
 
     const inputs = screen.getAllByRole("checkbox") as HTMLInputElement[]
 
@@ -79,7 +79,7 @@ describe("CheckBoxGroup", () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
 
-    renderWithTheme(<CheckBoxGroup data={data} value={[]} onChange={onChange} />)
+    renderCheckBox(<CheckBoxGroup data={data} value={[]} onChange={onChange} />)
 
     const inputs = screen.getAllByRole("checkbox")
 
@@ -92,7 +92,7 @@ describe("CheckBoxGroup", () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
 
-    renderWithTheme(<CheckBoxGroup data={data} value={["a"]} onChange={onChange} />)
+    renderCheckBox(<CheckBoxGroup data={data} value={["a"]} onChange={onChange} />)
 
     const inputs = screen.getAllByRole("checkbox")
 
@@ -102,7 +102,7 @@ describe("CheckBoxGroup", () => {
   })
 
   test("allCheck=true면 전체 선택 체크박스가 렌더링된다", () => {
-    renderWithTheme(<CheckBoxGroup data={data} allCheck />)
+    renderCheckBox(<CheckBoxGroup data={data} allCheck />)
 
     expect(screen.getAllByRole("checkbox")).toHaveLength(4)
   })
@@ -111,7 +111,7 @@ describe("CheckBoxGroup", () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
 
-    renderWithTheme(<CheckBoxGroup data={data} value={[]} onChange={onChange} allCheck />)
+    renderCheckBox(<CheckBoxGroup data={data} value={[]} onChange={onChange} allCheck />)
 
     const inputs = screen.getAllByRole("checkbox")
 
@@ -121,7 +121,7 @@ describe("CheckBoxGroup", () => {
   })
 
   test("일부 선택 상태에서 전체 선택은 indeterminate가 된다", () => {
-    renderWithTheme(<CheckBoxGroup data={data} value={["a"]} allCheck />)
+    renderCheckBox(<CheckBoxGroup data={data} value={["a"]} allCheck />)
 
     const inputs = screen.getAllByRole("checkbox") as HTMLInputElement[]
 
@@ -129,7 +129,7 @@ describe("CheckBoxGroup", () => {
   })
 
   test("disabled면 모든 체크박스가 비활성화된다", () => {
-    renderWithTheme(<CheckBoxGroup data={data} disabled />)
+    renderCheckBox(<CheckBoxGroup data={data} disabled />)
 
     const inputs = screen.getAllByRole("checkbox")
 
