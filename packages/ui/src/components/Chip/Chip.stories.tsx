@@ -7,7 +7,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Chip> = {
-  title: "Components/Chip",
+  title: "Data Display/Chip",
   component: Chip,
   parameters: {
     layout: "centered",

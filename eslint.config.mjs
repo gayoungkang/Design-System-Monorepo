@@ -53,6 +53,19 @@ export default tseslint.config(
         { allowShortCircuit: true, allowTernary: true, allowTaggedTemplates: true },
       ],
 
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Literal[value=/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]",
+          message: "임의 HEX 컬러 금지. theme/tokens를 사용하세요.",
+        },
+      ],
+    },
+  },
+
+  {
+    files: ["apps/**/*.{ts,tsx}"],
+    rules: {
       "no-restricted-imports": [
         "error",
         {
@@ -79,14 +92,6 @@ export default tseslint.config(
           ],
         },
       ],
-
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "Literal[value=/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]",
-          message: "임의 HEX 컬러 금지. theme/tokens를 사용하세요.",
-        },
-      ],
     },
   },
 
@@ -95,14 +100,6 @@ export default tseslint.config(
     rules: {
       "no-restricted-syntax": "off",
       "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
-
-  {
-    files: ["packages/ui/src/tokens/theme.ts"],
-    rules: {
-      "no-restricted-imports": "off",
-      "no-restricted-syntax": "off",
     },
   },
 

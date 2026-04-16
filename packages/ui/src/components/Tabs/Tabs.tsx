@@ -1,3 +1,4 @@
+import type { KeyboardEventHandler } from "react"
 import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { theme } from "../../tokens/theme"
@@ -42,6 +43,7 @@ const sizeStyle: Record<
 }
 
 const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1
+
 /**---------------------------------------------------------------------------/
  *
  * ! Tabs
@@ -143,6 +145,7 @@ export const Tabs = ({
   const [focusIndex, setFocusIndex] = useState(0)
 
   const visibleOptions = useMemo(() => options.filter((o) => !o.hidden), [options])
+
   const activeIndex = useMemo(
     () => (value === null ? -1 : visibleOptions.findIndex((o) => o.value === value)),
     [value, visibleOptions],
@@ -153,7 +156,6 @@ export const Tabs = ({
   }, [activeIndex])
 
   const updateIndicator = useCallback(() => {
-    if (!scrollRef.current) return
     if (activeIndex < 0) {
       setIndicator({ left: 0, width: 0 })
       return
@@ -190,6 +192,7 @@ export const Tabs = ({
       el.scrollTo({ left, behavior: "smooth" })
       return
     }
+
     if (right > viewRight) {
       el.scrollTo({ left: right - el.clientWidth, behavior: "smooth" })
     }
@@ -211,14 +214,16 @@ export const Tabs = ({
       updateIndicator()
       updateScrollButtons()
     })
+
     ro.observe(el)
 
     return () => ro.disconnect()
   }, [updateIndicator, updateScrollButtons])
 
   const scrollByStep = (delta: number) => {
-    if (!scrollRef.current) return
-    scrollRef.current.scrollBy({ left: delta, behavior: "smooth" })
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollBy({ left: delta, behavior: "smooth" })
   }
 
   const scrollLeft = () => scrollByStep(-160)
@@ -227,15 +232,15 @@ export const Tabs = ({
   const gap = sizeStyle[size].gap
   const height = sizeStyle[size].height
 
-  const onKeyDownTabList: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+  const onKeyDownTabList: KeyboardEventHandler<HTMLDivElement> = (e) => {
     if (!visibleOptions.length) return
 
     const moveFocus = (next: number) => {
       const clamped = Math.max(0, Math.min(visibleOptions.length - 1, next))
       setFocusIndex(clamped)
+
       const btn = tabRefs.current[clamped]
       btn?.focus()
-      // * 포커스 이동 시도 시 해당 탭이 보이도록
       btn?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" })
     }
 
@@ -244,21 +249,25 @@ export const Tabs = ({
       moveFocus(focusIndex + 1)
       return
     }
+
     if (e.key === "ArrowLeft") {
       e.preventDefault()
       moveFocus(focusIndex - 1)
       return
     }
+
     if (e.key === "Home") {
       e.preventDefault()
       moveFocus(0)
       return
     }
+
     if (e.key === "End") {
       e.preventDefault()
       moveFocus(visibleOptions.length - 1)
       return
     }
+
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault()
       const opt = visibleOptions[focusIndex]
@@ -269,11 +278,11 @@ export const Tabs = ({
 
   return (
     <TabsWrapper ref={wrapperRef} $height={height} {...props}>
-      {scrollButtonsVisible && (
+      {scrollButtonsVisible ? (
         <ScrollButtonWrapper>
           <IconButton icon="ArrowLeft" size={20} disabled={!canScrollLeft} onClick={scrollLeft} />
         </ScrollButtonWrapper>
-      )}
+      ) : null}
 
       <ScrollContainer
         ref={scrollRef}
@@ -289,13 +298,14 @@ export const Tabs = ({
           const el = scrollRef.current
           if (!el) return
           if (!isScrollableX(el)) return
+
           e.preventDefault()
           el.scrollBy({ left: e.deltaY, behavior: "smooth" })
         }}
       >
         {visibleOptions.map((option, idx) => {
           const selected = option.value === value
-          const disabled = !!option.disabled
+          const disabled = Boolean(option.disabled)
           const tabIndex = idx === focusIndex ? 0 : -1
 
           return (
@@ -338,7 +348,7 @@ export const Tabs = ({
         />
       </ScrollContainer>
 
-      {scrollButtonsVisible && (
+      {scrollButtonsVisible ? (
         <ScrollButtonWrapper>
           <IconButton
             icon="ArrowRight"
@@ -347,10 +357,11 @@ export const Tabs = ({
             onClick={scrollRight}
           />
         </ScrollButtonWrapper>
-      )}
+      ) : null}
     </TabsWrapper>
   )
 }
+
 Tabs.displayName = "Tabs"
 
 const TabsWrapper = styled.div<{ $height: string }>`
@@ -383,6 +394,7 @@ const ScrollContainer = styled(Flex)<{
     css`
       -ms-overflow-style: none;
       scrollbar-width: none;
+
       &::-webkit-scrollbar {
         display: none;
       }

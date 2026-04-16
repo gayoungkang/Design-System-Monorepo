@@ -5,7 +5,7 @@ import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 
 const meta: Meta<typeof Slider> = {
-  title: "Input/Slider",
+  title: "Inputs/Slider",
   component: Slider,
   args: {
     min: 0,

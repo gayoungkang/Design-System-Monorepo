@@ -20,7 +20,7 @@ const Cell = ({ text }: { text: string }) => {
 }
 
 const meta: Meta<typeof Grid> = {
-  title: "Layout/Grid",
+  title: "Foundation/Grid",
   component: Grid,
   args: {
     columns: "1fr 1fr",

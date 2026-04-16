@@ -7,7 +7,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof CheckBoxGroup> = {
-  title: "Components/CheckBox",
+  title: "Inputs/CheckBoxGroup",
   component: CheckBoxGroup,
   parameters: {
     layout: "centered",

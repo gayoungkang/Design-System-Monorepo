@@ -6,7 +6,7 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Button> = {
-  title: "Components/Button",
+  title: "Inputs/Button",
   component: Button,
   parameters: {
     layout: "centered",

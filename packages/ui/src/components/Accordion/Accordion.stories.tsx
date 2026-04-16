@@ -8,7 +8,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Accordion> = {
-  title: "Components/Accordion",
+  title: "Layout/Accordion",
   component: Accordion,
   parameters: {
     layout: "centered",

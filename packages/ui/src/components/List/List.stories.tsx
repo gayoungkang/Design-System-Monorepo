@@ -4,7 +4,7 @@ import List from "./List"
 import Box from "../Box/Box"
 
 const meta: Meta<typeof List> = {
-  title: "DataDisplay/List",
+  title: "Data Display/List",
   component: List,
   args: {
     dense: false,

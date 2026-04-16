@@ -6,7 +6,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Box> = {
-  title: "Components/Box",
+  title: "Foundation/Box",
   component: Box,
   parameters: {
     layout: "centered",

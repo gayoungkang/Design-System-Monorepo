@@ -1,292 +1,156 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import React, { useEffect, useMemo, useState } from "react"
-import { Typography, TypographyProps } from "./Typography"
+import { Typography } from "./Typography"
 import Flex from "../Flex/Flex"
-import Box from "../Box/Box"
-import TextField from "../TextField/TextField"
-import ToggleButton from "../ToggleButton/ToggleButton"
-import { theme, typographyVariants } from "../../tokens/theme"
 
-type StoryArgs = TypographyProps
-type VariantKey = keyof typeof typographyVariants
-type AsTag = NonNullable<TypographyProps["as"]>
-type Align = NonNullable<TypographyProps["align"]>
-
-const meta: Meta<StoryArgs> = {
-  title: "Components/Typography",
+const meta: Meta<typeof Typography> = {
+  title: "Foundation/Typography",
   component: Typography,
-  argTypes: {
-    variant: { control: "select", options: Object.keys(typographyVariants) },
-    text: { control: "text" },
-    as: {
-      control: "select",
-      options: ["p", "span", "div", "label", "strong", "em", "h1", "h2", "h3"],
-    },
-    color: { control: "text" },
-    italic: { control: "boolean" },
-    ellipsis: { control: "boolean" },
-    underline: { control: "boolean" },
-    align: { control: "radio", options: ["left", "center", "right", "justify"] },
-
-    p: { control: "text" },
-    px: { control: "text" },
-    py: { control: "text" },
-    pt: { control: "text" },
-    pr: { control: "text" },
-    pb: { control: "text" },
-    pl: { control: "text" },
-
-    m: { control: "text" },
-    mx: { control: "text" },
-    my: { control: "text" },
-    mt: { control: "text" },
-    mr: { control: "text" },
-    mb: { control: "text" },
-    ml: { control: "text" },
-
-    width: { control: "text" },
-    height: { control: "text" },
-    bgColor: { control: "text" },
-    sx: { control: "object" },
-  },
   args: {
+    text: "Typography sample text",
     variant: "b1Medium",
-    text: "Typography\nmultiline text",
     as: "p",
-    color: theme.colors.text.primary,
-    italic: false,
     ellipsis: false,
+    italic: false,
     underline: false,
     align: "left",
-    width: "100%",
+  },
+  argTypes: {
+    variant: {
+      control: "select",
+      options: Object.keys({
+        h1: "",
+        h2: "",
+        h3: "",
+        h4: "",
+        h5: "",
+        h6: "",
+        b1Bold: "",
+        b1Medium: "",
+        b1Regular: "",
+        b2Bold: "",
+        b2Medium: "",
+        b2Regular: "",
+        b3Bold: "",
+        b3Medium: "",
+        b3Regular: "",
+      }),
+    },
+    as: {
+      control: "select",
+      options: ["p", "span", "div", "h1", "h2", "h3", "h4", "h5", "h6"],
+    },
+    color: {
+      control: "text",
+    },
+    italic: {
+      control: "boolean",
+    },
+    ellipsis: {
+      control: "boolean",
+    },
+    underline: {
+      control: "boolean",
+    },
+    align: {
+      control: "select",
+      options: ["left", "center", "right", "justify"],
+    },
   },
 }
 
 export default meta
-type Story = StoryObj<StoryArgs>
 
-const asOptions: AsTag[] = ["p", "span", "div", "label", "strong", "em", "h1", "h2", "h3"]
-const alignOptions: Align[] = ["left", "center", "right", "justify"]
-
-const isVariantKey = (v: unknown): v is VariantKey =>
-  typeof v === "string" && Object.prototype.hasOwnProperty.call(typographyVariants, v)
-
-const safeAsTag = (v: unknown): AsTag | null =>
-  typeof v === "string" && (asOptions as string[]).includes(v) ? (v as AsTag) : null
-
-const safeAlign = (v: unknown): Align | null =>
-  typeof v === "string" && (alignOptions as string[]).includes(v) ? (v as Align) : null
+type Story = StoryObj<typeof Typography>
 
 export const Playground: Story = {
   render: (args) => {
-    const variantKeys = useMemo(() => Object.keys(typographyVariants) as VariantKey[], [])
-    const [text, setText] = useState<string>(
-      typeof args.text === "string" ? args.text : "Typography",
+    return <Typography {...args} />
+  },
+}
+
+export const Variants: Story = {
+  render: () => {
+    return (
+      <Flex direction="column" gap={12}>
+        <Typography variant="h1" text="h1 Typography" />
+        <Typography variant="h2" text="h2 Typography" />
+        <Typography variant="h3" text="h3 Typography" />
+        <Typography variant="b1Bold" text="b1Bold Typography" />
+        <Typography variant="b1Medium" text="b1Medium Typography" />
+        <Typography variant="b1Regular" text="b1Regular Typography" />
+        <Typography variant="b2Medium" text="b2Medium Typography" />
+        <Typography variant="b2Regular" text="b2Regular Typography" />
+        <Typography variant="b3Medium" text="b3Medium Typography" />
+        <Typography variant="b3Regular" text="b3Regular Typography" />
+      </Flex>
     )
+  },
+}
 
-    const [variant, setVariant] = useState<VariantKey>(
-      isVariantKey(args.variant) ? args.variant : "b1Medium",
+export const Decorations: Story = {
+  render: () => {
+    return (
+      <Flex direction="column" gap={12}>
+        <Typography text="Normal text" />
+        <Typography text="Italic text" italic />
+        <Typography text="Underline text" underline />
+        <Typography text="Italic underline text" italic underline />
+        <Typography text="Colored text" color="#2563eb" />
+      </Flex>
     )
-    const [asTag, setAsTag] = useState<AsTag>(args.as ?? "p")
-    const [align, setAlign] = useState<Align>(args.align ?? "left")
-    const [color, setColor] = useState<string>(args.color ?? theme.colors.text.primary)
+  },
+}
 
-    const [italic, setItalic] = useState<boolean>(!!args.italic)
-    const [underline, setUnderline] = useState<boolean>(!!args.underline)
-    const [ellipsis, setEllipsis] = useState<boolean>(!!args.ellipsis)
-
-    useEffect(() => {
-      setText(typeof args.text === "string" ? args.text : "Typography")
-    }, [args.text])
-
-    useEffect(() => {
-      setVariant(isVariantKey(args.variant) ? args.variant : "b1Medium")
-    }, [args.variant])
-
-    useEffect(() => {
-      setAsTag(args.as ?? "p")
-    }, [args.as])
-
-    useEffect(() => {
-      setAlign(args.align ?? "left")
-    }, [args.align])
-
-    useEffect(() => {
-      setColor(args.color ?? theme.colors.text.primary)
-    }, [args.color])
-
+export const Alignments: Story = {
+  render: () => {
     return (
       <Flex direction="column" gap={12} width="100%">
-        <Box
-          width="100%"
-          sx={{
-            border: `1px solid ${theme.colors.border.default}`,
-            borderRadius: theme.borderRadius[8],
-            padding: 12,
-          }}
-        >
-          <Flex direction="column" gap={10} width="100%" p={10}>
-            <TextField
-              label="text"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="문자열 입력 (\\n 줄바꿈 지원)"
-              variant="outlined"
-              size="M"
-              labelPlacement="top"
-            />
+        <Typography text="Left aligned text" align="left" width="100%" />
+        <Typography text="Center aligned text" align="center" width="100%" />
+        <Typography text="Right aligned text" align="right" width="100%" />
+        <Typography
+          text="Justify aligned text example for typography component rendering."
+          align="justify"
+          width="240px"
+        />
+      </Flex>
+    )
+  },
+}
 
-            <Flex gap={10} wrap="wrap" width="100%" align="center">
-              <ToggleButton
-                label="variant"
-                buttons={variantKeys.map((v) => ({ label: v, value: v }))}
-                selectedValue={variant}
-                onClick={(v) => {
-                  if (isVariantKey(v)) setVariant(v)
-                }}
-                size="S"
-              />
-              <ToggleButton
-                label="as"
-                buttons={asOptions.map((v) => ({ label: v, value: v }))}
-                selectedValue={asTag}
-                onClick={(v) => {
-                  const s = safeAsTag(v)
-                  if (!s) return
-                  setAsTag(s)
-                }}
-                size="S"
-              />
-              <ToggleButton
-                label="align"
-                buttons={alignOptions.map((v) => ({ label: v, value: v }))}
-                selectedValue={align}
-                onClick={(v) => {
-                  const s = safeAlign(v)
-                  if (!s) return
-                  setAlign(s)
-                }}
-                size="S"
-              />
-            </Flex>
+export const Multiline: Story = {
+  render: () => {
+    return <Typography text={"First line\nSecond line\nThird line"} />
+  },
+}
 
-            <Flex gap={10} wrap="wrap" width="100%" align="center">
-              <TextField
-                label="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                placeholder={theme.colors.text.primary}
-                variant="outlined"
-                size="M"
-                labelPlacement="top"
-              />
-              <ToggleButton
-                label="italic"
-                buttons={[
-                  { label: "false", value: "false" },
-                  { label: "true", value: "true" },
-                ]}
-                selectedValue={italic ? "true" : "false"}
-                onClick={(v) => {
-                  if (v === "true" || v === "false") setItalic(v === "true")
-                }}
-                size="S"
-              />
-              <ToggleButton
-                label="underline"
-                buttons={[
-                  { label: "false", value: "false" },
-                  { label: "true", value: "true" },
-                ]}
-                selectedValue={underline ? "true" : "false"}
-                onClick={(v) => {
-                  if (v === "true" || v === "false") setUnderline(v === "true")
-                }}
-                size="S"
-              />
-              <ToggleButton
-                label="ellipsis"
-                buttons={[
-                  { label: "false", value: "false" },
-                  { label: "true", value: "true" },
-                ]}
-                selectedValue={ellipsis ? "true" : "false"}
-                onClick={(v) => {
-                  if (v === "true" || v === "false") setEllipsis(v === "true")
-                }}
-                size="S"
-              />
-            </Flex>
-          </Flex>
-        </Box>
+export const Ellipsis: Story = {
+  render: () => {
+    return (
+      <Typography
+        text="This is a very long typography text that should be truncated with ellipsis when the width is constrained."
+        ellipsis
+        width="220px"
+      />
+    )
+  },
+}
 
-        <Flex
-          direction="column"
-          p={10}
-          gap={10}
-          width="100%"
-          sx={{ backgroundColor: theme.colors.background.default }}
-        >
-          <Typography variant="b1Bold" text="Preview" />
-
-          <Box
-            width="100%"
-            sx={{
-              border: `1px solid ${theme.colors.border.default}`,
-              borderRadius: theme.borderRadius[8],
-              padding: 12,
-            }}
-          >
-            <Typography
-              text={text}
-              variant={variant}
-              as={asTag}
-              align={align}
-              color={color}
-              italic={italic}
-              underline={underline}
-              ellipsis={ellipsis}
-              p={args.p}
-              px={args.px}
-              py={args.py}
-              pt={args.pt}
-              pr={args.pr}
-              pb={args.pb}
-              pl={args.pl}
-              m={args.m}
-              mx={args.mx}
-              my={args.my}
-              mt={args.mt}
-              mr={args.mr}
-              mb={args.mb}
-              ml={args.ml}
-              width={args.width}
-              height={args.height}
-              bgColor={args.bgColor}
-              sx={args.sx}
-            />
-          </Box>
-
-          <Box
-            width="260px"
-            sx={{
-              border: `1px solid ${theme.colors.border.default}`,
-              borderRadius: theme.borderRadius[8],
-              padding: 12,
-            }}
-          >
-            <Typography
-              variant={variant}
-              as={asTag}
-              align={align}
-              color={color}
-              italic={italic}
-              underline={underline}
-              ellipsis
-              text="Ellipsis demo: this text should be truncated inside a constrained box width"
-            />
-          </Box>
-        </Flex>
+export const AllCases: Story = {
+  render: () => {
+    return (
+      <Flex direction="column" gap={16} width="100%">
+        <Typography variant="h2" text="Heading Typography" />
+        <Typography variant="b1Medium" text="Default body typography" />
+        <Typography variant="b2Regular" text="Italic text example" italic />
+        <Typography variant="b2Regular" text="Underline text example" underline />
+        <Typography variant="b2Medium" text="Center aligned text" align="center" width="100%" />
+        <Typography text={"Multiline\nTypography\nExample"} />
+        <Typography
+          text="This is a long typography sentence for ellipsis demonstration in the component story."
+          ellipsis
+          width="240px"
+        />
       </Flex>
     )
   },

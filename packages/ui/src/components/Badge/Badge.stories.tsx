@@ -9,7 +9,7 @@ import Icon from "../Icon/Icon"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Badge> = {
-  title: "Components/Badge",
+  title: "Data Display/Badge",
   component: Badge,
   parameters: {
     layout: "centered",

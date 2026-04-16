@@ -4,7 +4,7 @@ import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 
 const meta: Meta<typeof HelperText> = {
-  title: "Form/HelperText",
+  title: "Data Display/HelperText",
   component: HelperText,
   args: {
     text: "안내 문구입니다.",

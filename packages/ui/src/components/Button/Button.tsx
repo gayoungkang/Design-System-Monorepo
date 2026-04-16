@@ -157,7 +157,7 @@ const Button = forwardRef(
             size="12px"
             color={color === "normal" ? theme.colors.grayscale[700] : theme.colors.grayscale.white}
             backgroundColor="transparent"
-            type="Circular"
+            type="circular"
             variant="indeterminate"
             {...progressProps}
           />

@@ -5,7 +5,7 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Divider> = {
-  title: "Components/Divider",
+  title: "Foundation/Divider",
   component: Divider,
   parameters: {
     layout: "centered",

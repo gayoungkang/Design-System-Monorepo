@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import type {
   ChangeEvent,
+  FocusEvent,
   FocusEventHandler,
   HTMLInputTypeAttribute,
   KeyboardEvent,
@@ -80,99 +81,64 @@ type InputStyleProps = {
  *
  * ! TextField
  *
- * * 단일 라인(input) 및 멀티라인(textarea)을 지원하는 입력 컴포넌트입니다.
- * * `value` 변경을 감지하여 내부 입력값을 동기화하는 controlled 지원 구조이며, 내부 상태(`inputValue`)로 표시 값을 관리합니다.
- * * `variant/size`에 따라 외곽선/배경/최소 높이 및 아이콘 크기를 결정합니다.
- * * 라벨(label)은 `labelPlacement`에 따라 상/하/좌/우로 배치되며, required 표기를 지원합니다.
- * * `type`에 따라 검색(search) / 비밀번호(password) 보조 UI(아이콘 버튼)를 노출합니다.
- * * `onlyNumber` 및 `maxLength` 옵션으로 입력 문자열을 정규화하며, 정규화 결과는 내부 상태에만 반영합니다.
- * * `clearable` + 포커스 활성 상태에서 값이 있을 때 clear 버튼을 노출하고, 클릭 시 내부 값만 초기화 후 포커스를 유지합니다.
+ * * 텍스트 입력을 처리하는 범용 입력 컴포넌트로, single-line(input)과 multiline(textarea)을 모두 지원한다
+ * * 내부 상태(inputValue)를 기반으로 동작하며, value prop 변경 시 동기화되는 반제어 형태로 동작한다
+ * * 검색(search), 비밀번호 토글, 숫자 제한, clear 기능 등 다양한 입력 보조 기능을 제공한다
+ * * disabled/readOnly 상태에서는 입력 및 인터랙션을 제한하고 UI를 비활성화한다 :contentReference[oaicite:0]{index=0}
  *
  * * 동작 규칙
- *   * 입력 모드:
- *     * `multiline=false`이면 input, `multiline=true`이면 textarea를 렌더링합니다.
- *     * forwardRef는 현재 모드에 맞는 엘리먼트(input/textarea)를 노출합니다(useImperativeHandle).
- *   * controlled 동기화:
- *     * 외부 `value`가 변경되면 `inputValue`를 `value ?? ""`로 동기화합니다.
- *   * autoFocus:
- *     * `autoFocus && !disabled && !readOnly`일 때 requestAnimationFrame으로 해당 엘리먼트 focus를 수행합니다.
- *   * 값 정규화(normalizeValue):
- *     * `onlyNumber`가 true면 숫자 이외 문자를 제거합니다(`/[^0-9]/g`).
- *     * `maxLength`가 유효하면 길이를 초과하는 문자열을 slice로 자릅니다.
- *   * onChange 처리:
- *     * 입력값은 정규화 후 `inputValue`에 반영됩니다.
- *     * `onChange`는 원본 이벤트를 그대로 전달하며(이벤트 객체 변형 금지), 정규화 값은 이벤트에 주입하지 않습니다.
- *   * clear 버튼(handleClear):
- *     * `setInputValue("")`로 내부 값만 초기화합니다.
- *     * `onClear` 콜백을 호출하고, 현재 입력 엘리먼트를 다시 focus합니다.
- *     * 노출 조건: `inputValue !== "" && !multiline && clearable && !readOnly && isActive`
- *   * 검색(search):
- *     * `type === "search" && !multiline`에서 검색 아이콘 버튼을 노출합니다.
- *     * 클릭 시 `onSearch(trimmed, false)`를 호출합니다.
- *     * Enter 입력 시 `onSearch(trimmed, true)`를 호출하며 기본 Enter 동작을 prevent합니다.
- *     * Enter 검색 시 `onSearchEnter(trimmed, true)`도 함께 호출됩니다.
- *   * 비밀번호 표시(password):
- *     * `type === "password" && !multiline`에서 눈 아이콘 버튼을 노출합니다.
- *     * 클릭 시 `isPasswordVisible` 토글, 실제 input type을 `text/password`로 전환합니다.
- *   * focus/blur:
- *     * focus 시 `isActive=true`, blur 시 `isActive=false`로 래퍼 강조 스타일을 제어합니다.
- *     * 외부 `onFocus/onBlur`를 각각 호출합니다.
- *   * disabled/readOnly:
- *     * disabled는 입력 및 버튼의 상호작용을 제한하고 스타일을 비활성화 상태로 전환합니다.
- *     * readOnly는 입력은 읽기 전용으로 유지하며, clear/search/password 토글 등 일부 보조 상호작용을 제한합니다.
+ *   * 주요 분기 조건 및 처리 우선순위
+ *     * multiline=true이면 textarea, 아니면 input을 렌더링한다
+ *     * type이 "password"이고 isPasswordVisible=true이면 input type을 "text"로 변경한다
+ *     * inputValue는 내부 state로 관리되며, value prop 변경 시 useEffect로 동기화된다
+ *     * onlyNumber=true이면 입력값에서 숫자 외 문자를 제거한다
+ *     * maxLength가 설정되면 입력값 길이를 제한한다
+ *   * 이벤트 처리 방식(onClick, onChange, onDoubleClick 등)
+ *     * onChange: normalizeValue 적용 후 내부 state 갱신 + 외부 onChange 호출
+ *     * onFocus/onBlur: isActive 상태 토글 + 외부 콜백 호출
+ *     * onKeyDown:
+ *       * type="search" && Enter → onSearch / onSearchEnter 호출
+ *       * 그 외 onKeyDown 전달
+ *     * clear 버튼 클릭 시 inputValue 초기화 + onClear 호출 + 포커스 유지
+ *     * search 아이콘 클릭 시 onSearch 호출
+ *     * password 아이콘 클릭 시 isPasswordVisible 토글
+ *   * disabled 상태에서 차단되는 동작
+ *     * disabled/readOnly 상태에서는 입력, 버튼 클릭, 키보드 이벤트가 제한되고 cursor가 not-allowed/no-drop으로 변경된다
  *
  * * 레이아웃/스타일 관련 규칙
- *   * 아이콘 크기:
- *     * size(S/M/L)에 따라 `14/16/18px`로 계산하며(상위에서 계산 규칙), start/end/search/clear/password 버튼에 동일 적용합니다.
- *   * InputWrapper(외곽 래퍼):
- *     * size에 따라 최소 높이: L=32px, M=28px, S=24px
- *     * variant:
- *       * outlined: 테두리 1px + borderRadius 적용
- *       * filled: 배경 `theme.colors.background.default`
- *       * standard: 투명 배경 + 하단 보더
- *     * 활성 상태(isActive)에서:
- *       * standard: border-bottom을 info[300]으로 강조
- *       * outlined/filled: border-color를 info[300]으로 강조
- *     * error 상태에서:
- *       * standard: border-bottom을 error[300]
- *       * outlined/filled: border-color를 error[300]
- *     * disabled/readOnly에서(outlined/filled):
- *       * border-color grayscale[200], background background.default, cursor not-allowed
- *   * 입력 요소 공통 스타일(commonInputStyle):
- *     * flex:1, border/outline 제거, 투명 배경
- *     * placeholder/disabled 색상은 theme 토큰 사용
- *     * readOnly는 cursor를 no-drop으로 설정
- *   * 멀티라인:
- *     * textarea는 resize none + font-family inherit 적용
- *     * 래퍼 align-items를 flex-start로 전환
- *   * 라벨 배치:
- *     * top/bottom은 renderTopBottomLabel로 렌더링(해당 placement일 때만)
- *     * left/right는 입력 래퍼 좌/우에 인라인 렌더링
+ *   * 전체 구조는 Box → Flex → InputWrapper → Input/Icons 구조로 구성된다
+ *   * InputWrapper는 variant(outlined/filled/standard)에 따라 border/background 스타일이 분기된다
+ *   * focus(isActive) 상태에서는 info 색상으로 border 강조, error 상태에서는 error 색상으로 override된다
+ *   * multiline일 경우 align-items: flex-start로 변경되어 textarea 상단 정렬을 유지한다
+ *   * startIcon/endIcon/clear/search/password 아이콘은 내부 Flex 흐름에 따라 좌우에 배치된다
+ *   * clear 버튼은 조건(inputValue 존재 && not multiline && clearable && not readOnly && isActive)에서만 노출된다
+ *   * placeholder와 텍스트는 Typography 토큰 기반 색상/폰트 규칙을 따른다
  *
  * * 데이터 처리 규칙
- *   * 입력 props 계약(필수/선택):
- *     * 값/이벤트: value, onChange, onBlur, onFocus, onKeyDown/onKeyUp
- *     * 모드/제어: multiline, rows, type(search/password), clearable, readOnly, disabled
- *     * 정규화: onlyNumber, maxLength
- *     * 보조 기능: onSearch, onSearchEnter, onClear, startIcon/endIcon, iconProps
- *     * 표시: label, labelPlacement, required, helperText/error
- *   * 내부 계산 로직:
- *     * `inputType`은 password + visible 상태에 따라 text/password로 변환됩니다.
- *     * search는 `trim()`된 값을 기준으로 콜백을 호출합니다.
- *   * 서버/클라이언트 제어 여부:
- *     * 외부 `value` 제공 시 controlled로 동작하며, 내부 `inputValue`는 표시/상호작용을 위한 상태로 유지됩니다.
+ *   * 입력 props 계약(필수/선택)
+ *     * value, onChange, placeholder, label, type, onlyNumber, maxLength 등은 모두 선택값이다
+ *     * multiline=true일 경우 rows로 높이를 제어한다
+ *     * BaseMixinProps를 확장하므로 spacing/sx 등 공통 스타일 props를 함께 전달할 수 있다
+ *   * 내부 계산 로직 요약(보정, fallback, formatter 등)
+ *     * normalizeValue:
+ *       * onlyNumber=true → 숫자만 허용
+ *       * maxLength 설정 시 길이 제한 적용
+ *     * inputValue는 항상 문자열로 유지되며, 초기값은 value 또는 ""이다
+ *     * autoFocus=true && not disabled/readOnly일 때 requestAnimationFrame으로 focus를 지연 적용한다
+ *   * 서버 제어/클라이언트 제어 여부
+ *     * 완전 controlled가 아닌 내부 상태 기반 컴포넌트이며, value prop은 동기화 용도로만 사용된다
+ *     * 서버 통신 로직은 없고 입력 이벤트 기반으로 동작하는 클라이언트 컴포넌트이다
  *
  * @module TextField
- * variant/size, label placement, search/password/clear 보조 UI를 포함한 입력 컴포넌트입니다.
+ * 다양한 입력 시나리오를 지원하는 텍스트 입력 컴포넌트로,
+ * 상태 제어, 포맷 제한, 아이콘 액션, 검색 기능을 통합 제공한다
  *
  * @usage
- * <TextField label="Name" value={v} onChange={onChange} />
- * <TextField type="search" onSearch={(q) => ...} />
- * <TextField type="password" />
- * <TextField multiline rows={6} />
+ * <TextField
+ *   {...props}
+ * />
  *
 /---------------------------------------------------------------------------**/
-
 const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(
   (
     {
@@ -221,7 +187,6 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
     const inputRef = useRef<HTMLInputElement | null>(null)
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
-    // * size에 따라 아이콘 크기 계산(상위에서 계산 규칙 준수: 이 컴포넌트가 상위)
     const getIconSize = (s: SizeUiType): string => {
       switch (s) {
         case "S":
@@ -235,20 +200,17 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
       }
     }
 
-    // * forwardRef에 현재 모드에 맞는 엘리먼트 노출
-    useImperativeHandle(ref, () => (multiline ? textareaRef.current! : inputRef.current!), [
-      multiline,
-    ])
+    useImperativeHandle(ref, () => {
+      const element = multiline ? textareaRef.current : inputRef.current
+      return element as HTMLInputElement | HTMLTextAreaElement | null
+    }, [multiline])
 
-    // * password visibility 반영
     const inputType = type === "password" && isPasswordVisible ? "text" : type
 
-    // * 외부 value 변경 시 내부 동기화(controlled 지원)
     useEffect(() => {
       setInputValue(value ?? "")
     }, [value])
 
-    // * autoFocus 동작
     useEffect(() => {
       if (!autoFocus || disabled || readOnly) return
       const el = multiline ? textareaRef.current : inputRef.current
@@ -258,23 +220,24 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
       return () => cancelAnimationFrame(id)
     }, [autoFocus, disabled, readOnly, multiline])
 
-    // * 값 정제(onlyNumber/maxLength)
     const normalizeValue = (raw: string) => {
-      let v = raw
-      if (onlyNumber) v = v.replace(/[^0-9]/g, "")
-      if (typeof maxLength === "number" && maxLength >= 0 && v.length > maxLength)
-        v = v.slice(0, maxLength)
-      return v
+      let nextValue = raw
+
+      if (onlyNumber) nextValue = nextValue.replace(/[^0-9]/g, "")
+
+      if (typeof maxLength === "number" && maxLength >= 0 && nextValue.length > maxLength) {
+        nextValue = nextValue.slice(0, maxLength)
+      }
+
+      return nextValue
     }
 
-    // * 입력 변경 핸들러 (이벤트 객체 변형 금지)
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const next = normalizeValue(e.target.value)
-      setInputValue(next)
+      const nextValue = normalizeValue(e.target.value)
+      setInputValue(nextValue)
       onChange?.(e)
     }
 
-    // * clear 버튼 클릭 시 내부 값만 초기화 (가짜 이벤트 생성 금지)
     const handleClear = () => {
       setInputValue("")
       onClear?.()
@@ -282,21 +245,22 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
       el?.focus()
     }
 
-    // * search 실행
     const fireSearch = (isEnter: boolean) => {
       const trimmed = inputValue.trim()
       onSearch?.(trimmed, isEnter)
       if (isEnter) onSearchEnter?.(trimmed, true)
     }
 
-    const handleSearchClick = () => fireSearch(false)
+    const handleSearchClick = () => {
+      fireSearch(false)
+    }
 
-    // * Enter 시 검색(검색 타입일 때만)
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (type === "search" && e.key === "Enter") {
         e.preventDefault()
         fireSearch(true)
       }
+
       onKeyDown?.(e)
     }
 
@@ -305,7 +269,7 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
       onFocus?.()
     }
 
-    const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleBlur = (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setIsActive(false)
       onBlur?.(event)
     }
@@ -392,7 +356,6 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
 
             {inputValue !== "" && !multiline && clearable && !readOnly && isActive && (
               <IconButton
-                onMouseDown={(e) => e.preventDefault()}
                 onClick={handleClear}
                 icon="CloseLine"
                 size={iconSize}
@@ -469,7 +432,7 @@ const InputWrapper = styled.div<InputWrapperStyleProps>`
   border: ${({ $variant }) =>
     $variant === "outlined" ? `1px solid ${theme.colors.border.default}` : "0"};
 
-  border-bottom: ${({ theme, $variant }) =>
+  border-bottom: ${({ $variant }) =>
     $variant === "standard"
       ? `1px solid ${theme.colors.border.default}`
       : `1px solid ${theme.colors.border.default}`};

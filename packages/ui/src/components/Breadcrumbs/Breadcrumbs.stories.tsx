@@ -8,7 +8,7 @@ import Icon from "../Icon/Icon"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Breadcrumbs> = {
-  title: "Components/Breadcrumbs",
+  title: "Navigation/Breadcrumbs",
   component: Breadcrumbs,
   parameters: {
     layout: "centered",

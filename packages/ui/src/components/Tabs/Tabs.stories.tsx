@@ -1,178 +1,191 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { useMemo, useState } from "react"
-import Tabs, { TabProps, TabOptionsType } from "./Tabs"
+import { useState } from "react"
+import Tabs, { type TabOptionsType } from "./Tabs"
 import Flex from "../Flex/Flex"
-import Box from "../Box/Box"
-import { Typography } from "../Typography/Typography"
-import Button from "../Button/Button"
+
+const baseOptions: TabOptionsType[] = [
+  { label: "Overview", value: "overview" },
+  { label: "Members", value: "members" },
+  { label: "Settings", value: "settings" },
+]
+
+const manyOptions: TabOptionsType[] = [
+  { label: "Overview", value: "overview" },
+  { label: "Members", value: "members" },
+  { label: "Settings", value: "settings" },
+  { label: "Activity", value: "activity" },
+  { label: "Billing", value: "billing" },
+  { label: "Logs", value: "logs" },
+  { label: "Security", value: "security" },
+  { label: "Integrations", value: "integrations" },
+]
 
 const meta: Meta<typeof Tabs> = {
-  title: "Components/Tabs",
+  title: "Navigation/Tabs",
   component: Tabs,
-  parameters: {
-    layout: "centered",
-  },
-  argTypes: {
-    options: { control: false },
-    value: { control: false },
-    size: { control: { type: "radio" }, options: ["S", "M", "L"] },
-    color: { control: { type: "text" } },
-    onSelect: { control: false },
-    scrollbarVisible: { control: { type: "boolean" } },
-    scrollButtonsVisible: { control: { type: "boolean" } },
-  },
   args: {
+    value: "overview",
     size: "M",
     color: "primary",
     scrollbarVisible: true,
     scrollButtonsVisible: false,
   },
+  argTypes: {
+    options: { control: false },
+    value: { control: "text" },
+    size: {
+      control: "select",
+      options: ["S", "M", "L"],
+    },
+    color: { control: "text" },
+    onSelect: { action: "select" },
+    scrollbarVisible: { control: "boolean" },
+    scrollButtonsVisible: { control: "boolean" },
+  },
 }
 
 export default meta
+
 type Story = StoryObj<typeof Tabs>
 
-const buildOptions = (count: number, prefix = "tab"): TabOptionsType[] =>
-  Array.from({ length: count }).map((_, i) => ({
-    label: `${prefix.toUpperCase()} ${i + 1}`,
-    value: `${prefix}-${i + 1}`,
-  }))
-
-const Controlled = (args: TabProps & { initialCount?: number }) => {
-  const count = args.initialCount ?? 6
-  const [value, setValue] = useState<string | null>("tab-1")
-
-  const [withHidden, setWithHidden] = useState(false)
-  const [withDisabled, setWithDisabled] = useState(false)
-
-  const options = useMemo(() => {
-    const base = buildOptions(count, "tab")
-    return base.map((o, idx) => ({
-      ...o,
-      hidden: withHidden ? idx === 2 : false,
-      disabled: withDisabled ? idx === 4 : false,
-      label: idx >= 6 ? `Very Long Label Tab ${idx + 1} - Lorem ipsum` : o.label,
-    }))
-  }, [count, withHidden, withDisabled])
-
-  useMemo(() => {
-    const exists = options.some((o) => o.value === value && !o.hidden)
-    if (!exists) setValue(options.find((o) => !o.hidden)?.value ?? null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options])
-
-  return (
-    <Flex direction="column" gap="12px" width="760px">
-      <Flex justify="space-between" align="center">
-        <Typography text="Tabs Playground" variant="h3" />
-        <Flex gap="8px">
-          <Button
-            variant="outlined"
-            text={withHidden ? "Hidden: ON" : "Hidden: OFF"}
-            onClick={() => setWithHidden((p) => !p)}
-          />
-          <Button
-            variant="outlined"
-            text={withDisabled ? "Disabled: ON" : "Disabled: OFF"}
-            onClick={() => setWithDisabled((p) => !p)}
-          />
-          <Button text="Select 1" onClick={() => setValue("tab-1")} />
-          <Button text="Select last" onClick={() => setValue(`tab-${count}`)} />
-        </Flex>
-      </Flex>
-
-      <Tabs
-        {...args}
-        options={options}
-        value={value}
-        onSelect={(v) => {
-          setValue(v)
-        }}
-      />
-
-      <Box sx={{ padding: "10px 12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-        <Typography text={`value: ${value ?? "null"}`} variant="b2Regular" />
-        <Typography
-          text="키보드: TabList 포커스 후 ←/→, Home/End 이동, Enter/Space 선택"
-          variant="b3Regular"
-          color="text.secondary"
-        />
-      </Box>
-    </Flex>
-  )
-}
-
 export const Playground: Story = {
-  render: (args) => <Controlled {...(args as TabProps)} />,
-}
-
-export const Variants: Story = {
+  args: {
+    options: baseOptions,
+  },
   render: (args) => {
-    const common = args as TabProps
-    const [v1, setV1] = useState<string | null>("tab-2")
-    const [v2, setV2] = useState<string | null>("tab-1")
-
-    const optionsShort = useMemo(() => buildOptions(4, "tab"), [])
-    const optionsMany = useMemo(() => buildOptions(12, "tab"), [])
-    const optionsManyMixed = useMemo(
-      () =>
-        buildOptions(12, "tab").map((o, idx) => ({
-          ...o,
-          label: `Tab ${idx + 1} - Very Long Label ${idx + 1}`,
-          disabled: idx === 7,
-          hidden: idx === 3,
-        })),
-      [],
-    )
+    const [value, setValue] = useState<string | null>(String(args.value))
 
     return (
-      <Flex direction="column" gap="18px" width="980px">
-        <Typography text="Basic (no scroll buttons)" variant="h3" />
-        <Tabs
-          {...common}
-          options={optionsShort}
-          value={v1}
-          onSelect={(v) => setV1(v)}
-          scrollButtonsVisible={false}
-          scrollbarVisible
-        />
+      <Tabs
+        {...args}
+        value={value}
+        onSelect={(nextValue) => {
+          setValue(nextValue)
+          args.onSelect?.(nextValue)
+        }}
+      />
+    )
+  },
+}
 
-        <Typography text="Many tabs (scrollbar visible)" variant="h3" />
-        <Tabs
-          {...common}
-          options={optionsMany}
-          value={v1}
-          onSelect={(v) => setV1(v)}
-          scrollButtonsVisible={false}
-          scrollbarVisible
-        />
+export const Sizes: Story = {
+  render: () => {
+    const [small, setSmall] = useState<string | null>("overview")
+    const [medium, setMedium] = useState<string | null>("members")
+    const [large, setLarge] = useState<string | null>("settings")
 
-        <Typography text="Many tabs (scroll buttons visible)" variant="h3" />
+    return (
+      <Flex direction="column" gap={20}>
+        <Tabs options={baseOptions} value={small} size="S" onSelect={setSmall} />
+        <Tabs options={baseOptions} value={medium} size="M" onSelect={setMedium} />
+        <Tabs options={baseOptions} value={large} size="L" onSelect={setLarge} />
+      </Flex>
+    )
+  },
+}
+
+export const Colors: Story = {
+  render: () => {
+    const [primary, setPrimary] = useState<string | null>("overview")
+    const [secondary, setSecondary] = useState<string | null>("overview")
+    const [normal, setNormal] = useState<string | null>("overview")
+    const [custom, setCustom] = useState<string | null>("overview")
+
+    return (
+      <Flex direction="column" gap={20}>
         <Tabs
-          {...common}
-          options={optionsMany}
-          value={v1}
-          onSelect={(v) => setV1(v)}
-          scrollButtonsVisible
+          options={baseOptions}
+          value={primary}
+          size="M"
+          color="primary"
+          onSelect={setPrimary}
+        />
+        <Tabs
+          options={baseOptions}
+          value={secondary}
+          size="M"
+          color="secondary"
+          onSelect={setSecondary}
+        />
+        <Tabs options={baseOptions} value={normal} size="M" color="normal" onSelect={setNormal} />
+        <Tabs options={baseOptions} value={custom} size="M" color="#7c3aed" onSelect={setCustom} />
+      </Flex>
+    )
+  },
+}
+
+export const WithDisabledAndHidden: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | null>("overview")
+
+    return (
+      <Tabs
+        options={[
+          { label: "Overview", value: "overview" },
+          { label: "Members", value: "members", disabled: true },
+          { label: "Hidden", value: "hidden", hidden: true },
+          { label: "Settings", value: "settings" },
+        ]}
+        value={value}
+        size="M"
+        onSelect={setValue}
+      />
+    )
+  },
+}
+
+export const Scrollable: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | null>("overview")
+
+    return (
+      <div style={{ width: 360 }}>
+        <Tabs
+          options={manyOptions}
+          value={value}
+          size="M"
+          onSelect={setValue}
           scrollbarVisible={false}
-        />
-
-        <Typography text="Hidden/Disabled/Long labels" variant="h3" />
-        <Tabs
-          {...common}
-          options={optionsManyMixed}
-          value={v2}
-          onSelect={(v) => setV2(v)}
           scrollButtonsVisible
-          scrollbarVisible={false}
+        />
+      </div>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  render: () => {
+    const [valueA, setValueA] = useState<string | null>("overview")
+    const [valueB, setValueB] = useState<string | null>("members")
+    const [valueC, setValueC] = useState<string | null>("activity")
+
+    return (
+      <Flex direction="column" gap={24}>
+        <Tabs options={baseOptions} value={valueA} size="S" onSelect={setValueA} />
+
+        <Tabs
+          options={[
+            { label: "Overview", value: "overview" },
+            { label: "Members", value: "members", disabled: true },
+            { label: "Settings", value: "settings" },
+          ]}
+          value={valueB}
+          size="M"
+          color="secondary"
+          onSelect={setValueB}
         />
 
-        <Box sx={{ padding: "10px 12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-          <Typography
-            text={`valueA: ${v1 ?? "null"} / valueB: ${v2 ?? "null"}`}
-            variant="b2Regular"
+        <div style={{ width: 420 }}>
+          <Tabs
+            options={manyOptions}
+            value={valueC}
+            size="L"
+            color="#2563eb"
+            scrollbarVisible={false}
+            scrollButtonsVisible
+            onSelect={setValueC}
           />
-        </Box>
+        </div>
       </Flex>
     )
   },

@@ -5,7 +5,7 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Icon> = {
-  title: "Foundation/Icon",
+  title: "Inputs/Icon",
   component: Icon,
   args: {
     name: "StatusInfo",

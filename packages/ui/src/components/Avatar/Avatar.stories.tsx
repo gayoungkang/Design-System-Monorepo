@@ -7,7 +7,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Avatar> = {
-  title: "Components/Avatar",
+  title: "Data Display/Avatar",
   component: Avatar,
   parameters: {
     layout: "centered",

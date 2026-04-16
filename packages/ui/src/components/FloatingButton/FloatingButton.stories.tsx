@@ -3,7 +3,7 @@ import { useState } from "react"
 import FloatingButton from "./FloatingButton"
 
 const meta: Meta<typeof FloatingButton> = {
-  title: "Components/FloatingButton",
+  title: "Inputs/FloatingButton",
   component: FloatingButton,
   args: {
     icon: "Add",

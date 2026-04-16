@@ -4,7 +4,7 @@ import Flex from "../Flex/Flex"
 import Label from "./Label"
 
 const meta: Meta<typeof Label> = {
-  title: "Form/Label",
+  title: "Data Display/Label",
   component: Label,
   args: {
     text: "이름",

@@ -19,7 +19,7 @@ const categoryOptions: SelectOptionType<string>[] = [
 ]
 
 const meta: Meta<typeof Select> = {
-  title: "Form/Select",
+  title: "Inputs/Select",
   component: Select,
   args: {
     variant: "outlined",

@@ -1,310 +1,305 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { useState } from "react"
-import TextField, { TextFieldProps } from "./TextField"
+import TextField from "./TextField"
 import Flex from "../Flex/Flex"
-import Box from "../Box/Box"
-import { Typography } from "../Typography/Typography"
-import Button from "../Button/Button"
 
 const meta: Meta<typeof TextField> = {
-  title: "Components/TextField",
+  title: "Inputs/TextField",
   component: TextField,
-  parameters: { layout: "centered" },
-  argTypes: {
-    variant: { control: { type: "radio" }, options: ["outlined", "filled", "standard"] },
-    size: { control: { type: "radio" }, options: ["S", "M", "L"] },
-    type: { control: { type: "text" } },
-    name: { control: { type: "text" } },
-    label: { control: { type: "text" } },
-    placeholder: { control: { type: "text" } },
-    value: { control: false },
-    onlyNumber: { control: { type: "boolean" } },
-    maxLength: { control: { type: "number" } },
-    onClear: { control: false },
-    onChange: { control: false },
-    onBlur: { control: false },
-    onFocus: { control: false },
-    onSearch: { control: false },
-    onKeyDown: { control: false },
-    onKeyUp: { control: false },
-    onClick: { control: false },
-    onMouseDown: { control: false },
-    onMouseUp: { control: false },
-    disabled: { control: { type: "boolean" } },
-    error: { control: { type: "boolean" } },
-    helperText: { control: { type: "text" } },
-    startIcon: { control: "text" },
-    endIcon: { control: "text" },
-    required: { control: { type: "boolean" } },
-    readOnly: { control: { type: "boolean" } },
-    labelPlacement: { control: { type: "radio" }, options: ["top", "bottom", "left", "right"] },
-    labelProps: { control: false },
-    iconProps: { control: false },
-    multiline: { control: { type: "boolean" } },
-    rows: { control: { type: "number" } },
-    clearable: { control: { type: "boolean" } },
-    autoFocus: { control: { type: "boolean" } },
-    onSearchEnter: { control: false },
-  },
   args: {
     variant: "outlined",
     size: "M",
-    type: "text",
-    name: "field",
-    label: "Label",
     placeholder: "Type here",
-    onlyNumber: false,
-    maxLength: undefined,
     disabled: false,
     error: false,
-    helperText: "Helper text",
-    startIcon: undefined,
-    endIcon: undefined,
-    required: false,
     readOnly: false,
-    labelPlacement: "top",
     multiline: false,
-    rows: 4,
     clearable: true,
     autoFocus: false,
+    labelPlacement: "top",
+  },
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["outlined", "filled", "standard"],
+    },
+    size: {
+      control: "select",
+      options: ["S", "M", "L"],
+    },
+    type: {
+      control: "select",
+      options: ["text", "search", "password", "number"],
+    },
+    labelPlacement: {
+      control: "select",
+      options: ["top", "bottom", "left", "right"],
+    },
+    onChange: { action: "change" },
+    onClear: { action: "clear" },
+    onSearch: { action: "search" },
+    onSearchEnter: { action: "searchEnter" },
+    onFocus: { action: "focus" },
+    onBlur: { action: "blur" },
+    onKeyDown: { action: "keydown" },
+    onKeyUp: { action: "keyup" },
   },
 }
 
 export default meta
+
 type Story = StoryObj<typeof TextField>
 
-const Controlled = (args: TextFieldProps) => {
-  const [val, setVal] = useState<string>("")
-  const [err, setErr] = useState<boolean>(!!args.error)
+export const Playground: Story = {
+  render: (args) => {
+    const [value, setValue] = useState("")
 
-  return (
-    <Flex direction="column" gap="12px" width="640px">
-      <Flex justify="space-between" align="center">
-        <Typography text="Playground" variant="h3" />
-        <Flex gap="8px">
-          <Button
-            variant="outlined"
-            text={err ? "Error: ON" : "Error: OFF"}
-            onClick={() => setErr((p) => !p)}
-          />
-          <Button text="Set sample" onClick={() => setVal("sample value")} />
-          <Button variant="outlined" text="Clear" onClick={() => setVal("")} />
-        </Flex>
-      </Flex>
-
+    return (
       <TextField
         {...args}
-        value={val}
-        error={err}
-        helperText={err ? "Error helper text" : args.helperText}
-        onChange={(e) => setVal(e.target.value)}
-        onClear={() => setVal("")}
-        onSearch={(v, isEnter) => {
-          // * demo: 검색 시 값에 태그 추가
-          setVal((p) => (p ? `${p} | search:${v}(${isEnter ? "enter" : "click"})` : `search:${v}`))
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value)
+          args.onChange?.(e)
         }}
-        onSearchEnter={(v) => {
-          // * demo: 엔터 검색 시 추가 태그
-          setVal((p) => (p ? `${p} | enter:${v}` : `enter:${v}`))
+        onClear={() => {
+          setValue("")
+          args.onClear?.()
         }}
       />
-
-      <Box sx={{ padding: "10px 12px", borderRadius: "12px", backgroundColor: "grayscale.50" }}>
-        <Typography text={`value: ${val}`} variant="b2Regular" />
-      </Box>
-    </Flex>
-  )
-}
-
-export const Playground: Story = {
-  render: (args) => <Controlled {...(args as TextFieldProps)} />,
+    )
+  },
 }
 
 export const Variants: Story = {
-  render: (args) => {
-    const common = args as TextFieldProps
-
-    const [vText, setVText] = useState("hello")
-    const [vSearch, setVSearch] = useState("query")
-    const [vPass, setVPass] = useState("password")
-    const [vNum, setVNum] = useState("1234")
-    const [vMulti, setVMulti] = useState("line1\nline2\nline3")
+  render: () => {
+    const [outlined, setOutlined] = useState("")
+    const [filled, setFilled] = useState("")
+    const [standard, setStandard] = useState("")
 
     return (
-      <Flex direction="column" gap="18px" width="980px">
-        <Typography text="Basic" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            label="Outlined"
-            variant="outlined"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="Filled"
-            variant="filled"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="Standard"
-            variant="standard"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-        </Flex>
+      <Flex direction="column" gap={16}>
+        <TextField
+          label="Outlined"
+          variant="outlined"
+          value={outlined}
+          onChange={(e) => setOutlined(e.target.value)}
+        />
+        <TextField
+          label="Filled"
+          variant="filled"
+          value={filled}
+          onChange={(e) => setFilled(e.target.value)}
+        />
+        <TextField
+          label="Standard"
+          variant="standard"
+          value={standard}
+          onChange={(e) => setStandard(e.target.value)}
+        />
+      </Flex>
+    )
+  },
+}
 
-        <Typography text="Sizes" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            size="S"
-            label="Size S"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            size="M"
-            label="Size M"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            size="L"
-            label="Size L"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-        </Flex>
+export const Sizes: Story = {
+  render: () => {
+    const [small, setSmall] = useState("")
+    const [medium, setMedium] = useState("")
+    const [large, setLarge] = useState("")
 
-        <Typography text="States" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            label="Disabled"
-            disabled
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="ReadOnly"
-            readOnly
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="Error"
-            error
-            helperText="error helper text"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-        </Flex>
+    return (
+      <Flex direction="column" gap={16}>
+        <TextField
+          label="Small"
+          size="S"
+          value={small}
+          onChange={(e) => setSmall(e.target.value)}
+        />
+        <TextField
+          label="Medium"
+          size="M"
+          value={medium}
+          onChange={(e) => setMedium(e.target.value)}
+        />
+        <TextField
+          label="Large"
+          size="L"
+          value={large}
+          onChange={(e) => setLarge(e.target.value)}
+        />
+      </Flex>
+    )
+  },
+}
 
-        <Typography text="Icons" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            label="Start/End"
-            startIcon={"ClipboardLine" as any}
-            endIcon={"CheckLine" as any}
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-        </Flex>
+export const Search: Story = {
+  render: () => {
+    const [value, setValue] = useState("")
 
-        <Typography text="Search" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            type="search"
-            label="Search (Enter / Click)"
-            placeholder="type and Enter"
-            value={vSearch}
-            onChange={(e) => setVSearch(e.target.value)}
-            onSearch={(v) => setVSearch(v)}
-          />
-        </Flex>
+    return (
+      <TextField
+        label="Search"
+        type="search"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onSearch={(searchValue) => {
+          setValue(searchValue)
+        }}
+        onSearchEnter={() => {}}
+      />
+    )
+  },
+}
 
-        <Typography text="Password" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            type="password"
-            label="Password"
-            value={vPass}
-            onChange={(e) => setVPass(e.target.value)}
-          />
-        </Flex>
+export const Password: Story = {
+  render: () => {
+    const [value, setValue] = useState("secret")
 
-        <Typography text="Only number / MaxLength" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            label="onlyNumber"
-            onlyNumber
-            value={vNum}
-            onChange={(e) => setVNum(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="maxLength=6"
-            maxLength={6}
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-        </Flex>
+    return (
+      <TextField
+        label="Password"
+        type="password"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    )
+  },
+}
 
-        <Typography text="Multiline" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            label="Multiline"
-            multiline
-            rows={4}
-            value={vMulti}
-            onChange={(e) => setVMulti(e.target.value)}
-          />
-        </Flex>
+export const Multiline: Story = {
+  render: () => {
+    const [value, setValue] = useState("multiline text")
 
-        <Typography text="Label placement" variant="h3" />
-        <Flex gap="12px" wrap="wrap">
-          <TextField
-            {...common}
-            label="Top"
-            labelPlacement="top"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="Bottom"
-            labelPlacement="bottom"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="Left"
-            labelPlacement="left"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-          <TextField
-            {...common}
-            label="Right"
-            labelPlacement="right"
-            value={vText}
-            onChange={(e) => setVText(e.target.value)}
-          />
-        </Flex>
+    return (
+      <TextField
+        label="Description"
+        multiline
+        rows={5}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    )
+  },
+}
+
+export const States: Story = {
+  render: () => {
+    const readonlyValue = "readonly"
+    const [normal, setNormal] = useState("editable")
+    const [errorValue, setErrorValue] = useState("wrong value")
+    const [disabledValue] = useState("disabled")
+
+    return (
+      <Flex direction="column" gap={16}>
+        <TextField label="Normal" value={normal} onChange={(e) => setNormal(e.target.value)} />
+        <TextField
+          label="Error"
+          value={errorValue}
+          onChange={(e) => setErrorValue(e.target.value)}
+          error
+          helperText="This field is invalid"
+        />
+        <TextField label="ReadOnly" value={readonlyValue} readOnly />
+        <TextField label="Disabled" value={disabledValue} disabled />
+      </Flex>
+    )
+  },
+}
+
+export const LabelPlacements: Story = {
+  render: () => {
+    const [top, setTop] = useState("")
+    const [bottom, setBottom] = useState("")
+    const [left, setLeft] = useState("")
+    const [right, setRight] = useState("")
+
+    return (
+      <Flex direction="column" gap={16}>
+        <TextField
+          label="Top Label"
+          labelPlacement="top"
+          value={top}
+          onChange={(e) => setTop(e.target.value)}
+        />
+        <TextField
+          label="Bottom Label"
+          labelPlacement="bottom"
+          value={bottom}
+          onChange={(e) => setBottom(e.target.value)}
+        />
+        <TextField
+          label="Left Label"
+          labelPlacement="left"
+          value={left}
+          onChange={(e) => setLeft(e.target.value)}
+        />
+        <TextField
+          label="Right Label"
+          labelPlacement="right"
+          value={right}
+          onChange={(e) => setRight(e.target.value)}
+        />
+      </Flex>
+    )
+  },
+}
+
+export const AllCases: Story = {
+  render: () => {
+    const [name, setName] = useState("")
+    const [search, setSearch] = useState("")
+    const [password, setPassword] = useState("password")
+    const [message, setMessage] = useState("Hello")
+    const [numberValue, setNumberValue] = useState("123")
+
+    return (
+      <Flex direction="column" gap={20}>
+        <TextField
+          label="Name"
+          value={name}
+          startIcon="Folder"
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <TextField
+          label="Search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onSearch={(value) => setSearch(value)}
+        />
+
+        <TextField
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <TextField
+          label="Message"
+          multiline
+          rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+
+        <TextField
+          label="Only Number"
+          value={numberValue}
+          onlyNumber
+          maxLength={6}
+          onChange={(e) => setNumberValue(e.target.value)}
+        />
+
+        <TextField
+          label="Error Case"
+          value="invalid"
+          error
+          helperText="This field is invalid"
+          readOnly
+        />
       </Flex>
     )
   },

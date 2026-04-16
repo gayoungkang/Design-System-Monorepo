@@ -8,7 +8,7 @@ import Box from "../Box/Box"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof AlertModal> = {
-  title: "Components/AlertModal",
+  title: "Feedback/AlertModal",
   component: AlertModal,
   parameters: {
     layout: "centered",

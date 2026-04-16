@@ -3,7 +3,7 @@ import { useState } from "react"
 import Rating from "./Rating"
 
 const meta: Meta<typeof Rating> = {
-  title: "Feedback/Rating",
+  title: "Inputs/Rating",
   component: Rating,
 }
 

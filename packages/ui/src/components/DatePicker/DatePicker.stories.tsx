@@ -8,7 +8,7 @@ import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof DatePicker> = {
-  title: "Components/DatePicker",
+  title: "Inputs/DatePicker",
   component: DatePicker,
   parameters: {
     layout: "centered",

@@ -5,7 +5,7 @@ import Paper from "./Paper"
 import { Typography } from "../Typography/Typography"
 
 const meta: Meta<typeof Paper> = {
-  title: "Surface/Paper",
+  title: "Data Display/Paper",
   component: Paper,
   args: {
     elevation: 2,
