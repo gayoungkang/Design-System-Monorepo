@@ -54,6 +54,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "build:types": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
