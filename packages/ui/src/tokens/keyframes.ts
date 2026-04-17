@@ -1,19 +1,16 @@
-import { keyframes } from "styled-components";
+import { keyframes } from "styled-components"
 
-/**
- * @Keyframes
- * css animation keyframes
- */
-
+/** @public */
 export const spin = keyframes`
- 0% {
+  0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
   }
-`;
+`
 
+/** @public */
 export const indeterminateAnimation = keyframes`
   0% {
     left: -40%;
@@ -27,9 +24,11 @@ export const indeterminateAnimation = keyframes`
     left: 100%;
     width: 40%;
   }
-`;
+`
+
+/** @public */
 export const wave = keyframes`
-50%,
+  50%,
   75% {
     transform: scale(2.5);
   }
@@ -37,22 +36,25 @@ export const wave = keyframes`
   100% {
     opacity: 0;
   }
-`;
-export const circularIndeterminate = keyframes`
-     0% {
-      stroke-dasharray: 1, 200;
-      stroke-dashoffset: 0;
-    }
-    50% {
-      stroke-dasharray: 100, 200;
-      stroke-dashoffset: -15px;
-    }
-    100% {
-      stroke-dasharray: 100, 200;
-      stroke-dashoffset: -125px;
-    }
-`;
+`
 
+/** @public */
+export const circularIndeterminate = keyframes`
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -15px;
+  }
+  100% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -125px;
+  }
+`
+
+/** @public */
 export const fadeInUp = keyframes`
   0% {
     transform: translateY(12px);
@@ -62,8 +64,9 @@ export const fadeInUp = keyframes`
     transform: translateY(0px);
     opacity: 1;
   }
-`;
+`
 
+/** @public */
 export const popover = keyframes`
   0% {
     opacity: 0;
@@ -73,4 +76,4 @@ export const popover = keyframes`
     opacity: 1;
     transform: scale(1);
   }
-`;
+`

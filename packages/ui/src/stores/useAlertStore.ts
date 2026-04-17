@@ -2,8 +2,10 @@ import { create } from "zustand"
 import type { ButtonProps } from "../components/Button/Button"
 import type { BaseMixinProps } from "../tokens/baseMixin"
 
+/** @internal */
 export type AlertType = "confirm" | "alert"
 
+/** @internal */
 export type AlertState = {
   open: boolean
   type?: AlertType
@@ -17,6 +19,12 @@ export type AlertState = {
   cancelButtonProps?: Partial<ButtonProps>
   bodySx?: BaseMixinProps
 }
+
+type AlertStore = AlertState & {
+  showAlert: (state: Omit<AlertState, "open">) => void
+  resetAlert: () => void
+}
+
 /**
  * @module useAlertStore
  * 전역 상태로 알림(Alert/Confirm) 모달의 동작을 관리하는 Zustand 기반 커스텀 상태 관리 훅입니다.
@@ -57,11 +65,7 @@ export type AlertState = {
  * });
  */
 
-type AlertStore = AlertState & {
-  showAlert: (state: Omit<AlertState, "open">) => void
-  resetAlert: () => void
-}
-
+/** @internal */
 export const useAlertStore = create<AlertStore>((set) => ({
   open: false,
   type: "alert",

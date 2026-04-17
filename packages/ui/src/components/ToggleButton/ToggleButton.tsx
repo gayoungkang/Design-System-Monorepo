@@ -11,7 +11,8 @@ import { Typography } from "../Typography/Typography"
 import { styled } from "../../tokens/customStyled"
 import type { IconName } from "../Icon/icon-types"
 import type { DirectionType } from "../../types/layout"
-import type { SizeUiType } from "../../types/ui"
+import type { SizeUiType } from "../../types/ui"/** @public */
+
 
 export type ToggleButtonItem<Value extends string | number = string> = {
   startIcon?: IconName
@@ -19,7 +20,8 @@ export type ToggleButtonItem<Value extends string | number = string> = {
   label?: string
   value: Value
   disabled?: boolean
-}
+}/** @public */
+
 
 export type ToggleButtonProps<Value extends string | number = string> = BaseMixinProps & {
   orientation?: DirectionType

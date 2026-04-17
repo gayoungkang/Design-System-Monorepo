@@ -8,7 +8,8 @@ import { styled } from "../../tokens/customStyled"
 import { RESIZABLEPANEL } from "../../types/zindex"
 import type { DirectionType } from "../../types/layout"
 
-const SIZE = 8
+const SIZE = 8/** @public */
+
 
 export type ResizablePanelProps = BaseMixinProps & {
   direction?: DirectionType

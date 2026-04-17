@@ -13,7 +13,8 @@ import type { AxisPlacement, DirectionType, SizeUiType } from "../../public"
 type DataType<Value extends string | number = string> = {
   text: string
   value: Value
-}
+}/** @public */
+
 
 export type CheckBoxProps<Value extends string | number = string> = BaseMixinProps & {
   value?: Value[]
@@ -32,7 +33,8 @@ export type CheckBoxProps<Value extends string | number = string> = BaseMixinPro
   onBlur?: FocusEventHandler<HTMLInputElement>
   labelPlacement?: AxisPlacement
   size?: SizeUiType
-}
+}/** @public */
+
 
 export type CheckBoxSingleProps = BaseMixinProps & {
   checked?: boolean
@@ -98,7 +100,8 @@ const mergeRefs =
       if (typeof ref === "function") ref(value)
       else (ref as React.MutableRefObject<T | null>).current = value
     })
-  }
+  }/** @public */
+
 
 /**---------------------------------------------------------------------------/
 

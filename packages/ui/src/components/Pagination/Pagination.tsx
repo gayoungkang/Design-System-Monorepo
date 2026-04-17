@@ -7,7 +7,8 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import IconButton from "../IconButton/IconButton"
 import { clamp } from "../Table/@utils/table"
-import type { IconName } from "../Icon/icon-types"
+import type { IconName } from "../Icon/icon-types"/** @public */
+
 
 export type PaginationType = "Table" | "Basic"
 
@@ -44,7 +45,8 @@ type BasicPaginationProps = PaginationBaseProps & {
   hideFirstLastButtons?: boolean
   showFirstLastButtons?: boolean
   showPrevNextButtons?: boolean
-}
+}/** @public */
+
 
 export type PaginationProps = TablePaginationProps | BasicPaginationProps
 

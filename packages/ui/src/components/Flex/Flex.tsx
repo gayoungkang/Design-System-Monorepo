@@ -6,7 +6,8 @@ import { styled } from "../../tokens/customStyled"
 type ExtraHTMLProps = HTMLAttributes<HTMLDivElement> & {
   [key: `data-${string}`]: string | number | undefined
   [key: `aria-${string}`]: string | number | undefined
-}
+}/** @public */
+
 
 export type FlexProps = HTMLAttributes<HTMLDivElement> &
   BaseMixinProps & {

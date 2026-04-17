@@ -11,7 +11,8 @@ import { createPortal } from "react-dom"
 import { canUseDOM } from "../../utils/canUseDOM"
 import type { StatusUiType } from "../../types/status"
 import type { DirectionalPlacement } from "../../types/placement"
-import type { IconName } from "../Icon/icon-types"
+import type { IconName } from "../Icon/icon-types"/** @public */
+
 
 export type SnackBarProps = {
   id: string

@@ -11,7 +11,8 @@ import { theme } from "../../tokens/theme"
 import type { AxisPlacement } from "../../types/placement"
 import type { IconName } from "../Icon/icon-types"
 
-type RatingValue = number | null
+type RatingValue = number | null/** @public */
+
 
 export type RatingProps = BaseMixinProps & {
   value?: RatingValue

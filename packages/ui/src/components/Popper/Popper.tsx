@@ -5,7 +5,8 @@ import { POPOVER_ZINDEX } from "../../types/zindex"
 import { styled } from "../../tokens/customStyled"
 import { popover } from "../../tokens/keyframes"
 import { canUseDOM } from "../../utils/canUseDOM"
-import type { DirectionalPlacement } from "../../types/placement"
+import type { DirectionalPlacement } from "../../types/placement"/** @public */
+
 
 export type PopperProps = {
   anchorRef: RefObject<HTMLElement | null>

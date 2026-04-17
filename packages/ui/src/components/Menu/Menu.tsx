@@ -10,7 +10,8 @@ import type { TypographyProps } from "../Typography/Typography"
 import Flex from "../Flex/Flex"
 import { styled } from "../../tokens/customStyled"
 import type { SizeUiType } from "../../types/ui"
-import type { IconName } from "../Icon/icon-types"
+import type { IconName } from "../Icon/icon-types"/** @public */
+
 
 export type MenuProps = BaseMixinProps & {
   size?: SizeUiType

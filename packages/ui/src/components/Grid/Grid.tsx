@@ -5,7 +5,8 @@ import { styled } from "../../tokens/customStyled"
 const toCssUnit = (value?: number | string) => {
   if (value === undefined) return undefined
   return typeof value === "number" ? `${value}px` : value
-}
+}/** @public */
+
 
 export type GridProps = BaseMixinProps &
   Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {

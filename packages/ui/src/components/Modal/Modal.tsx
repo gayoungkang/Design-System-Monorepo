@@ -16,7 +16,8 @@ import IconButton from "../IconButton/IconButton"
 import Divider from "../Divider/Divider"
 import Progress from "../Progress/Progress"
 import { styled } from "../../tokens/customStyled"
-import { canUseDOM } from "../../utils/canUseDOM"
+import { canUseDOM } from "../../utils/canUseDOM"/** @public */
+
 
 export type BasicModalProps = BaseMixinProps & {
   width?: string

@@ -18,7 +18,8 @@ import HelperText from "../HelperText/HelperText"
 import { styled } from "../../tokens/customStyled"
 import type { VariantFormType } from "../../types/form"
 import type { SizeUiType } from "../../types/ui"
-import type { AxisPlacement } from "../../types/placement"
+import type { AxisPlacement } from "../../types/placement"/** @public */
+
 
 export type SelectOptionType<
   TValue extends string | number = string | number,
@@ -60,21 +61,24 @@ type SelectCommonProps<TValue extends string | number> = BaseMixinProps & {
     Partial<PopperProps>,
     "anchorRef" | "open" | "children" | "placement" | "width" | "onClose"
   >
-}
+}/** @public */
+
 
 export type SingleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
   multiple?: false
   value?: SingleValue<TValue>
   defaultValue?: SingleValue<TValue>
   onChange?: (value: SingleValue<TValue>) => void
-}
+}/** @public */
+
 
 export type MultipleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
   multiple: true
   value?: MultipleValue<TValue>
   defaultValue?: MultipleValue<TValue>
   onChange?: (value: MultipleValue<TValue>) => void
-}
+}/** @public */
+
 
 export type SelectProps<TValue extends string | number = string> =
   | SingleSelectProps<TValue>

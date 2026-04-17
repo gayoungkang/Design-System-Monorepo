@@ -6,13 +6,15 @@ import { styled } from "../../tokens/customStyled"
 import Flex from "../Flex/Flex"
 import Icon from "../Icon/Icon"
 import Link from "../Link/Link"
-import { Typography } from "../Typography/Typography"
+import { Typography } from "../Typography/Typography"/** @public */
+
 
 export type BreadcrumbItem = {
   label: string
   href?: string
   onClick?: () => void
-}
+}/** @public */
+
 
 export type BreadcrumbsProps = BaseMixinProps & {
   items: BreadcrumbItem[]

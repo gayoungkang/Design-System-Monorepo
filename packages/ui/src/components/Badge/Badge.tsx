@@ -6,7 +6,8 @@ import { styled } from "../../tokens/customStyled"
 import Box from "../Box/Box"
 import { Typography } from "../Typography/Typography"
 import type { StatusUiType } from "../../types/status"
-import type { CornerPlacement } from "../../types/placement"
+import type { CornerPlacement } from "../../types/placement"/** @public */
+
 
 export type BadgeProps = BaseMixinProps & {
   children: ReactNode

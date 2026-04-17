@@ -3,8 +3,10 @@ import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import type { IconName } from "./icon-types"
 import { styled } from "../../tokens/customStyled"
 
+/** @public */
 export type IconPaintType = "auto" | "fill" | "stroke" | "both"
 
+/** @public */
 export type IconProps = BaseMixinProps & {
   name: IconName
   size?: string | number
@@ -64,6 +66,7 @@ const normalizeSize = (size?: string | number) =>
  *
 /---------------------------------------------------------------------------**/
 
+/** @public */
 const Icon = forwardRef<SVGSVGElement, IconProps>(
   ({ name, size = 24, color, strokeWidth, paint = "auto", ariaLabel, ...others }, ref) => {
     const resolvedSize = normalizeSize(size)

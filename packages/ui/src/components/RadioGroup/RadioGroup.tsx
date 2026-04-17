@@ -10,12 +10,14 @@ import HelperText from "../HelperText/HelperText"
 import { styled } from "../../tokens/customStyled"
 import type { DirectionType } from "../../types/layout"
 import type { AxisPlacement } from "../../types/placement"
-import type { SizeUiType } from "../../types/ui"
+import type { SizeUiType } from "../../types/ui"/** @public */
+
 
 export type DataType<Value extends string | number> = {
   text: string
   value: Value
-}
+}/** @public */
+
 
 export type RadioGroupProps<Value extends string | number> = BaseMixinProps & {
   value?: Value

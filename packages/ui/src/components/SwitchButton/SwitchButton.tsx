@@ -8,7 +8,8 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import type { TypographyProps } from "../Typography/Typography"
 import type { ColorUiType, SizeUiType } from "../../types/ui"
-import type { AxisPlacement } from "../../types/placement"
+import type { AxisPlacement } from "../../types/placement"/** @public */
+
 
 export type SwitchButtonProps = BaseMixinProps & {
   checked: boolean

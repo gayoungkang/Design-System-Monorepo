@@ -2,7 +2,8 @@ import type { CSSProperties, ReactNode } from "react"
 import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
-import { cssValue } from "../../utils/string"
+import { cssValue } from "../../utils/string"/** @public */
+
 
 export type ScrollBoxProps = BaseMixinProps & {
   children?: ReactNode

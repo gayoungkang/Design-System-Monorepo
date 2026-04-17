@@ -2,7 +2,8 @@ import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
-import type { TypographyProps } from "../Typography/Typography"
+import type { TypographyProps } from "../Typography/Typography"/** @public */
+
 
 export type LabelProps = BaseMixinProps & {
   text: string

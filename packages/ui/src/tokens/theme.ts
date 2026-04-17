@@ -109,6 +109,7 @@ const shadows = {
   ],
 } as const
 
+/** @public */
 export const zIndex = {
   base: 0,
   content: 1,
@@ -121,31 +122,31 @@ export const zIndex = {
   loading: 2000,
 }
 
+/** @public */
 export const fonts = {
   heading: {
     h1: css`
-      font-size: 1.5rem; /* 24px */
+      font-size: 1.5rem;
       font-weight: 700;
-      line-height: 2rem; /* 32px */
+      line-height: 2rem;
     `,
     h2: css`
-      font-size: 1.25rem; /* 20px */
+      font-size: 1.25rem;
       font-weight: 700;
-      line-height: 1.75rem; /* 28px */
+      line-height: 1.75rem;
     `,
     h3: css`
-      font-size: 1.125rem; /* 18px */
+      font-size: 1.125rem;
       font-weight: 700;
-      line-height: 1.5rem; /* 24px */
+      line-height: 1.5rem;
     `,
   },
-
   body: {
     b1: {
       Bold: css`
-        font-size: 1rem; /* 16px */
+        font-size: 1rem;
         font-weight: 700;
-        line-height: 1.5rem; /* 24px */
+        line-height: 1.5rem;
       `,
       Medium: css`
         font-size: 1rem;
@@ -160,9 +161,9 @@ export const fonts = {
     },
     b2: {
       Medium: css`
-        font-size: 0.875rem; /* 14px */
+        font-size: 0.875rem;
         font-weight: 500;
-        line-height: 1.25rem; /* 20px */
+        line-height: 1.25rem;
       `,
       Regular: css`
         font-size: 0.875rem;
@@ -172,9 +173,9 @@ export const fonts = {
     },
     b3: {
       Medium: css`
-        font-size: 0.75rem; /* 12px */
+        font-size: 0.75rem;
         font-weight: 500;
-        line-height: 1rem; /* 16px */
+        line-height: 1rem;
       `,
       Regular: css`
         font-size: 0.75rem;
@@ -196,35 +197,36 @@ const borderRadius = {
   50: "50%",
 } as const
 
-export type TypographyVariant = keyof typeof typographyVariants
-
+/** @public */
 export const typographyVariants = {
-  // heading
   h1: fonts.heading.h1,
   h2: fonts.heading.h2,
   h3: fonts.heading.h3,
-
-  // body b1
   b1Bold: fonts.body.b1.Bold,
   b1Medium: fonts.body.b1.Medium,
   b1Regular: fonts.body.b1.Regular,
-
-  // body b2
   b2Medium: fonts.body.b2.Medium,
   b2Regular: fonts.body.b2.Regular,
-
-  // body b3
   b3Medium: fonts.body.b3.Medium,
   b3Regular: fonts.body.b3.Regular,
 } as const
 
+/** @public */
+export type TypographyVariant = keyof typeof typographyVariants
+/** @public */
 export type ThemeVariantType = "WHITE" | "BLUE" | "BLACK"
+/** @public */
 export type ColorsType = typeof colors
+/** @public */
 export type ZindexType = typeof zIndex
+/** @public */
 export type FontsType = typeof fonts
+/** @public */
 export type ShadowsType = typeof shadows
+/** @public */
 export type BorderRadiusType = typeof borderRadius
 
+/** @public */
 export const theme: DefaultTheme = {
   zIndex,
   colors,

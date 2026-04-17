@@ -32,6 +32,7 @@ let idCounter = 0
  * enqueueSnackbar("성공적으로 저장되었습니다.", { status: "success" });
  */
 
+/** @internal */
 export const useSnackBarStore = create<SnackBarStore>((set) => ({
   snackbars: [],
   enqueueSnackbar: (message, options) => {

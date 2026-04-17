@@ -36,40 +36,18 @@ const _STYLE_PROPS = new Set<string>([
   "collapsedSize",
 ])
 
-/**
- * @module styled
- * styled-components의 기본 `styled`를 래핑하여
- * 스타일 전용 커스텀 props가 DOM 요소에 전달되지 않도록 안전하게 필터링합니다.
- *
- * - `shouldForwardProp` 설정으로 스타일 전용 props를 HTML에 전달하지 않음
- * - Proxy로 `styled.div`, `styled.button`, `styled(MyComponent)` 모두 자동 적용
- * - `$`로 시작하는 props는 무조건 스타일용으로 간주하고 DOM으로 전달하지 않음
- *
- * @사용법
- * ```tsx
- * import { styled } from "./customStyled";
- *
- * const Box = styled.div<{ $active: boolean; variant: "primary" | "secondary" }>`
- *   background: ${({ $active }) => ($active ? "red" : "gray")};
- * `;
- * ```
- */
-
-// * DOM으로 보내지 말아야 하는 prop을 정의
 const isStyleProp = (prop: string) => {
   if (prop.startsWith("$")) return true
-
   if (_STYLE_PROPS.has(prop)) return true
-
   return false
 }
 
+/** @public */
 export const shouldForwardProp = (prop: string) => {
   if (isStyleProp(prop)) return false
   return true
 }
 
-// * Proxy로 감싼 커스텀 styled
 const customStyled = new Proxy(styled, {
   get(target, prop, receiver) {
     const original = Reflect.get(target, prop, receiver)
@@ -96,4 +74,5 @@ const customStyled = new Proxy(styled, {
   },
 })
 
+/** @public */
 export { customStyled as styled }

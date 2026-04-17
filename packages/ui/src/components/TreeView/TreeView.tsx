@@ -10,7 +10,8 @@ import Icon from "../Icon/Icon"
 import ToggleButton from "../ToggleButton/ToggleButton"
 import Button from "../Button/Button"
 import type { IconName } from "../Icon/icon-types"
-import type { SizeUiType } from "../../types/ui"
+import type { SizeUiType } from "../../types/ui"/** @public */
+
 
 export type TreeNodeType = {
   id: string
@@ -19,7 +20,8 @@ export type TreeNodeType = {
   disabled?: boolean
   icon?: IconName
   onClick?: (id: string, node: TreeNodeType) => void
-}
+}/** @public */
+
 
 export type TreeViewProps = BaseMixinProps &
   Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps | "onSelect"> & {

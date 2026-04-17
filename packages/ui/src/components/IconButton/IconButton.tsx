@@ -7,7 +7,8 @@ import Icon, { type IconProps } from "../Icon/Icon"
 import { styled } from "../../tokens/customStyled"
 import { Tooltip, type TooltipProps } from "../Tooltip/Tooltip"
 import type { IconName } from "../Icon/icon-types"
-import type { VariantUiType } from "../../types/ui"
+import type { VariantUiType } from "../../types/ui"/** @public */
+
 
 export type IconButtonProps = BaseMixinProps & {
   icon: IconName
@@ -107,7 +108,8 @@ const variantStyle = (p: { $variant: VariantUiType; theme: DefaultTheme; disable
         border: none;
       `
   }
-}
+}/** @public */
+
 
 export const IconButtonStyle = styled.button<
   BaseMixinProps & {

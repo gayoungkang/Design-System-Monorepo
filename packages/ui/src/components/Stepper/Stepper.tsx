@@ -10,7 +10,8 @@ import Divider from "../Divider/Divider"
 import Icon from "../Icon/Icon"
 import Flex from "../Flex/Flex"
 import type { IconName } from "../Icon/icon-types"
-import type { DirectionType } from "../../types/layout"
+import type { DirectionType } from "../../types/layout"/** @public */
+
 
 export type StepperOptionType<Value extends string | number = string> = {
   children?: string | ReactNode | IconName
@@ -21,7 +22,8 @@ export type StepperOptionType<Value extends string | number = string> = {
   error?: boolean
   label?: ReactNode
   onClick?: () => void
-}
+}/** @public */
+
 
 export type StepperProps<Value extends string | number = string> = BaseMixinProps &
   Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps | "onSelect"> & {

@@ -8,9 +8,11 @@ import type { LabelProps } from "../Label/Label"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import type { IconName } from "../Icon/icon-types"
-import type { MouseEvent as ReactMouseEvent } from "react"
+import type { MouseEvent as ReactMouseEvent } from "react"/** @public */
 
-export type SliderValue = number | [number, number]
+
+export type SliderValue = number | [number, number]/** @public */
+
 
 export type SliderProps = BaseMixinProps & {
   value: SliderValue
@@ -26,7 +28,8 @@ export type SliderProps = BaseMixinProps & {
   startIcon?: IconName
   endIcon?: IconName
   iconSize?: number | string
-}
+}/** @public */
+
 
 /**---------------------------------------------------------------------------/
  *

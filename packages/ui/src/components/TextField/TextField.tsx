@@ -23,7 +23,8 @@ import { css } from "styled-components"
 import type { VariantFormType } from "../../types/form"
 import type { SizeUiType } from "../../types/ui"
 import type { IconName } from "../Icon/icon-types"
-import type { AxisPlacement } from "../../types/placement"
+import type { AxisPlacement } from "../../types/placement"/** @public */
+
 
 export type TextFieldProps = BaseMixinProps & {
   variant?: VariantFormType

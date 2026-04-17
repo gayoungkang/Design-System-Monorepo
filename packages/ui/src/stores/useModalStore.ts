@@ -4,7 +4,8 @@ type ModalStackState = {
   stack: symbol[]
   push: (id: symbol) => void
   remove: (id: symbol) => void
-}
+}/** @internal */
+
 
 /**---------------------------------------------------------------------------*
  * @module useModalStackStore

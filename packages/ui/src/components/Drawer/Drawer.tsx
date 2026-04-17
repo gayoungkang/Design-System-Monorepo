@@ -7,10 +7,13 @@ import { styled } from "../../tokens/customStyled"
 import Box from "../Box/Box"
 import { cssValue } from "../../utils/string"
 import { canUseDOM } from "../../utils/canUseDOM"
-import type { AxisPlacement } from "../../types/placement"
+import type { AxisPlacement } from "../../types/placement"/** @public */
 
-export type DrawerVariant = "fixed" | "absolute" | "flex"
-export type DrawerCloseBehavior = "hidden" | "collapsed"
+
+export type DrawerVariant = "fixed" | "absolute" | "flex"/** @public */
+
+export type DrawerCloseBehavior = "hidden" | "collapsed"/** @public */
+
 
 export type DrawerProps = BaseMixinProps & {
   open: boolean

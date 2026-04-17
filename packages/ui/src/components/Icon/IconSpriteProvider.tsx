@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 
+/** @public */
 export type IconSpriteProviderProps = {
   spriteUrl: string
   elementId?: string
@@ -7,6 +8,7 @@ export type IconSpriteProviderProps = {
 
 const DEFAULT_ID = "acme-ui-icon-sprite"
 
+/** @public */
 export const IconSpriteProvider = ({
   spriteUrl,
   elementId = DEFAULT_ID,

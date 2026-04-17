@@ -3,7 +3,8 @@ import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import { indeterminateAnimation } from "../../tokens/keyframes"
 import { css } from "styled-components"
-import { cssValue } from "../../utils/string"
+import { cssValue } from "../../utils/string"/** @public */
+
 
 export type SkeletonProps = BaseMixinProps & {
   variant?: "text" | "rectangular" | "rounded" | "circular"

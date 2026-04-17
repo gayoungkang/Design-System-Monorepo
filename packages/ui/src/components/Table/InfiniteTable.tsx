@@ -28,20 +28,24 @@ import { theme } from "../../tokens/theme"
 import type { ExportType } from "./_internal/TableExport"
 import Progress from "../Progress/Progress"
 import { clamp, parseWidthToPx } from "./@utils/table"
-import useIntersect from "./@hooks/useIntersect"
+import useIntersect from "./@hooks/useIntersect"/** @public */
+
 
 export type TableRowAction<T extends Record<string, unknown>> = {
   key: string
   render: (row: T, index: number) => ReactNode
-}
+}/** @public */
+
 
 export type InfiniteTableExportItem = {
   type: ExportType
   label: string
   icon?: string
-}
+}/** @public */
 
-export type InfiniteTableExportContext = Record<string, unknown>
+
+export type InfiniteTableExportContext = Record<string, unknown>/** @public */
+
 
 export type InfiniteTableProps<T extends Record<string, unknown>> = {
   tableKey: string

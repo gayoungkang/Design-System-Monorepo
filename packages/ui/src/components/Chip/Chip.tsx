@@ -8,7 +8,8 @@ import IconButton from "../IconButton/IconButton"
 import { styled } from "../../tokens/customStyled"
 import { COMMON_PARENTS_ELEMENT_ZINDEX } from "../../types/zindex"
 import type { IconName } from "../Icon/icon-types"
-import type { SizeUiType, VariantUiType } from "../../types/ui"
+import type { SizeUiType, VariantUiType } from "../../types/ui"/** @public */
+
 
 export type ChipProps = BaseMixinProps & {
   label: string

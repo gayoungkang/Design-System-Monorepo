@@ -1,3 +1,4 @@
+/** @public */
 export type DirectionalPlacement =
   | "top"
   | "top-start"
@@ -10,8 +11,10 @@ export type DirectionalPlacement =
   | "left-end"
   | "right"
   | "right-start"
-  | "right-end"
+  | "right-end"/** @public */
 
-export type AxisPlacement = "top" | "bottom" | "left" | "right"
+
+export type AxisPlacement = "top" | "bottom" | "left" | "right"/** @public */
+
 
 export type CornerPlacement = "top-right" | "top-left" | "bottom-right" | "bottom-left"

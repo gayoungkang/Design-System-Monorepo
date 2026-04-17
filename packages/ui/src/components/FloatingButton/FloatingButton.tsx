@@ -12,7 +12,8 @@ type OptionType = {
   icon: IconName
   label?: string
   onClick?: () => void
-}
+}/** @public */
+
 
 export type FloatingButtonProps = BaseMixinProps & {
   item?: OptionType[]

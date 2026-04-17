@@ -7,7 +7,8 @@ import { fadeInUp } from "../../tokens/keyframes"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
-import Icon from "../Icon/Icon"
+import Icon from "../Icon/Icon"/** @public */
+
 
 export type AccordionProps = BaseMixinProps & {
   expanded?: boolean

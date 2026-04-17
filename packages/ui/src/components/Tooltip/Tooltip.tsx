@@ -2,14 +2,16 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
-import type { AxisPlacement } from "../../types/placement"
+import type { AxisPlacement } from "../../types/placement"/** @public */
+
 
 export type TooltipProps = BaseMixinProps & {
   children: ReactNode
   content: string
   maxWidth?: string
   placement?: AxisPlacement
-}
+}/** @public */
+
 /**---------------------------------------------------------------------------/
  *
  * ! Tooltip

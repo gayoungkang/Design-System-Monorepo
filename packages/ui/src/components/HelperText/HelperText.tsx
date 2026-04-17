@@ -6,7 +6,8 @@ import { styled } from "../../tokens/customStyled"
 import Icon, { type IconProps } from "../Icon/Icon"
 import { Typography, type TypographyProps } from "../Typography/Typography"
 import type { IconName } from "../Icon/icon-types"
-import type { HelperTextUiType } from "../../types/form"
+import type { HelperTextUiType } from "../../types/form"/** @public */
+
 
 export type HelperTextProps = BaseMixinProps & {
   text: string

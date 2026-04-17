@@ -7,14 +7,16 @@ import { css } from "styled-components"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import IconButton from "../IconButton/IconButton"
-import type { ColorUiType, SizeUiType } from "../../types/ui"
+import type { ColorUiType, SizeUiType } from "../../types/ui"/** @public */
+
 
 export type TabOptionsType = {
   label: string
   value: string
   hidden?: boolean
   disabled?: boolean
-}
+}/** @public */
+
 
 export type TabProps = BaseMixinProps & {
   options: TabOptionsType[]
@@ -42,7 +44,8 @@ const sizeStyle: Record<
   L: { height: "48px", padding: "0 16px", fontSize: "16px", gap: "20px" },
 }
 
-const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1
+const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1/** @public */
+
 
 /**---------------------------------------------------------------------------/
  *

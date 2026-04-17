@@ -58,7 +58,8 @@ type SwitchItem = {
   }
 }
 
-type ListItemRenderConfig = IconItem | AvatarItem | CheckBoxItem | IconButtonItem | SwitchItem
+type ListItemRenderConfig = IconItem | AvatarItem | CheckBoxItem | IconButtonItem | SwitchItem/** @public */
+
 
 export type ListItemProps = BaseMixinProps & {
   label: string
@@ -68,7 +69,8 @@ export type ListItemProps = BaseMixinProps & {
   disabled?: boolean
   onClick?: () => void
   separator?: boolean
-}
+}/** @public */
+
 
 export type ListProps = BaseMixinProps & {
   items: ListItemProps[]
@@ -129,7 +131,8 @@ const renderItem = (item: ListItemRenderConfig): ReactNode => {
     default:
       return null
   }
-}
+}/** @public */
+
 /**---------------------------------------------------------------------------/
  *
  * ! List / ListItem
@@ -228,7 +231,8 @@ export const List = ({
       })}
     </StyledList>
   )
-}
+}/** @public */
+
 
 export const ListItem = ({
   label,

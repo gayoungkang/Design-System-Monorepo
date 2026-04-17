@@ -3,7 +3,8 @@ import { circularIndeterminate, indeterminateAnimation } from "../../tokens/keyf
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { Typography } from "../Typography/Typography"
 import Box from "../Box/Box"
-import { styled } from "../../tokens/customStyled"
+import { styled } from "../../tokens/customStyled"/** @public */
+
 
 export type ProgressProps = BaseMixinProps & {
   type?: "bar" | "circular"

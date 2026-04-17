@@ -3,7 +3,8 @@ import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { BaseMixin } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
-import type { DirectionType } from "../../types/layout"
+import type { DirectionType } from "../../types/layout"/** @public */
+
 
 export type DividerProps = BaseMixinProps & {
   direction?: DirectionType

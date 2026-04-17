@@ -3,7 +3,8 @@ import type { AnchorHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode } f
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import { Typography } from "../Typography/Typography"
-import type { TypographyProps } from "../Typography/Typography"
+import type { TypographyProps } from "../Typography/Typography"/** @public */
+
 
 export type LinkProps = BaseMixinProps &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseMixinProps> & {

@@ -36,6 +36,8 @@ import { useModalStackStore } from "./useModalStore"
  *   return () => document.removeEventListener("keydown", handleKeyDown);
  * }, [open, isTop]);
  *---------------------------------------------------------------------------**/
+
+/** @internal */
 export const useModalStack = (isOpen: boolean) => {
   const modalIdRef = useRef(Symbol("modalId"))
   const { stack, push, remove } = useModalStackStore()

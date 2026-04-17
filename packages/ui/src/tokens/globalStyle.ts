@@ -1,8 +1,8 @@
-import { createGlobalStyle } from "styled-components";
-import { theme } from "./theme";
+import { createGlobalStyle } from "styled-components"
+import { theme } from "./theme"
 
+/** @public */
 export const GlobalStyle = createGlobalStyle`
-  /* 기본 태그 초기화 */
   html, body, div, span, applet, object, iframe,
   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
   a, abbr, acronym, address, big, cite, code,
@@ -22,13 +22,11 @@ export const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
-  /* HTML5 display-role reset for older browsers */
   article, aside, details, figcaption, figure, 
   footer, header, hgroup, menu, nav, section {
     display: block;
   }
 
-  /* 글로벌 공통 */
   *,
   *::before,
   *::after {
@@ -37,6 +35,7 @@ export const GlobalStyle = createGlobalStyle`
     scrollbar-width: thin;
     scrollbar-color: #c1c1c1 #f5f5f5;
   }
+
   html {
     font-family: 'Pretendard', sans-serif;
     font-size: 10px;
@@ -60,7 +59,6 @@ export const GlobalStyle = createGlobalStyle`
     overflow: hidden;
   }
 
-  /* 요소별 초기화 */
   button,
   input,
   select,
@@ -107,13 +105,13 @@ export const GlobalStyle = createGlobalStyle`
   blockquote, q {
     quotes: none;
   }
+
   blockquote::before, blockquote::after,
   q::before, q::after {
     content: '';
     content: none;
   }
 
-  /* Chrome/Safari/Edge - search input */
   input[type='search']::-webkit-search-cancel-button,
   input[type='search']::-webkit-search-decoration,
   input[type='search']::-webkit-search-results-button,
@@ -121,27 +119,23 @@ export const GlobalStyle = createGlobalStyle`
     display: none;
   }
 
-  /* Firefox - search input */
   input[type='search']::-moz-search-clear-button,
   input[type='search']::-moz-search-cancel-button {
     display: none;
   }
 
-  /* Number input spin 제거 */
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
-  /* Date/Time input 달력 제거 */
   input[type='date']::-webkit-calendar-picker-indicator,
   input[type='time']::-webkit-calendar-picker-indicator,
   input[type='datetime-local']::-webkit-calendar-picker-indicator {
     display: none;
     -webkit-appearance: none;
   }
+`
 
-`;
-
-export default GlobalStyle;
+export default GlobalStyle
