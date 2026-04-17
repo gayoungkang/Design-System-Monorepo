@@ -141,7 +141,7 @@ jobs:
           yarn cache clean --all || true
           yarn install --immutable --mode=skip-build
 
-      - name: Build icon assets (types + sprite)
+      - name: Build icon assets
         run: yarn icons:build
 
       - name: Lint
@@ -150,10 +150,10 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
-      - name: UI tests (Vitest)
+      - name: UI tests
         run: yarn workspace @acme/ui test:run
 
-      - name: Build @acme/ui (for Storybook and API Extractor)
+      - name: Build @acme/ui
         run: yarn workspace @acme/ui build
 
       - name: Storybook CI
@@ -162,32 +162,29 @@ jobs:
       - name: Ensure API Extractor folders
         run: mkdir -p packages/ui/etc
 
-      - name: Patch API Extractor entrypoint to dist d.ts
+      # ✔ heredoc 제거한 안정 버전
+      - name: Patch API Extractor entrypoint
         working-directory: packages/ui
         run: |
-          node - <<'NODE'
-           const fs = require("fs");
-           const path = require("path");
-
-           const file = path.resolve(process.cwd(), "api-extractor.json");
-           const json = JSON.parse(fs.readFileSync(file, "utf8"));
-
-           json.mainEntryPointFilePath = "<projectFolder>/dist/index.d.ts";
-
-           fs.writeFileSync(file, JSON.stringify(json, null, 2) + "\n");
-           console.log("Patched api-extractor.json mainEntryPointFilePath:", json.mainEntryPointFilePath);
-           NODE
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const file = path.resolve(process.cwd(), 'api-extractor.json');
+            const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+            json.mainEntryPointFilePath = '<projectFolder>/dist/index.d.ts';
+            fs.writeFileSync(file, JSON.stringify(json, null, 2) + '\n');
+            console.log('Patched api-extractor.json mainEntryPointFilePath:', json.mainEntryPointFilePath);
+          "
 
       - name: Debug API Extractor inputs
         run: |
           ls -la packages/ui/dist || true
           test -f packages/ui/dist/index.d.ts && echo "index.d.ts exists" || (echo "index.d.ts missing" && exit 1)
-          grep -nE 'src/|\.ts"|\.ts;' packages/ui/dist/index.d.ts | head -n 50 || true
 
-      - name: API stability (API Extractor)
+      - name: API stability
         run: yarn workspace @acme/ui api:check
 
-      - name: Build (apps/web)
+      - name: Build apps
         run: yarn build
 
       - name: Bundle budget check
