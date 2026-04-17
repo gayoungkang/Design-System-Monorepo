@@ -88,11 +88,11 @@ jobs:
       - name: UI tests (Vitest)
         run: yarn workspace @acme/ui test:run
 
+      - name: Build @acme/ui (for Storybook and API Extractor)
+        run: yarn workspace @acme/ui build
+
       - name: Storybook CI
         run: yarn storybook:ci
-
-      - name: Build @acme/ui (for API Extractor)
-        run: yarn workspace @acme/ui build
 
       - name: Ensure API Extractor folders
         run: mkdir -p packages/ui/etc
