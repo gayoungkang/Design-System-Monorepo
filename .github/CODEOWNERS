@@ -4,3 +4,6 @@
 # 스크립트/릴리즈 변경도 담당자 리뷰 권장
 /scripts/ @gayoungkang
 /.changeset/ @gayoungkang
+
+# 앱도 필요하면
+/apps/web/ @gayoungkang
