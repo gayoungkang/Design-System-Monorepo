@@ -18,7 +18,7 @@ env:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -79,8 +79,17 @@ jobs:
       - name: Build icon assets (types + sprite)
         run: yarn icons:build
 
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: yarn typecheck
+
       - name: UI tests (Vitest)
         run: yarn workspace @acme/ui test:run
+
+      - name: Storybook CI
+        run: yarn storybook:ci
 
       - name: Build @acme/ui (for API Extractor)
         run: yarn workspace @acme/ui build
@@ -98,7 +107,6 @@ jobs:
           const file = path.resolve(process.cwd(), "api-extractor.json");
           const json = JSON.parse(fs.readFileSync(file, "utf8"));
 
-          // API Extractor must analyze a .d.ts entrypoint (not src/*.ts)
           json.mainEntryPointFilePath = "<projectFolder>/dist/index.d.ts";
 
           fs.writeFileSync(file, JSON.stringify(json, null, 2) + "\n");

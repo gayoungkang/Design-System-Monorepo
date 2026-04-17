@@ -5,5 +5,5 @@
 /scripts/ @gayoungkang
 /.changeset/ @gayoungkang
 
-# 앱도 필요하면
+# 앱 변경도 리뷰 대상
 /apps/web/ @gayoungkang
