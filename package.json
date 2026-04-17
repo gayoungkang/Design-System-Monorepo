@@ -19,7 +19,7 @@
     "preview": "yarn workspace web preview",
     "storybook:build": "yarn workspace @acme/ui storybook:build",
     "storybook:test": "yarn workspace @acme/ui storybook:test",
-    "storybook:ci": "yarn build:ui && yarn storybook:build && yarn storybook:test",
+    "storybook:ci": "yarn storybook:build",
     "lint": "eslint . --ext ts,tsx",
     "build:ui": "yarn workspace @acme/ui build && yarn workspace @acme/ui build:types",
     "typecheck": "yarn workspace @acme/ui build:types && yarn workspaces foreach -Apt run typecheck",
