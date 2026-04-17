@@ -166,17 +166,17 @@ jobs:
         working-directory: packages/ui
         run: |
           node - <<'NODE'
-          const fs = require("fs");
-          const path = require("path");
+           const fs = require("fs");
+           const path = require("path");
 
-          const file = path.resolve(process.cwd(), "api-extractor.json");
-          const json = JSON.parse(fs.readFileSync(file, "utf8"));
+           const file = path.resolve(process.cwd(), "api-extractor.json");
+           const json = JSON.parse(fs.readFileSync(file, "utf8"));
 
-          json.mainEntryPointFilePath = "<projectFolder>/dist/index.d.ts";
+           json.mainEntryPointFilePath = "<projectFolder>/dist/index.d.ts";
 
-          fs.writeFileSync(file, JSON.stringify(json, null, 2) + "\n");
-          console.log("Patched api-extractor.json mainEntryPointFilePath:", json.mainEntryPointFilePath);
-          NODE
+           fs.writeFileSync(file, JSON.stringify(json, null, 2) + "\n");
+           console.log("Patched api-extractor.json mainEntryPointFilePath:", json.mainEntryPointFilePath);
+           NODE
 
       - name: Debug API Extractor inputs
         run: |
