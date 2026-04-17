@@ -4,7 +4,7 @@ import "@testing-library/jest-dom"
 import { describe, expect, it } from "vitest"
 import { ThemeProvider } from "styled-components"
 import Label from "./Label"
-import { theme } from "@acme/ui"
+import { theme } from "../../tokens/theme"
 
 const renderWithTheme = (ui: ReactNode) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)

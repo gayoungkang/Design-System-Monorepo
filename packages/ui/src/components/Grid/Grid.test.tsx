@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import type { ReactNode } from "react"
 import { ThemeProvider } from "styled-components"
 import Grid from "./Grid"
-import { theme } from "@acme/ui"
+import { theme } from "../../tokens/theme"
 
 const renderWithTheme = (ui: ReactNode) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
