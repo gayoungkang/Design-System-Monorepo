@@ -16,6 +16,71 @@ env:
   CI_CACHE_BUSTER: v6
 
 jobs:
+  changeset:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.11.0 --activate
+          yarn --version
+
+      - name: Install dependencies
+        run: yarn install --immutable --mode=skip-build
+
+      - name: Require changeset for package changes
+        run: |
+          BASE_REF="origin/${{ github.base_ref }}"
+          git fetch origin "${{ github.base_ref }}" --depth=1
+
+          CHANGED_FILES=$(git diff --name-only "$BASE_REF"...HEAD)
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          REQUIRES_CHANGESET=false
+
+          while IFS= read -r file; do
+            if [[ "$file" == packages/* ]] || [[ "$file" == .changeset/config.json ]]; then
+              REQUIRES_CHANGESET=true
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [[ "$REQUIRES_CHANGESET" == "false" ]]; then
+            echo "No package changes detected. Skipping changeset requirement."
+            exit 0
+          fi
+
+          HAS_CHANGESET=false
+
+          while IFS= read -r file; do
+            if [[ "$file" == .changeset/*.md ]]; then
+              HAS_CHANGESET=true
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [[ "$HAS_CHANGESET" == "false" ]]; then
+            echo "Changeset required for package changes, but no .changeset/*.md file was found."
+            exit 1
+          fi
+
+          echo "Changeset detected."
+
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 30

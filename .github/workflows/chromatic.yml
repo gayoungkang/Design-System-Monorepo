@@ -1,0 +1,49 @@
+name: Chromatic
+
+on:
+  pull_request:
+    paths:
+      - "packages/ui/**"
+      - ".storybook/**"
+      - "package.json"
+      - "yarn.lock"
+
+concurrency:
+  group: chromatic-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.11.0 --activate
+          yarn --version
+
+      - name: Install dependencies
+        run: yarn install --immutable --mode=skip-build
+
+      - name: Build icon assets (types + sprite)
+        run: yarn icons:build
+
+      - name: Publish to Chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: yarn chromatic --exit-zero-on-changes
