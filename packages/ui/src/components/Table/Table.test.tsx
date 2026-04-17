@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
 import { renderWithProviders } from "../../test"
 import Table from "./Table"
-import type { ColumnProps, ServerTableQuery } from "./@Types/table"
+import type { ColumnProps } from "./@Types/table"
 
 type Row = {
   id: number
