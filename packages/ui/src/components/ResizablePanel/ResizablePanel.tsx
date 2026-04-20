@@ -9,6 +9,7 @@ import { RESIZABLEPANEL } from "../../types/zindex"
 import type { DirectionType } from "../../types/layout"
 
 const SIZE = 8/** @public */
+/** @public */
 
 
 export type ResizablePanelProps = BaseMixinProps & {

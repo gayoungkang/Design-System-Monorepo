@@ -7,6 +7,7 @@ import Icon, { type IconProps } from "../Icon/Icon"
 import { Typography, type TypographyProps } from "../Typography/Typography"
 import type { IconName } from "../Icon/icon-types"
 import type { HelperTextUiType } from "../../types/form"/** @public */
+/** @public */
 
 
 export type HelperTextProps = BaseMixinProps & {

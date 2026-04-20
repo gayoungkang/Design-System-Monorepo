@@ -9,9 +9,11 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import type { IconName } from "../Icon/icon-types"
 import type { MouseEvent as ReactMouseEvent } from "react"/** @public */
+/** @public */
 
 
 export type SliderValue = number | [number, number]/** @public */
+/** @public */
 
 
 export type SliderProps = BaseMixinProps & {
@@ -29,6 +31,8 @@ export type SliderProps = BaseMixinProps & {
   endIcon?: IconName
   iconSize?: number | string
 }/** @public */
+/** @public */
+/** @public */
 
 
 /**---------------------------------------------------------------------------/

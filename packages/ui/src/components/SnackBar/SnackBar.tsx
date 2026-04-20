@@ -12,6 +12,7 @@ import { canUseDOM } from "../../utils/canUseDOM"
 import type { StatusUiType } from "../../types/status"
 import type { DirectionalPlacement } from "../../types/placement"
 import type { IconName } from "../Icon/icon-types"/** @public */
+/** @public */
 
 
 export type SnackBarProps = {

@@ -4,6 +4,7 @@ import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import { Typography } from "../Typography/Typography"
 import type { TypographyProps } from "../Typography/Typography"/** @public */
+/** @public */
 
 
 export type LinkProps = BaseMixinProps &

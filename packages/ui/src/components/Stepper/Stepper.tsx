@@ -11,6 +11,7 @@ import Icon from "../Icon/Icon"
 import Flex from "../Flex/Flex"
 import type { IconName } from "../Icon/icon-types"
 import type { DirectionType } from "../../types/layout"/** @public */
+/** @public */
 
 
 export type StepperOptionType<Value extends string | number = string> = {
@@ -23,6 +24,7 @@ export type StepperOptionType<Value extends string | number = string> = {
   label?: ReactNode
   onClick?: () => void
 }/** @public */
+/** @public */
 
 
 export type StepperProps<Value extends string | number = string> = BaseMixinProps &

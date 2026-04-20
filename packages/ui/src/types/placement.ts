@@ -12,9 +12,11 @@ export type DirectionalPlacement =
   | "right"
   | "right-start"
   | "right-end"/** @public */
+/** @public */
 
 
 export type AxisPlacement = "top" | "bottom" | "left" | "right"/** @public */
+/** @public */
 
 
 export type CornerPlacement = "top-right" | "top-left" | "bottom-right" | "bottom-left"

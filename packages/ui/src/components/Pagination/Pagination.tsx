@@ -8,6 +8,7 @@ import { Typography } from "../Typography/Typography"
 import IconButton from "../IconButton/IconButton"
 import { clamp } from "../Table/@utils/table"
 import type { IconName } from "../Icon/icon-types"/** @public */
+/** @public */
 
 
 export type PaginationType = "Table" | "Basic"
@@ -46,6 +47,7 @@ type BasicPaginationProps = PaginationBaseProps & {
   showFirstLastButtons?: boolean
   showPrevNextButtons?: boolean
 }/** @public */
+/** @public */
 
 
 export type PaginationProps = TablePaginationProps | BasicPaginationProps

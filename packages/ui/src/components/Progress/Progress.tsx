@@ -4,6 +4,7 @@ import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { Typography } from "../Typography/Typography"
 import Box from "../Box/Box"
 import { styled } from "../../tokens/customStyled"/** @public */
+/** @public */
 
 
 export type ProgressProps = BaseMixinProps & {

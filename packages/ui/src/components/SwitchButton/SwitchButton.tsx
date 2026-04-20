@@ -9,6 +9,7 @@ import { Typography } from "../Typography/Typography"
 import type { TypographyProps } from "../Typography/Typography"
 import type { ColorUiType, SizeUiType } from "../../types/ui"
 import type { AxisPlacement } from "../../types/placement"/** @public */
+/** @public */
 
 
 export type SwitchButtonProps = BaseMixinProps & {

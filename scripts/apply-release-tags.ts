@@ -19,53 +19,27 @@ const TARGET_EXPORT_KINDS = new Set<ts.SyntaxKind>([
 ])
 
 const ensurePosix = (input: string) => input.replace(/\\/g, "/")
-
 const exists = (filePath: string) => fs.existsSync(filePath)
-
 const readFile = (filePath: string) => fs.readFileSync(filePath, "utf8")
+const writeFile = (filePath: string, content: string) => fs.writeFileSync(filePath, content, "utf8")
+const detectLineEnding = (text: string) => (text.includes("\r\n") ? "\r\n" : "\n")
 
-const writeFile = (filePath: string, content: string) => {
-  fs.writeFileSync(filePath, content, "utf8")
+const resolveModuleFile = (fromFilePath: string, specifier: string) => {
+  if (!specifier.startsWith("./")) return null
+
+  const baseResolved = path.resolve(path.dirname(fromFilePath), specifier)
+  const candidates = [
+    `${baseResolved}.ts`,
+    `${baseResolved}.tsx`,
+    path.join(baseResolved, "index.ts"),
+    path.join(baseResolved, "index.tsx"),
+  ]
+
+  return candidates.find(exists) ?? null
 }
 
-const resolveExportTargetsFromEntry = (
-  entryFilePath: string,
-  releaseTag: ReleaseTag,
-): Array<{ filePath: string; releaseTag: ReleaseTag }> => {
-  if (!exists(entryFilePath)) return []
-
-  const sourceText = readFile(entryFilePath)
-  const sourceFile = ts.createSourceFile(entryFilePath, sourceText, ts.ScriptTarget.Latest, true)
-
-  const targets: Array<{ filePath: string; releaseTag: ReleaseTag }> = []
-
-  sourceFile.forEachChild((node) => {
-    if (!ts.isExportDeclaration(node)) return
-    if (!node.moduleSpecifier || !ts.isStringLiteral(node.moduleSpecifier)) return
-
-    const specifier = node.moduleSpecifier.text
-    if (!specifier.startsWith("./")) return
-
-    const baseResolved = path.resolve(path.dirname(entryFilePath), specifier)
-    const candidates = [
-      `${baseResolved}.ts`,
-      `${baseResolved}.tsx`,
-      path.join(baseResolved, "index.ts"),
-      path.join(baseResolved, "index.tsx"),
-    ]
-
-    const found = candidates.find(exists)
-
-    if (!found) return
-
-    targets.push({
-      filePath: found,
-      releaseTag,
-    })
-  })
-
-  return targets
-}
+const getSourceFile = (filePath: string) =>
+  ts.createSourceFile(filePath, readFile(filePath), ts.ScriptTarget.Latest, true)
 
 const getJsDocText = (node: ts.Node, sourceFile: ts.SourceFile) => {
   const ranges = ts.getLeadingCommentRanges(sourceFile.getFullText(), node.getFullStart()) ?? []
@@ -94,7 +68,39 @@ const isExportedTopLevelDeclaration = (node: ts.Node) => {
 
 const buildInsertionText = (tag: ReleaseTag, lineEnding: string) => `/** ${tag} */${lineEnding}`
 
-const detectLineEnding = (text: string) => (text.includes("\r\n") ? "\r\n" : "\n")
+const collectTargetsFromFile = (
+  entryFilePath: string,
+  releaseTag: ReleaseTag,
+  visited = new Set<string>(),
+) => {
+  const normalizedEntry = ensurePosix(path.resolve(entryFilePath))
+
+  if (!exists(normalizedEntry) || visited.has(normalizedEntry)) return []
+
+  visited.add(normalizedEntry)
+
+  const sourceFile = getSourceFile(normalizedEntry)
+  const targets: Array<{ filePath: string; releaseTag: ReleaseTag }> = []
+
+  sourceFile.forEachChild((node) => {
+    if (!ts.isExportDeclaration(node)) return
+    if (!node.moduleSpecifier || !ts.isStringLiteral(node.moduleSpecifier)) return
+
+    const resolved = resolveModuleFile(normalizedEntry, node.moduleSpecifier.text)
+    if (!resolved) return
+
+    targets.push({
+      filePath: resolved,
+      releaseTag,
+    })
+
+    collectTargetsFromFile(resolved, releaseTag, visited).forEach((target) => {
+      targets.push(target)
+    })
+  })
+
+  return targets
+}
 
 const applyReleaseTagToFile = (filePath: string, releaseTag: ReleaseTag) => {
   const sourceText = readFile(filePath)
@@ -140,15 +146,16 @@ const applyReleaseTagToFile = (filePath: string, releaseTag: ReleaseTag) => {
 
 const main = () => {
   const targets = [
-    ...resolveExportTargetsFromEntry(PUBLIC_ENTRY, "@public"),
-    ...resolveExportTargetsFromEntry(INTERNAL_ENTRY, "@internal"),
+    ...collectTargetsFromFile(PUBLIC_ENTRY, "@public"),
+    ...collectTargetsFromFile(INTERNAL_ENTRY, "@internal"),
   ]
 
   const deduped = new Map<string, ReleaseTag>()
 
   for (const target of targets) {
-    const normalized = ensurePosix(path.relative(ROOT, target.filePath))
-    deduped.set(normalized, target.releaseTag)
+    const absolutePath = path.resolve(target.filePath)
+    const relativePath = ensurePosix(path.relative(ROOT, absolutePath))
+    deduped.set(relativePath, target.releaseTag)
   }
 
   if (deduped.size === 0) {

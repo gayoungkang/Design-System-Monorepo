@@ -3,6 +3,7 @@ import type { JSX, ReactNode } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { theme, type TypographyVariant, typographyVariants } from "../../tokens/theme"
 import { styled } from "../../tokens/customStyled"/** @public */
+/** @public */
 
 
 export type TypographyProps = BaseMixinProps & {
@@ -72,6 +73,7 @@ type StyledTypographyProps = BaseMixinProps & {
   $underline?: boolean
   $align?: React.CSSProperties["textAlign"]
 }/** @public */
+/** @public */
 
 
 export const Typography = ({

@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import type { AxisPlacement } from "../../types/placement"/** @public */
+/** @public */
 
 
 export type TooltipProps = BaseMixinProps & {
@@ -11,6 +12,8 @@ export type TooltipProps = BaseMixinProps & {
   maxWidth?: string
   placement?: AxisPlacement
 }/** @public */
+/** @public */
+/** @public */
 
 /**---------------------------------------------------------------------------/
  *

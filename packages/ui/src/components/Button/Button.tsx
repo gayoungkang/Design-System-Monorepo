@@ -8,6 +8,7 @@ import Progress, { type ProgressProps } from "../Progress/Progress"
 import { Typography, type TypographyProps } from "../Typography/Typography"
 import type { ColorUiType, SizeUiType, VariantUiType } from "../../types/ui"
 import type { IconName } from "../Icon/icon-types"/** @public */
+/** @public */
 
 
 export type ButtonProps = BaseMixinProps & {

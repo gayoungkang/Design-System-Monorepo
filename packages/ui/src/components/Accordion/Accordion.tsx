@@ -8,6 +8,7 @@ import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import Icon from "../Icon/Icon"/** @public */
+/** @public */
 
 
 export type AccordionProps = BaseMixinProps & {

@@ -8,11 +8,14 @@ import Box from "../Box/Box"
 import { cssValue } from "../../utils/string"
 import { canUseDOM } from "../../utils/canUseDOM"
 import type { AxisPlacement } from "../../types/placement"/** @public */
+/** @public */
 
 
 export type DrawerVariant = "fixed" | "absolute" | "flex"/** @public */
+/** @public */
 
 export type DrawerCloseBehavior = "hidden" | "collapsed"/** @public */
+/** @public */
 
 
 export type DrawerProps = BaseMixinProps & {

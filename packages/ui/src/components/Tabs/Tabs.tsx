@@ -8,6 +8,7 @@ import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import IconButton from "../IconButton/IconButton"
 import type { ColorUiType, SizeUiType } from "../../types/ui"/** @public */
+/** @public */
 
 
 export type TabOptionsType = {
@@ -16,6 +17,7 @@ export type TabOptionsType = {
   hidden?: boolean
   disabled?: boolean
 }/** @public */
+/** @public */
 
 
 export type TabProps = BaseMixinProps & {
@@ -45,6 +47,8 @@ const sizeStyle: Record<
 }
 
 const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1/** @public */
+/** @public */
+/** @public */
 
 
 /**---------------------------------------------------------------------------/

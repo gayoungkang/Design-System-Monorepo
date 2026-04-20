@@ -6,6 +6,7 @@ const toCssUnit = (value?: number | string) => {
   if (value === undefined) return undefined
   return typeof value === "number" ? `${value}px` : value
 }/** @public */
+/** @public */
 
 
 export type GridProps = BaseMixinProps &

@@ -53,16 +53,16 @@
     "vitest": "^4.0.18"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "yarn --cwd ../.. release-tags:apply && tsup",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "build:types": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "build:types": "yarn --cwd ../.. release-tags:apply && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "storybook:test": "storybook test --watch=false",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
-    "build:dts": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-    "api:check": "yarn build:dts && node -e \"require('fs').mkdirSync('etc',{recursive:true})\" && api-extractor run --config ./api-extractor.json --local"
+    "build:dts": "yarn --cwd ../.. release-tags:apply && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "api:check": "yarn --cwd ../.. release-tags:apply && yarn build:dts && node -e \"require('fs').mkdirSync('etc',{recursive:true})\" && api-extractor run --config ./api-extractor.json --local"
   }
 }

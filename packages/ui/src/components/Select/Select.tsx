@@ -19,6 +19,7 @@ import { styled } from "../../tokens/customStyled"
 import type { VariantFormType } from "../../types/form"
 import type { SizeUiType } from "../../types/ui"
 import type { AxisPlacement } from "../../types/placement"/** @public */
+/** @public */
 
 
 export type SelectOptionType<
@@ -62,6 +63,7 @@ type SelectCommonProps<TValue extends string | number> = BaseMixinProps & {
     "anchorRef" | "open" | "children" | "placement" | "width" | "onClose"
   >
 }/** @public */
+/** @public */
 
 
 export type SingleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
@@ -70,6 +72,7 @@ export type SingleSelectProps<TValue extends string | number> = SelectCommonProp
   defaultValue?: SingleValue<TValue>
   onChange?: (value: SingleValue<TValue>) => void
 }/** @public */
+/** @public */
 
 
 export type MultipleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
@@ -78,6 +81,7 @@ export type MultipleSelectProps<TValue extends string | number> = SelectCommonPr
   defaultValue?: MultipleValue<TValue>
   onChange?: (value: MultipleValue<TValue>) => void
 }/** @public */
+/** @public */
 
 
 export type SelectProps<TValue extends string | number = string> =

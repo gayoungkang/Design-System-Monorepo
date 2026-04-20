@@ -6,6 +6,7 @@ import { styled } from "../../tokens/customStyled"
 import { popover } from "../../tokens/keyframes"
 import { canUseDOM } from "../../utils/canUseDOM"
 import type { DirectionalPlacement } from "../../types/placement"/** @public */
+/** @public */
 
 
 export type PopperProps = {

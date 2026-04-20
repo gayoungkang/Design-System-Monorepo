@@ -13,6 +13,7 @@ type OptionType = {
   label?: string
   onClick?: () => void
 }/** @public */
+/** @public */
 
 
 export type FloatingButtonProps = BaseMixinProps & {

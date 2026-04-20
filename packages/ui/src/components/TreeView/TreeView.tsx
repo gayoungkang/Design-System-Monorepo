@@ -11,6 +11,7 @@ import ToggleButton from "../ToggleButton/ToggleButton"
 import Button from "../Button/Button"
 import type { IconName } from "../Icon/icon-types"
 import type { SizeUiType } from "../../types/ui"/** @public */
+/** @public */
 
 
 export type TreeNodeType = {
@@ -21,6 +22,7 @@ export type TreeNodeType = {
   icon?: IconName
   onClick?: (id: string, node: TreeNodeType) => void
 }/** @public */
+/** @public */
 
 
 export type TreeViewProps = BaseMixinProps &

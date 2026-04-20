@@ -7,6 +7,7 @@ import Flex from "../Flex/Flex"
 import Icon from "../Icon/Icon"
 import Link from "../Link/Link"
 import { Typography } from "../Typography/Typography"/** @public */
+/** @public */
 
 
 export type BreadcrumbItem = {
@@ -14,6 +15,7 @@ export type BreadcrumbItem = {
   href?: string
   onClick?: () => void
 }/** @public */
+/** @public */
 
 
 export type BreadcrumbsProps = BaseMixinProps & {

@@ -11,12 +11,14 @@ import { styled } from "../../tokens/customStyled"
 import type { DirectionType } from "../../types/layout"
 import type { AxisPlacement } from "../../types/placement"
 import type { SizeUiType } from "../../types/ui"/** @public */
+/** @public */
 
 
 export type DataType<Value extends string | number> = {
   text: string
   value: Value
 }/** @public */
+/** @public */
 
 
 export type RadioGroupProps<Value extends string | number> = BaseMixinProps & {

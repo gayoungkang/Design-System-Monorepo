@@ -14,6 +14,7 @@ type DataType<Value extends string | number = string> = {
   text: string
   value: Value
 }/** @public */
+/** @public */
 
 
 export type CheckBoxProps<Value extends string | number = string> = BaseMixinProps & {
@@ -34,6 +35,7 @@ export type CheckBoxProps<Value extends string | number = string> = BaseMixinPro
   labelPlacement?: AxisPlacement
   size?: SizeUiType
 }/** @public */
+/** @public */
 
 
 export type CheckBoxSingleProps = BaseMixinProps & {
@@ -101,6 +103,8 @@ const mergeRefs =
       else (ref as React.MutableRefObject<T | null>).current = value
     })
   }/** @public */
+/** @public */
+/** @public */
 
 
 /**---------------------------------------------------------------------------/

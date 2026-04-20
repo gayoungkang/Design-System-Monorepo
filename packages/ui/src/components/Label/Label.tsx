@@ -3,6 +3,7 @@ import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import type { TypographyProps } from "../Typography/Typography"/** @public */
+/** @public */
 
 
 export type LabelProps = BaseMixinProps & {

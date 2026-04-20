@@ -7,6 +7,7 @@ import Box from "../Box/Box"
 import { Typography } from "../Typography/Typography"
 import type { StatusUiType } from "../../types/status"
 import type { CornerPlacement } from "../../types/placement"/** @public */
+/** @public */
 
 
 export type BadgeProps = BaseMixinProps & {

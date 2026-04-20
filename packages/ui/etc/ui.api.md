@@ -31,10 +31,8 @@ import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
 import type { RefObject } from 'react';
 import { RuleSet } from 'styled-components';
-import { StoreApi } from 'zustand';
 import { StyledInstance } from 'styled-components';
 import { Substitute } from 'styled-components/dist/types';
-import { UseBoundStore } from 'zustand';
 import { WebTarget } from 'styled-components';
 
 // @public (undocumented)
@@ -49,24 +47,6 @@ export type AccordionProps = BaseMixinProps & {
 
 // @public (undocumented)
 export function addImportantToSx(styles: SxProps): SxProps;
-
-// @public (undocumented)
-export type AlertState = {
-    open: boolean;
-    type?: AlertType;
-    message?: string;
-    confirmText?: string;
-    cancelText?: string;
-    onConfirm?: () => void;
-    onCancel?: () => void;
-    title?: string;
-    confirmButtonProps?: Partial<ButtonProps>;
-    cancelButtonProps?: Partial<ButtonProps>;
-    bodySx?: BaseMixinProps;
-};
-
-// @public (undocumented)
-export type AlertType = "confirm" | "alert";
 
 // @public (undocumented)
 export type AvatarProps = BaseMixinProps & {
@@ -136,11 +116,6 @@ export type BasicModalProps = BaseMixinProps & {
     bodySx?: BaseMixinProps;
     container?: HTMLElement;
 };
-
-// Warning: (ae-forgotten-export) The symbol "borderRadius" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type BorderRadiusType = typeof borderRadius;
 
 // @public (undocumented)
 export type BoxProps = BaseMixinProps & Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
@@ -254,11 +229,6 @@ export type ChipProps = BaseMixinProps & {
 // @public (undocumented)
 export const circularIndeterminate: default_2;
 
-// Warning: (ae-forgotten-export) The symbol "colors" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type ColorsType = typeof colors;
-
 // @public (undocumented)
 export type ColorUiType = "normal" | "primary" | "secondary";
 
@@ -270,9 +240,6 @@ export const COMMON_PARENTS_ELEMENT_ZINDEX = 2;
 
 // @public (undocumented)
 export type CornerPlacement = "top-right" | "top-left" | "bottom-right" | "bottom-left";
-
-// @public (undocumented)
-export const cssValue: (v: string | number) => string | undefined;
 
 // @public (undocumented)
 export type DataType<Value extends string | number> = {
@@ -329,7 +296,7 @@ export type FlexProps = HTMLAttributes<HTMLDivElement> & BaseMixinProps & {
     align?: CSSProperties["alignItems"];
     wrap?: CSSProperties["flexWrap"];
     gap?: string | number;
-    extraProps?: Record<string, any>;
+    extraProps?: ExtraHTMLProps;
     isActive?: boolean;
 };
 
@@ -348,42 +315,16 @@ export type FloatingButtonProps = BaseMixinProps & {
 };
 
 // @public (undocumented)
-export const fonts: {
-    heading: {
-        h1: RuleSet<object>;
-        h2: RuleSet<object>;
-        h3: RuleSet<object>;
-    };
-    body: {
-        b1: {
-            Bold: RuleSet<object>;
-            Medium: RuleSet<object>;
-            Regular: RuleSet<object>;
-        };
-        b2: {
-            Medium: RuleSet<object>;
-            Regular: RuleSet<object>;
-        };
-        b3: {
-            Medium: RuleSet<object>;
-            Regular: RuleSet<object>;
-        };
-    };
-};
-
-// @public (undocumented)
-export type FontsType = typeof fonts;
-
-// @public (undocumented)
-export const formatWithComma: (value: number | string) => string;
-
-// @public (undocumented)
 export const GlobalStyle: NamedExoticComponent<ExecutionProps & object>;
 
 // @public (undocumented)
 export type GridProps = BaseMixinProps & Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
     columns: string;
+    rows?: string;
     gap?: number | string;
+    rowGap?: number | string;
+    columnGap?: number | string;
+    inline?: boolean;
 };
 
 // @public (undocumented)
@@ -400,7 +341,7 @@ export type HelperTextUiType = "success" | "error" | "info" | "default";
 // @public (undocumented)
 export type IconButtonProps = BaseMixinProps & {
     icon: IconName;
-    onClick?: (e: MouseEvent_2<HTMLButtonElement>) => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     color?: string;
     size?: number | string;
     variant?: VariantUiType;
@@ -409,16 +350,14 @@ export type IconButtonProps = BaseMixinProps & {
     disableInteraction?: boolean;
     toolTip?: string;
     toolTipProps?: TooltipProps;
-    onMouseDown?: (e: MouseEvent_2<HTMLButtonElement>) => void;
-    onMouseUp?: (e: MouseEvent_2<HTMLButtonElement>) => void;
-    onMouseLeave?: (e: MouseEvent_2<HTMLButtonElement>) => void;
     ariaLabel?: string;
 };
 
 // @public (undocumented)
-export const IconButtonStyle: IStyledComponentBase<"web", Substitute<DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, Omit<IconButtonProps, "icon" | "variant" | "disableInteraction" | "onClick"> & {
+export const IconButtonStyle: IStyledComponentBase<"web", Substitute<DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, BaseMixinProps & {
 $disableInteraction: boolean;
 $variant: VariantUiType;
+disabled?: boolean;
 }>> & string;
 
 // @public (undocumented)
@@ -447,6 +386,16 @@ export type IconSpriteProviderProps = {
 export const indeterminateAnimation: default_2;
 
 // @public (undocumented)
+export type InfiniteTableExportContext = Record<string, unknown>;
+
+// @public (undocumented)
+export type InfiniteTableExportItem = {
+    type: ExportType;
+    label: string;
+    icon?: string;
+};
+
+// @public (undocumented)
 export type InfiniteTableProps<T extends Record<string, unknown>> = {
     tableKey: string;
     columnConfig: ColumnProps<T>[];
@@ -467,14 +416,10 @@ export type InfiniteTableProps<T extends Record<string, unknown>> = {
     customTableHeader?: JSX_2.Element | null;
     toolbar?: TableToolBarProps;
     exportEnabled?: boolean;
-    exportItems?: {
-        type: any;
-        label: string;
-        icon?: string;
-    }[];
-    excludeExportTypes?: any[];
-    onExport?: (type: any, ctx: unknown) => void;
-    exportContext?: unknown;
+    exportItems?: InfiniteTableExportItem[];
+    excludeExportTypes?: ExportType[];
+    onExport?: (type: ExportType, ctx: InfiniteTableExportContext) => void;
+    exportContext?: InfiniteTableExportContext;
     virtualized?: VirtualizedOptions;
 };
 
@@ -484,17 +429,17 @@ export type LabelProps = BaseMixinProps & {
     textAlign?: "left" | "right";
     placement?: "left" | "right";
     required?: boolean;
-    typographyProps?: Partial<TypographyProps>;
+    typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>;
 };
 
 // @public (undocumented)
-export type LinkProps = BaseMixinProps & AnchorHTMLAttributes<HTMLAnchorElement> & {
+export type LinkProps = BaseMixinProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseMixinProps> & {
     children: string | ReactNode;
     underline?: "none" | "hover" | "always";
     color?: string;
     hoverColor?: string;
     disabled?: boolean;
-    typographyProps?: Partial<TypographyProps>;
+    typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>;
 };
 
 // @public
@@ -536,40 +481,37 @@ export type MenuProps = BaseMixinProps & {
     selected?: boolean;
     disabled?: boolean;
     iconProps?: Partial<Omit<IconProps, "name">>;
-    typographyProps?: Partial<TypographyProps>;
+    typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>;
 };
 
 // @public (undocumented)
 export const MODAL_ZINDEX = 999;
 
+// Warning: (ae-forgotten-export) The symbol "SelectCommonProps" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export const omittedBaseProps: readonly ["p", "pt", "pr", "pb", "pl", "px", "py", "m", "mt", "mr", "mb", "ml", "mx", "my", "sx", "width", "height", "bgColor"];
-
-// @public (undocumented)
-export type PaginationProps = BaseMixinProps & Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
-    type: PaginationType;
-    disabled?: boolean;
-    count?: number;
-    page?: number;
-    onPageChange?: (page: number) => void;
-    labelDisplayedRows?: (from: number, to: number, count: number) => ReactNode;
-    pageCount?: number;
-    siblingCount?: number;
-    boundaryCount?: number;
-    hidePrevNextButtons?: boolean;
-    hideFirstLastButtons?: boolean;
-    showFirstLastButtons?: boolean;
-    showPrevNextButtons?: boolean;
-    icons?: Partial<{
-        prev: IconName;
-        next: IconName;
-        first: IconName;
-        last: IconName;
-    }>;
+export type MultipleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
+    multiple: true;
+    value?: MultipleValue<TValue>;
+    defaultValue?: MultipleValue<TValue>;
+    onChange?: (value: MultipleValue<TValue>) => void;
 };
+
+// Warning: (ae-forgotten-export) The symbol "TablePaginationProps" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "BasicPaginationProps" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type PaginationProps = TablePaginationProps | BasicPaginationProps;
 
 // @public (undocumented)
 export type PaginationType = "Table" | "Basic";
+
+// @public (undocumented)
+export type PaperProps = BaseMixinProps & {
+    children?: ReactNode;
+    elevation?: number;
+    radius?: BorderRadiusKey | number | string;
+};
 
 // @public (undocumented)
 export const popover: default_2;
@@ -588,12 +530,15 @@ export type PopperProps = {
     showArrow?: boolean;
     height?: string;
     width?: "auto" | "anchor" | "max-content";
+    minWidth?: number;
+    maxWidth?: number;
+    strategy?: "absolute" | "fixed";
     onClose?: () => void;
 };
 
 // @public (undocumented)
 export type ProgressProps = BaseMixinProps & {
-    type?: "bar" | "Circular";
+    type?: "bar" | "circular";
     variant?: "determinate" | "indeterminate";
     value?: number;
     color?: string;
@@ -647,23 +592,26 @@ export type ResizablePanelProps = BaseMixinProps & {
     minSize?: number;
     maxSize?: number;
     initialSize?: number;
-    borderRadius?: string;
+    size?: number;
+    onResize?: (size: number) => void;
     children: ReactNode;
 };
 
 // @public (undocumented)
 export type ScrollBoxProps = BaseMixinProps & {
-    children: ReactNode;
+    children?: ReactNode;
     minWidth?: string | number;
     minHeight?: string | number;
     maxWidth?: string | number;
     maxHeight?: string | number;
     overflow?: CSSProperties["overflow"];
+    overflowX?: CSSProperties["overflowX"];
+    overflowY?: CSSProperties["overflowY"];
 };
 
 // @public (undocumented)
-export type SelectOptionType<T extends string | number = string | number, TPayload extends Record<string, unknown> = Record<string, unknown>> = {
-    value: T;
+export type SelectOptionType<TValue extends string | number = string | number, TPayload extends Record<string, unknown> = Record<string, unknown>> = {
+    value: TValue;
     label: string;
     chipColor?: string;
     onClick?: () => void;
@@ -673,47 +621,15 @@ export type SelectOptionType<T extends string | number = string | number, TPaylo
 };
 
 // @public (undocumented)
-export type SelectProps<T extends string | string[] = string> = BaseMixinProps & {
-    variant?: VariantFormType;
-    multipleType?: "default" | "chip" | "multiple";
-    label?: string;
-    options: SelectOptionType[];
-    value?: SelectValue<T>;
-    defaultValue?: SelectValue<T>;
-    onChange?: (value: SelectValue<T>) => void;
-    onBlur?: FocusEventHandler<HTMLDivElement>;
-    onFocus?: () => void;
-    error?: boolean;
-    helperText?: string;
-    disabled?: boolean;
-    placeholder?: string;
-    size?: SizeUiType;
-    color?: string;
-    required?: boolean;
-    readOnly?: boolean;
-    autoFocus?: boolean;
-    isLoading?: boolean;
-    labelProps?: Partial<Omit<LabelProps, "text">>;
-    typographyProps?: Partial<TypographyProps>;
-    labelPlacement?: AxisPlacement;
-    popperProps?: PopperProps;
+export type SelectProps<TValue extends string | number = string> = SingleSelectProps<TValue> | MultipleSelectProps<TValue>;
+
+// @public (undocumented)
+export type SingleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
+    multiple?: false;
+    value?: SingleValue<TValue>;
+    defaultValue?: SingleValue<TValue>;
+    onChange?: (value: SingleValue<TValue>) => void;
 };
-
-// @public (undocumented)
-export type SelectValue<T extends string | string[]> = T | undefined;
-
-// Warning: (ae-forgotten-export) The symbol "shadows" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type ShadowsType = typeof shadows;
-
-// Warning: (ae-forgotten-export) The symbol "OmittedBaseProp" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export const shouldBlock: (prop: string) => prop is OmittedBaseProp;
-
-// @public (undocumented)
-export const shouldForwardProp: (prop: string) => boolean;
 
 // @public (undocumented)
 export type SizeUiType = "S" | "M" | "L";
@@ -744,9 +660,9 @@ export type SliderProps = BaseMixinProps & {
     disabled?: boolean;
     track?: "normal" | "inset" | "none";
     label?: string;
-    labelProps?: any;
-    startIcon?: string;
-    endIcon?: string;
+    labelProps?: LabelProps;
+    startIcon?: IconName;
+    endIcon?: IconName;
     iconSize?: number | string;
 };
 
@@ -767,7 +683,7 @@ export type SnackBarProps = {
     closeIconSize?: number | string;
 };
 
-// @public
+// @public (undocumented)
 export const spin: default_2;
 
 // @public (undocumented)
@@ -950,7 +866,7 @@ export type SwitchButtonProps = BaseMixinProps & {
     typographyProps?: Partial<TypographyProps>;
 };
 
-// @public
+// @public (undocumented)
 export type SxProps = CSSObject & {
     [K in `&:${string}` | `@${string}`]?: CSSObject;
 };
@@ -1032,9 +948,6 @@ export const theme: DefaultTheme;
 
 // @public (undocumented)
 export type ThemeVariantType = "WHITE" | "BLUE" | "BLACK";
-
-// @public (undocumented)
-export const toCssValue: (value?: string | number) => string | undefined;
 
 // @public (undocumented)
 export type ToggleButtonItem<Value extends string | number = string> = {
@@ -1135,26 +1048,6 @@ export const typographyVariants: {
     readonly b3Regular: RuleSet<object>;
 };
 
-// Warning: (ae-forgotten-export) The symbol "AlertStore" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export const useAlertStore: UseBoundStore<StoreApi<AlertStore>>;
-
-// @public
-export const useModalStack: (isOpen: boolean) => {
-    isTop: boolean;
-};
-
-// Warning: (ae-forgotten-export) The symbol "ModalStackState" needs to be exported by the entry point index.d.ts
-//
-// @public
-export const useModalStackStore: UseBoundStore<StoreApi<ModalStackState>>;
-
-// Warning: (ae-forgotten-export) The symbol "SnackBarStore" needs to be exported by the entry point index.d.ts
-//
-// @public
-export const useSnackBarStore: UseBoundStore<StoreApi<SnackBarStore>>;
-
 // @public (undocumented)
 export type VariantFormType = "outlined" | "filled" | "standard";
 
@@ -1177,22 +1070,22 @@ export const zIndex: {
     loading: number;
 };
 
-// @public (undocumented)
-export type ZindexType = typeof zIndex;
-
 // Warnings were encountered during analysis:
 //
-// dist/components/Button/Button.d.ts:16:5 - (ae-forgotten-export) The symbol "IconName" needs to be exported by the entry point index.d.ts
-// dist/components/CheckBoxGroup/CheckBoxGroup.d.ts:12:5 - (ae-forgotten-export) The symbol "DataType_2" needs to be exported by the entry point index.d.ts
-// dist/components/FloatingButton/FloatingButton.d.ts:13:5 - (ae-forgotten-export) The symbol "OptionType" needs to be exported by the entry point index.d.ts
-// dist/components/List/List.d.ts:44:5 - (ae-forgotten-export) The symbol "ListItemRenderConfig" needs to be exported by the entry point index.d.ts
-// dist/components/Rating/Rating.d.ts:8:5 - (ae-forgotten-export) The symbol "RatingValue" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:11:5 - (ae-forgotten-export) The symbol "ColumnProps" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:16:5 - (ae-forgotten-export) The symbol "ServerTableQuery" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:25:5 - (ae-forgotten-export) The symbol "SummaryRowProps" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:27:5 - (ae-forgotten-export) The symbol "TableToolBarProps" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:37:5 - (ae-forgotten-export) The symbol "VirtualizedOptions" needs to be exported by the entry point index.d.ts
-
-// (No @packageDocumentation comment for this package)
+// dist/components/Button/Button.d.ts:17:5 - (ae-forgotten-export) The symbol "IconName" needs to be exported by the entry point index.d.ts
+// dist/components/CheckBoxGroup/CheckBoxGroup.d.ts:13:5 - (ae-forgotten-export) The symbol "DataType_2" needs to be exported by the entry point index.d.ts
+// dist/components/Flex/Flex.d.ts:16:5 - (ae-forgotten-export) The symbol "ExtraHTMLProps" needs to be exported by the entry point index.d.ts
+// dist/components/FloatingButton/FloatingButton.d.ts:14:5 - (ae-forgotten-export) The symbol "OptionType" needs to be exported by the entry point index.d.ts
+// dist/components/List/List.d.ts:45:5 - (ae-forgotten-export) The symbol "ListItemRenderConfig" needs to be exported by the entry point index.d.ts
+// dist/components/Paper/Paper.d.ts:8:5 - (ae-forgotten-export) The symbol "BorderRadiusKey" needs to be exported by the entry point index.d.ts
+// dist/components/Rating/Rating.d.ts:9:5 - (ae-forgotten-export) The symbol "RatingValue" needs to be exported by the entry point index.d.ts
+// dist/components/Select/Select.d.ts:46:5 - (ae-forgotten-export) The symbol "SingleValue" needs to be exported by the entry point index.d.ts
+// dist/components/Select/Select.d.ts:53:5 - (ae-forgotten-export) The symbol "MultipleValue" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:13:5 - (ae-forgotten-export) The symbol "ExportType" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnProps" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:27:5 - (ae-forgotten-export) The symbol "ServerTableQuery" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:36:5 - (ae-forgotten-export) The symbol "SummaryRowProps" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:38:5 - (ae-forgotten-export) The symbol "TableToolBarProps" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:44:5 - (ae-forgotten-export) The symbol "VirtualizedOptions" needs to be exported by the entry point index.d.ts
 
 ```

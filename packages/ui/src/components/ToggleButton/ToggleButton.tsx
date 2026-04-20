@@ -12,6 +12,7 @@ import { styled } from "../../tokens/customStyled"
 import type { IconName } from "../Icon/icon-types"
 import type { DirectionType } from "../../types/layout"
 import type { SizeUiType } from "../../types/ui"/** @public */
+/** @public */
 
 
 export type ToggleButtonItem<Value extends string | number = string> = {
@@ -21,6 +22,7 @@ export type ToggleButtonItem<Value extends string | number = string> = {
   value: Value
   disabled?: boolean
 }/** @public */
+/** @public */
 
 
 export type ToggleButtonProps<Value extends string | number = string> = BaseMixinProps & {

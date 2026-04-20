@@ -5,6 +5,8 @@ type ModalStackState = {
   push: (id: symbol) => void
   remove: (id: symbol) => void
 }/** @internal */
+/** @internal */
+/** @internal */
 
 
 /**---------------------------------------------------------------------------*

@@ -4,6 +4,7 @@ import { styled } from "../../tokens/customStyled"
 import { indeterminateAnimation } from "../../tokens/keyframes"
 import { css } from "styled-components"
 import { cssValue } from "../../utils/string"/** @public */
+/** @public */
 
 
 export type SkeletonProps = BaseMixinProps & {

@@ -12,6 +12,7 @@ import type { AxisPlacement } from "../../types/placement"
 import type { IconName } from "../Icon/icon-types"
 
 type RatingValue = number | null/** @public */
+/** @public */
 
 
 export type RatingProps = BaseMixinProps & {

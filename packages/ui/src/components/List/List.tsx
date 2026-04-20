@@ -59,6 +59,7 @@ type SwitchItem = {
 }
 
 type ListItemRenderConfig = IconItem | AvatarItem | CheckBoxItem | IconButtonItem | SwitchItem/** @public */
+/** @public */
 
 
 export type ListItemProps = BaseMixinProps & {
@@ -70,6 +71,7 @@ export type ListItemProps = BaseMixinProps & {
   onClick?: () => void
   separator?: boolean
 }/** @public */
+/** @public */
 
 
 export type ListProps = BaseMixinProps & {
@@ -132,6 +134,8 @@ const renderItem = (item: ListItemRenderConfig): ReactNode => {
       return null
   }
 }/** @public */
+/** @public */
+/** @public */
 
 /**---------------------------------------------------------------------------/
  *
@@ -232,6 +236,7 @@ export const List = ({
     </StyledList>
   )
 }/** @public */
+/** @public */
 
 
 export const ListItem = ({

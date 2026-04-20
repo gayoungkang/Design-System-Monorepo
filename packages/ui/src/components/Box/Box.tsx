@@ -2,6 +2,7 @@ import type { HTMLAttributes, JSX, ReactNode } from "react"
 import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"/** @public */
+/** @public */
 
 
 export type BoxProps = BaseMixinProps &

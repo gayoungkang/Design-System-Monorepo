@@ -3,6 +3,7 @@ import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import { cssValue } from "../../utils/string"/** @public */
+/** @public */
 
 
 export type ScrollBoxProps = BaseMixinProps & {

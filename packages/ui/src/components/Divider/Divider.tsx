@@ -4,6 +4,7 @@ import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { BaseMixin } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 import type { DirectionType } from "../../types/layout"/** @public */
+/** @public */
 
 
 export type DividerProps = BaseMixinProps & {

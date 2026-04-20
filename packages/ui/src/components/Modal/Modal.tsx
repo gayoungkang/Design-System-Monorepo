@@ -17,6 +17,7 @@ import Divider from "../Divider/Divider"
 import Progress from "../Progress/Progress"
 import { styled } from "../../tokens/customStyled"
 import { canUseDOM } from "../../utils/canUseDOM"/** @public */
+/** @public */
 
 
 export type BasicModalProps = BaseMixinProps & {

@@ -29,12 +29,14 @@ import type { ExportType } from "./_internal/TableExport"
 import Progress from "../Progress/Progress"
 import { clamp, parseWidthToPx } from "./@utils/table"
 import useIntersect from "./@hooks/useIntersect"/** @public */
+/** @public */
 
 
 export type TableRowAction<T extends Record<string, unknown>> = {
   key: string
   render: (row: T, index: number) => ReactNode
 }/** @public */
+/** @public */
 
 
 export type InfiniteTableExportItem = {
@@ -42,9 +44,11 @@ export type InfiniteTableExportItem = {
   label: string
   icon?: string
 }/** @public */
+/** @public */
 
 
 export type InfiniteTableExportContext = Record<string, unknown>/** @public */
+/** @public */
 
 
 export type InfiniteTableProps<T extends Record<string, unknown>> = {

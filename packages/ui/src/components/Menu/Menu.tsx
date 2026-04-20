@@ -11,6 +11,7 @@ import Flex from "../Flex/Flex"
 import { styled } from "../../tokens/customStyled"
 import type { SizeUiType } from "../../types/ui"
 import type { IconName } from "../Icon/icon-types"/** @public */
+/** @public */
 
 
 export type MenuProps = BaseMixinProps & {
