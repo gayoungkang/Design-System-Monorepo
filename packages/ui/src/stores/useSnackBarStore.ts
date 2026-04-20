@@ -1,3 +1,4 @@
+/** @internal */
 import { create } from "zustand"
 import type { SnackBarProps } from "../components/SnackBar/SnackBar"
 

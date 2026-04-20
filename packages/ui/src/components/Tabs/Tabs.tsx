@@ -1,3 +1,4 @@
+/** @public */
 import type { KeyboardEventHandler } from "react"
 import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -7,18 +8,16 @@ import { css } from "styled-components"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import IconButton from "../IconButton/IconButton"
-import type { ColorUiType, SizeUiType } from "../../types/ui"/** @public */
+import type { ColorUiType, SizeUiType } from "../../types/ui" /** @public */
 /** @public */
-
 
 export type TabOptionsType = {
   label: string
   value: string
   hidden?: boolean
   disabled?: boolean
-}/** @public */
+}
 /** @public */
-
 
 export type TabProps = BaseMixinProps & {
   options: TabOptionsType[]
@@ -46,10 +45,7 @@ const sizeStyle: Record<
   L: { height: "48px", padding: "0 16px", fontSize: "16px", gap: "20px" },
 }
 
-const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1/** @public */
-/** @public */
-/** @public */
-
+const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1 /** @public */
 
 /**---------------------------------------------------------------------------/
  *
@@ -131,7 +127,7 @@ const isScrollableX = (el: HTMLElement) => el.scrollWidth > el.clientWidth + 1/*
  * />
  *
 /---------------------------------------------------------------------------**/
-
+/** @public */
 export const Tabs = ({
   options,
   value,
@@ -476,6 +472,7 @@ const Indicator = styled.div<{ $color?: ColorUiType | string }>`
   transition: all 0.25s ease;
   border-radius: 2px;
   z-index: 3;
-`
+` /** @public */
+/** @public */
 
 export default Tabs

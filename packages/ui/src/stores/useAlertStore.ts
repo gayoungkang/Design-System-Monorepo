@@ -1,3 +1,4 @@
+/** @internal */
 import { create } from "zustand"
 import type { ButtonProps } from "../components/Button/Button"
 import type { BaseMixinProps } from "../tokens/baseMixin"

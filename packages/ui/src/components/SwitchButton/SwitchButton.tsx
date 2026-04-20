@@ -1,3 +1,4 @@
+/** @public */
 import { css } from "styled-components"
 import type { DefaultTheme } from "styled-components"
 import type { KeyboardEventHandler } from "react"
@@ -298,5 +299,7 @@ const Knob = styled.div<{ $size: SizeUiType; $checked: boolean }>`
     $checked ? sizeMap[$size].offset.checked : sizeMap[$size].offset.unchecked};
 `
 
-SwitchButton.displayName = "SwitchButton"
+SwitchButton.displayName = "SwitchButton"/** @public */
+/** @public */
+
 export default SwitchButton

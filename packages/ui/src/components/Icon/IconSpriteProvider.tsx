@@ -1,3 +1,4 @@
+/** @public */
 import { useEffect } from "react"
 
 /** @public */

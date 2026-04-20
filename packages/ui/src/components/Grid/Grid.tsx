@@ -1,3 +1,4 @@
+/** @public */
 import type { HTMLAttributes } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
@@ -82,6 +83,8 @@ const Root = styled.div<
   row-gap: ${({ $rowGap }) => toCssUnit($rowGap) ?? "normal"};
   column-gap: ${({ $columnGap }) => toCssUnit($columnGap) ?? "normal"};
   ${BaseMixin};
-`
+`/** @public */
+/** @public */
+
 
 export default Grid

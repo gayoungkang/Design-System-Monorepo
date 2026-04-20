@@ -1,3 +1,4 @@
+/** @public */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { HTMLAttributes, ReactNode } from "react"
 import { BaseMixin } from "../../tokens/baseMixin"
@@ -650,5 +651,7 @@ const ChildrenGroup = styled.div<{ $open: boolean }>`
     transform 0.18s ease;
 `
 
-TreeView.displayName = "TreeView"
+TreeView.displayName = "TreeView"/** @public */
+/** @public */
+
 export default TreeView

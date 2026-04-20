@@ -1,19 +1,17 @@
+/** @public */
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
-import type { AxisPlacement } from "../../types/placement"/** @public */
+import type { AxisPlacement } from "../../types/placement" /** @public */
+
 /** @public */
-
-
 export type TooltipProps = BaseMixinProps & {
   children: ReactNode
   content: string
   maxWidth?: string
   placement?: AxisPlacement
-}/** @public */
-/** @public */
-/** @public */
+}
 
 /**---------------------------------------------------------------------------/
  *
@@ -69,7 +67,7 @@ export type TooltipProps = BaseMixinProps & {
  * </Tooltip>
  *
 /---------------------------------------------------------------------------**/
-
+/** @public */
 export const Tooltip = ({
   children,
   content,
@@ -225,6 +223,7 @@ const FixedTooltipBubble = styled.div<
         return `transform: translate(-50%, 0);`
     }
   }}
-`
+` /** @public */
+/** @public */
 
 export default Tooltip

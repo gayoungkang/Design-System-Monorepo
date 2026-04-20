@@ -1,3 +1,4 @@
+/** @public */
 import { theme } from "../../tokens/theme"
 import { circularIndeterminate, indeterminateAnimation } from "../../tokens/keyframes"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -205,6 +206,8 @@ const DeterminateCircle = styled.circle`
 
 const IndeterminateCircle = styled.circle`
   animation: ${circularIndeterminate} 1.4s linear infinite;
-`
+`/** @public */
+/** @public */
+
 
 export default Progress

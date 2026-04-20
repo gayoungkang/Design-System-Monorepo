@@ -1,3 +1,4 @@
+/** @public */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -8,13 +9,11 @@ import type { LabelProps } from "../Label/Label"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
 import type { IconName } from "../Icon/icon-types"
-import type { MouseEvent as ReactMouseEvent } from "react"/** @public */
+import type { MouseEvent as ReactMouseEvent } from "react" /** @public */
 /** @public */
 
-
-export type SliderValue = number | [number, number]/** @public */
+export type SliderValue = number | [number, number] /** @public */
 /** @public */
-
 
 export type SliderProps = BaseMixinProps & {
   value: SliderValue
@@ -30,10 +29,17 @@ export type SliderProps = BaseMixinProps & {
   startIcon?: IconName
   endIcon?: IconName
   iconSize?: number | string
-}/** @public */
+} /** @public */
 /** @public */
 /** @public */
-
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
 
 /**---------------------------------------------------------------------------/
  *
@@ -119,7 +125,7 @@ export type SliderProps = BaseMixinProps & {
  * <Slider value={[20, 80]} onChange={setRange} onChangeEnd={setRange} track="inset" />
  *
 /---------------------------------------------------------------------------**/
-
+/** @public */
 export const Slider = ({
   value,
   onChange,
@@ -519,6 +525,7 @@ const ValueLabel = styled.div`
   border-radius: 4px;
   box-shadow: ${({ theme }) => theme.shadows.elevation[8]};
   white-space: nowrap;
-`
+` /** @public */
+/** @public */
 
 export default Slider

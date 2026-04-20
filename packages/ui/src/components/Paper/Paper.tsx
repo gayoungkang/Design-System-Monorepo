@@ -1,3 +1,4 @@
+/** @public */
 import type { ReactNode } from "react"
 import type { DefaultTheme } from "styled-components"
 import { css } from "styled-components"
@@ -6,7 +7,7 @@ import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 
 type BorderRadiusKey = keyof DefaultTheme["borderRadius"]
-
+/** @public */
 type PaperProps = BaseMixinProps & {
   children?: ReactNode
   elevation?: number
@@ -106,7 +107,8 @@ const StyledPaper = styled.div<
   }}
 
   ${BaseMixin};
-`
+` /** @public */
+/** @public */
 
 export default Paper
 export type { PaperProps }

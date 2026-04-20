@@ -1,3 +1,4 @@
+/** @public */
 import { useTheme } from "styled-components"
 import type { ReactNode } from "react"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -58,9 +59,13 @@ type SwitchItem = {
   }
 }
 
-type ListItemRenderConfig = IconItem | AvatarItem | CheckBoxItem | IconButtonItem | SwitchItem/** @public */
+type ListItemRenderConfig =
+  | IconItem
+  | AvatarItem
+  | CheckBoxItem
+  | IconButtonItem
+  | SwitchItem /** @public */
 /** @public */
-
 
 export type ListItemProps = BaseMixinProps & {
   label: string
@@ -70,9 +75,8 @@ export type ListItemProps = BaseMixinProps & {
   disabled?: boolean
   onClick?: () => void
   separator?: boolean
-}/** @public */
+} /** @public */
 /** @public */
-
 
 export type ListProps = BaseMixinProps & {
   items: ListItemProps[]
@@ -133,7 +137,15 @@ const renderItem = (item: ListItemRenderConfig): ReactNode => {
     default:
       return null
   }
-}/** @public */
+} /** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
 /** @public */
 /** @public */
 
@@ -207,7 +219,7 @@ const renderItem = (item: ListItemRenderConfig): ReactNode => {
  * />
  *
 /---------------------------------------------------------------------------**/
-
+/** @public */
 export const List = ({
   items,
   dense = false,
@@ -235,9 +247,8 @@ export const List = ({
       })}
     </StyledList>
   )
-}/** @public */
+} /** @public */
 /** @public */
-
 
 export const ListItem = ({
   label,
@@ -329,6 +340,7 @@ const StyledListItem = styled(Flex)<{
 const ItemWrapper = styled.span`
   display: inline-flex;
   align-items: center;
-`
+` /** @public */
+/** @public */
 
 export default List

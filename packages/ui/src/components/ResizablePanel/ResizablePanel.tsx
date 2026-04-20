@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import Flex from "../Flex/Flex"
@@ -188,5 +189,7 @@ const Grip = styled.div<{ direction: DirectionType }>`
   transform: translate(-50%, -50%);
 `
 
-ResizablePanel.displayName = "ResizablePanel"
+ResizablePanel.displayName = "ResizablePanel"/** @public */
+/** @public */
+
 export default ResizablePanel

@@ -1,3 +1,4 @@
+/** @public */
 import type { HTMLAttributes, JSX, ReactNode } from "react"
 import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -50,5 +51,7 @@ const StyledBox = styled.div<BoxProps>`
   ${BaseMixin};
 `
 
-Box.displayName = "Box"
+Box.displayName = "Box"/** @public */
+/** @public */
+
 export default Box

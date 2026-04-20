@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styledBase from "styled-components"
 
 const _STYLE_PROPS = new Set<string>([
   "placement",
@@ -48,7 +48,8 @@ export const shouldForwardProp = (prop: string) => {
   return true
 }
 
-const customStyled = new Proxy(styled, {
+/** @public */
+export const styled = new Proxy(styledBase, {
   get(target, prop, receiver) {
     const original = Reflect.get(target, prop, receiver)
 
@@ -73,6 +74,3 @@ const customStyled = new Proxy(styled, {
     return styledFn
   },
 })
-
-/** @public */
-export { customStyled as styled }

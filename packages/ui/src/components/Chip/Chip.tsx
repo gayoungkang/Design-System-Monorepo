@@ -1,3 +1,4 @@
+/** @public */
 import type { MouseEvent } from "react"
 import { useMemo } from "react"
 import { useTheme } from "styled-components"
@@ -235,6 +236,8 @@ const ChipWrapper = styled.div<
         return ""
     }
   }}
-`
+`/** @public */
+/** @public */
+
 
 export default Chip

@@ -1,3 +1,4 @@
+/** @internal */
 import { create } from "zustand"
 
 type ModalStackState = {
@@ -5,6 +6,14 @@ type ModalStackState = {
   push: (id: symbol) => void
   remove: (id: symbol) => void
 }/** @internal */
+/** @internal */
+/** @internal */
+/** @internal */
+/** @internal */
+/** @internal */
+/** @internal */
+/** @internal */
+/** @internal */
 /** @internal */
 /** @internal */
 

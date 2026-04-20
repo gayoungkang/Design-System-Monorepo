@@ -1,3 +1,4 @@
+/** @public */
 import { css } from "styled-components"
 import type { DefaultTheme } from "styled-components"
 

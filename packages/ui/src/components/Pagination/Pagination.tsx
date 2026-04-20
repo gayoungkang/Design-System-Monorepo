@@ -1,3 +1,4 @@
+/** @public */
 import { useMemo } from "react"
 import type { HTMLAttributes, ReactNode } from "react"
 import { useTheme } from "styled-components"
@@ -381,5 +382,7 @@ const PageButton = styled.button<{
   }
 `
 
-Pagination.displayName = "Pagination"
+Pagination.displayName = "Pagination"/** @public */
+/** @public */
+
 export default Pagination

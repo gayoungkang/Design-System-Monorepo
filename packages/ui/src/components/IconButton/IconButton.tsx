@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef } from "react"
 import { useTheme } from "styled-components"
 import type { DefaultTheme } from "styled-components"
@@ -146,6 +147,8 @@ export const IconButtonStyle = styled.button<
   ${({ theme, $variant, disabled }) => variantStyle({ $variant, theme, disabled })}
 `
 
-IconButton.displayName = "IconButton"
+IconButton.displayName = "IconButton"/** @public */
+/** @public */
+
 
 export default IconButton

@@ -1,3 +1,4 @@
+/** @public */
 import { useMemo } from "react"
 import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -109,6 +110,8 @@ const StyledDivider = styled.hr<
       `}
 
   ${({ $flexItem }) => $flexItem && "align-self: stretch;"}
-`
+`/** @public */
+/** @public */
+
 
 export default Divider

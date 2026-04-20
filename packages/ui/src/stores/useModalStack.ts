@@ -1,3 +1,4 @@
+/** @internal */
 import { useEffect, useRef } from "react"
 import { useModalStackStore } from "./useModalStore"
 

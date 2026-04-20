@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef, useLayoutEffect, useRef, useState } from "react"
 import type { ReactNode, RefObject } from "react"
 import { createPortal } from "react-dom"
@@ -268,5 +269,7 @@ const Arrow = styled.div<{ placement: DirectionalPlacement }>`
   transform: rotate(45deg);
 `
 
-Popper.displayName = "Popper"
+Popper.displayName = "Popper"/** @public */
+/** @public */
+
 export default Popper

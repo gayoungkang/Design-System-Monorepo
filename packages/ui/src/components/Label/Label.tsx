@@ -1,3 +1,4 @@
+/** @public */
 import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Flex from "../Flex/Flex"
@@ -100,6 +101,8 @@ const Label = ({
       {renderRequiredMark("right")}
     </Flex>
   )
-}
+}/** @public */
+/** @public */
+
 
 export default Label

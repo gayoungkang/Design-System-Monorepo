@@ -1,3 +1,4 @@
+/** @public */
 import type { ReactNode } from "react"
 import { useCallback, useId, useState } from "react"
 import { useTheme } from "styled-components"
@@ -159,6 +160,8 @@ const Details = styled.div`
   padding: 12px 16px;
   animation: ${fadeInUp} 0.2s ease;
   border-top: 1px solid ${({ theme }) => theme.colors.border.default};
-`
+`/** @public */
+/** @public */
+
 
 export default Accordion

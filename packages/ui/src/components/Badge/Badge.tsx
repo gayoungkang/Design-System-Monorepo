@@ -1,3 +1,4 @@
+/** @public */
 import type { ReactNode } from "react"
 import { useMemo } from "react"
 import { useTheme, type DefaultTheme } from "styled-components"
@@ -160,6 +161,8 @@ const StyledBadge = styled.div<{
   white-space: nowrap;
 
   ${({ $placement }) => getPlacementStyle($placement)}
-`
+`/** @public */
+/** @public */
+
 
 export default Badge

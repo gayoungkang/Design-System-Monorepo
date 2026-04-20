@@ -1,3 +1,4 @@
+/** @public */
 import { useEffect, useMemo, useState } from "react"
 import { useTheme } from "styled-components"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -142,6 +143,8 @@ const AvatarImg = styled.img`
   height: 100%;
   object-fit: cover;
   display: block;
-`
+`/** @public */
+/** @public */
+
 
 export default Avatar

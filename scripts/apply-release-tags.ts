@@ -9,20 +9,9 @@ const UI_SRC_ROOT = path.join(ROOT, "packages/ui/src")
 const PUBLIC_ENTRY = path.join(UI_SRC_ROOT, "public.ts")
 const INTERNAL_ENTRY = path.join(UI_SRC_ROOT, "internal.ts")
 
-const TARGET_EXPORT_KINDS = new Set<ts.SyntaxKind>([
-  ts.SyntaxKind.FunctionDeclaration,
-  ts.SyntaxKind.ClassDeclaration,
-  ts.SyntaxKind.InterfaceDeclaration,
-  ts.SyntaxKind.TypeAliasDeclaration,
-  ts.SyntaxKind.EnumDeclaration,
-  ts.SyntaxKind.VariableStatement,
-])
-
-const ensurePosix = (input: string) => input.replace(/\\/g, "/")
 const exists = (filePath: string) => fs.existsSync(filePath)
 const readFile = (filePath: string) => fs.readFileSync(filePath, "utf8")
 const writeFile = (filePath: string, content: string) => fs.writeFileSync(filePath, content, "utf8")
-const detectLineEnding = (text: string) => (text.includes("\r\n") ? "\r\n" : "\n")
 
 const resolveModuleFile = (fromFilePath: string, specifier: string) => {
   if (!specifier.startsWith("./")) return null
@@ -38,154 +27,77 @@ const resolveModuleFile = (fromFilePath: string, specifier: string) => {
   return candidates.find(exists) ?? null
 }
 
-const getSourceFile = (filePath: string) =>
-  ts.createSourceFile(filePath, readFile(filePath), ts.ScriptTarget.Latest, true)
+const hasReleaseTag = (text: string) => /@public\b|@internal\b|@beta\b|@alpha\b/.test(text)
 
-const getJsDocText = (node: ts.Node, sourceFile: ts.SourceFile) => {
-  const ranges = ts.getLeadingCommentRanges(sourceFile.getFullText(), node.getFullStart()) ?? []
+const addTagBefore = (source: string, pos: number, tag: ReleaseTag) => {
+  return source.slice(0, pos) + `/** ${tag} */\n` + source.slice(pos)
+}
 
-  for (const range of ranges.reverse()) {
-    const text = sourceFile.getFullText().slice(range.pos, range.end)
-    if (text.startsWith("/**")) return text
+const processFile = (filePath: string, tag: ReleaseTag) => {
+  let source = readFile(filePath)
+  const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true)
+
+  const insertions: number[] = []
+
+  sourceFile.forEachChild((node) => {
+    const isExport =
+      (ts.canHaveModifiers(node) &&
+        ts.getModifiers(node)?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) ||
+      ts.isExportAssignment(node)
+
+    if (!isExport) return
+
+    const text = source.slice(node.getFullStart(), node.getStart())
+    if (hasReleaseTag(text)) return
+
+    insertions.push(node.getFullStart())
+  })
+
+  insertions
+    .sort((a, b) => b - a)
+    .forEach((pos) => {
+      source = addTagBefore(source, pos, tag)
+    })
+
+  if (insertions.length > 0) {
+    writeFile(filePath, source)
+    console.log("UPDATED", filePath, `(+${insertions.length})`)
   }
-
-  return ""
 }
 
-const hasReleaseTag = (node: ts.Node, sourceFile: ts.SourceFile) => {
-  const jsDocText = getJsDocText(node, sourceFile)
-  return /@public\b|@internal\b|@beta\b|@alpha\b/.test(jsDocText)
-}
+const collectTargets = (entry: string, tag: ReleaseTag, visited = new Set<string>()) => {
+  if (!exists(entry) || visited.has(entry)) return []
 
-const isExportedTopLevelDeclaration = (node: ts.Node) => {
-  if (!TARGET_EXPORT_KINDS.has(node.kind)) return false
+  visited.add(entry)
 
-  const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined
-  if (!modifiers) return false
+  const sourceFile = ts.createSourceFile(entry, readFile(entry), ts.ScriptTarget.Latest, true)
 
-  return modifiers.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
-}
-
-const buildInsertionText = (tag: ReleaseTag, lineEnding: string) => `/** ${tag} */${lineEnding}`
-
-const collectTargetsFromFile = (
-  entryFilePath: string,
-  releaseTag: ReleaseTag,
-  visited = new Set<string>(),
-) => {
-  const normalizedEntry = ensurePosix(path.resolve(entryFilePath))
-
-  if (!exists(normalizedEntry) || visited.has(normalizedEntry)) return []
-
-  visited.add(normalizedEntry)
-
-  const sourceFile = getSourceFile(normalizedEntry)
-  const targets: Array<{ filePath: string; releaseTag: ReleaseTag }> = []
+  const targets: string[] = []
 
   sourceFile.forEachChild((node) => {
     if (!ts.isExportDeclaration(node)) return
     if (!node.moduleSpecifier || !ts.isStringLiteral(node.moduleSpecifier)) return
 
-    const resolved = resolveModuleFile(normalizedEntry, node.moduleSpecifier.text)
+    const resolved = resolveModuleFile(entry, node.moduleSpecifier.text)
     if (!resolved) return
 
-    targets.push({
-      filePath: resolved,
-      releaseTag,
-    })
-
-    collectTargetsFromFile(resolved, releaseTag, visited).forEach((target) => {
-      targets.push(target)
-    })
+    targets.push(resolved)
+    collectTargets(resolved, tag, visited).forEach((f) => targets.push(f))
   })
 
   return targets
 }
 
-const applyReleaseTagToFile = (filePath: string, releaseTag: ReleaseTag) => {
-  const sourceText = readFile(filePath)
-  const sourceFile = ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true)
-  const lineEnding = detectLineEnding(sourceText)
-
-  const insertions: Array<{ pos: number; text: string }> = []
-
-  sourceFile.forEachChild((node) => {
-    if (!isExportedTopLevelDeclaration(node)) return
-    if (hasReleaseTag(node, sourceFile)) return
-
-    insertions.push({
-      pos: node.getFullStart(),
-      text: buildInsertionText(releaseTag, lineEnding),
-    })
-  })
-
-  if (insertions.length === 0) {
-    return {
-      filePath,
-      updated: false,
-      insertedCount: 0,
-    }
-  }
-
-  let nextText = sourceText
-
-  insertions
-    .sort((a, b) => b.pos - a.pos)
-    .forEach(({ pos, text }) => {
-      nextText = `${nextText.slice(0, pos)}${text}${nextText.slice(pos)}`
-    })
-
-  writeFile(filePath, nextText)
-
-  return {
-    filePath,
-    updated: true,
-    insertedCount: insertions.length,
-  }
-}
-
 const main = () => {
-  const targets = [
-    ...collectTargetsFromFile(PUBLIC_ENTRY, "@public"),
-    ...collectTargetsFromFile(INTERNAL_ENTRY, "@internal"),
-  ]
+  const publicTargets = collectTargets(PUBLIC_ENTRY, "@public")
+  const internalTargets = collectTargets(INTERNAL_ENTRY, "@internal")
 
-  const deduped = new Map<string, ReleaseTag>()
+  const all = new Map<string, ReleaseTag>()
 
-  for (const target of targets) {
-    const absolutePath = path.resolve(target.filePath)
-    const relativePath = ensurePosix(path.relative(ROOT, absolutePath))
-    deduped.set(relativePath, target.releaseTag)
-  }
+  publicTargets.forEach((f) => all.set(path.resolve(f), "@public"))
+  internalTargets.forEach((f) => all.set(path.resolve(f), "@internal"))
 
-  if (deduped.size === 0) {
-    console.log("No export targets found from public.ts/internal.ts")
-    process.exit(0)
-  }
-
-  const results = Array.from(deduped.entries()).map(([relativePath, releaseTag]) =>
-    applyReleaseTagToFile(path.join(ROOT, relativePath), releaseTag),
-  )
-
-  const updated = results.filter((result) => result.updated)
-  const totalInserted = results.reduce((sum, result) => sum + result.insertedCount, 0)
-
-  console.log("")
-  console.log("Release tag apply result")
-  console.log("------------------------")
-
-  results.forEach((result) => {
-    const status = result.updated ? "UPDATED" : "SKIPPED"
-    console.log(
-      `${status}  ${ensurePosix(path.relative(ROOT, result.filePath))}  (+${result.insertedCount})`,
-    )
-  })
-
-  console.log("------------------------")
-  console.log(`Files processed: ${results.length}`)
-  console.log(`Files updated:   ${updated.length}`)
-  console.log(`Tags inserted:   ${totalInserted}`)
-  console.log("")
+  all.forEach((tag, filePath) => processFile(filePath, tag))
 }
 
 main()

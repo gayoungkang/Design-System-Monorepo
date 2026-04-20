@@ -157,7 +157,7 @@ export type ButtonProps = BaseMixinProps & {
     typographyProps?: Partial<TypographyProps>;
 };
 
-// @public
+// @public (undocumented)
 export const CheckBox: ForwardRefExoticComponent<BaseMixinProps & {
 checked?: boolean;
 onChange?: (checked: boolean) => void;
@@ -235,7 +235,7 @@ export type ColorUiType = "normal" | "primary" | "secondary";
 // @public (undocumented)
 export const COMMON_CHILD_ELEMENT_ZINDEX = 1;
 
-// @public
+// @public (undocumented)
 export const COMMON_PARENTS_ELEMENT_ZINDEX = 2;
 
 // @public (undocumented)
@@ -442,7 +442,7 @@ export type LinkProps = BaseMixinProps & Omit<AnchorHTMLAttributes<HTMLAnchorEle
     typographyProps?: Partial<Omit<TypographyProps, "text" | "variant" | "color">>;
 };
 
-// @public
+// @public (undocumented)
 export const List: (input: ListProps) => JSX_3.Element;
 
 // @public (undocumented)
@@ -643,7 +643,7 @@ export type SkeletonProps = BaseMixinProps & {
     children?: ReactNode;
 };
 
-// @public
+// @public (undocumented)
 export const Slider: {
     (input: SliderProps): JSX_3.Element;
     displayName: string;
@@ -899,7 +899,7 @@ export type TabProps = BaseMixinProps & {
     scrollButtonsVisible?: boolean;
 };
 
-// @public
+// @public (undocumented)
 export const Tabs: {
     (input: TabProps): JSX_3.Element;
     displayName: string;
@@ -972,7 +972,7 @@ export type ToggleButtonProps<Value extends string | number = string> = BaseMixi
     iconProps?: Partial<Omit<IconProps, "name">>;
 };
 
-// @public
+// @public (undocumented)
 export const Tooltip: {
     (input: TooltipProps): JSX_3.Element;
     displayName: string;
@@ -1072,20 +1072,20 @@ export const zIndex: {
 
 // Warnings were encountered during analysis:
 //
-// dist/components/Button/Button.d.ts:17:5 - (ae-forgotten-export) The symbol "IconName" needs to be exported by the entry point index.d.ts
-// dist/components/CheckBoxGroup/CheckBoxGroup.d.ts:13:5 - (ae-forgotten-export) The symbol "DataType_2" needs to be exported by the entry point index.d.ts
-// dist/components/Flex/Flex.d.ts:16:5 - (ae-forgotten-export) The symbol "ExtraHTMLProps" needs to be exported by the entry point index.d.ts
+// dist/components/Button/Button.d.ts:18:5 - (ae-forgotten-export) The symbol "IconName" needs to be exported by the entry point index.d.ts
+// dist/components/CheckBoxGroup/CheckBoxGroup.d.ts:14:5 - (ae-forgotten-export) The symbol "DataType_2" needs to be exported by the entry point index.d.ts
+// dist/components/Flex/Flex.d.ts:17:5 - (ae-forgotten-export) The symbol "ExtraHTMLProps" needs to be exported by the entry point index.d.ts
 // dist/components/FloatingButton/FloatingButton.d.ts:14:5 - (ae-forgotten-export) The symbol "OptionType" needs to be exported by the entry point index.d.ts
 // dist/components/List/List.d.ts:45:5 - (ae-forgotten-export) The symbol "ListItemRenderConfig" needs to be exported by the entry point index.d.ts
-// dist/components/Paper/Paper.d.ts:8:5 - (ae-forgotten-export) The symbol "BorderRadiusKey" needs to be exported by the entry point index.d.ts
+// dist/components/Paper/Paper.d.ts:10:5 - (ae-forgotten-export) The symbol "BorderRadiusKey" needs to be exported by the entry point index.d.ts
 // dist/components/Rating/Rating.d.ts:9:5 - (ae-forgotten-export) The symbol "RatingValue" needs to be exported by the entry point index.d.ts
 // dist/components/Select/Select.d.ts:46:5 - (ae-forgotten-export) The symbol "SingleValue" needs to be exported by the entry point index.d.ts
 // dist/components/Select/Select.d.ts:53:5 - (ae-forgotten-export) The symbol "MultipleValue" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:13:5 - (ae-forgotten-export) The symbol "ExportType" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:22:5 - (ae-forgotten-export) The symbol "ColumnProps" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:27:5 - (ae-forgotten-export) The symbol "ServerTableQuery" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:36:5 - (ae-forgotten-export) The symbol "SummaryRowProps" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:38:5 - (ae-forgotten-export) The symbol "TableToolBarProps" needs to be exported by the entry point index.d.ts
-// dist/components/Table/InfiniteTable.d.ts:44:5 - (ae-forgotten-export) The symbol "VirtualizedOptions" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:14:5 - (ae-forgotten-export) The symbol "ExportType" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:23:5 - (ae-forgotten-export) The symbol "ColumnProps" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:28:5 - (ae-forgotten-export) The symbol "ServerTableQuery" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:37:5 - (ae-forgotten-export) The symbol "SummaryRowProps" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:39:5 - (ae-forgotten-export) The symbol "TableToolBarProps" needs to be exported by the entry point index.d.ts
+// dist/components/Table/InfiniteTable.d.ts:45:5 - (ae-forgotten-export) The symbol "VirtualizedOptions" needs to be exported by the entry point index.d.ts
 
 ```

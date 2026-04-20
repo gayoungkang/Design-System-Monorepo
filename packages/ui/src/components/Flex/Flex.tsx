@@ -1,3 +1,4 @@
+/** @public */
 import type { CSSProperties, HTMLAttributes, JSX, ReactNode } from "react"
 import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -119,6 +120,8 @@ const StyledFlex = styled.div<
   flex-wrap: ${({ $wrap }) => $wrap ?? "nowrap"};
   gap: ${({ $gap }) => (typeof $gap === "number" ? `${$gap}px` : $gap)};
   ${BaseMixin};
-`
+`/** @public */
+/** @public */
+
 
 export default Flex

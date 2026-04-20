@@ -1,3 +1,4 @@
+/** @public */
 import { useEffect, useMemo, useRef, useState } from "react"
 import type { CSSProperties, JSX, MouseEvent as ReactMouseEvent, ComponentProps } from "react"
 import Pagination from "../Pagination/Pagination"
@@ -632,6 +633,8 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
       </Flex>
     </>
   )
-}
+}/** @public */
+/** @public */
+
 
 export default Table

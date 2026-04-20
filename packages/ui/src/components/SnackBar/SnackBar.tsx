@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef, useEffect, useMemo, useState } from "react"
 import type { ForwardRefExoticComponent, RefAttributes, CSSProperties } from "react"
 import { theme } from "../../tokens/theme"
@@ -291,6 +292,8 @@ type SnackBarComponent = ForwardRefExoticComponent<
 }
 
 const SnackBar = SnackBarBase as SnackBarComponent
-SnackBar.List = SnackBarList
+SnackBar.List = SnackBarList/** @public */
+/** @public */
+
 
 export default SnackBar

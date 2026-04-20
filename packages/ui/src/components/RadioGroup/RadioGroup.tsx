@@ -1,3 +1,4 @@
+/** @public */
 import { useId, useMemo } from "react"
 import type { ChangeEvent } from "react"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -337,6 +338,8 @@ const StyledRadio = styled.input<{
     border-color: ${({ theme }) => theme.colors.primary[200]};
     background-color: ${({ theme }) => theme.colors.primary[200]};
   }
-`
+`/** @public */
+/** @public */
+
 
 export default RadioGroup

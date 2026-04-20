@@ -1,3 +1,4 @@
+/** @public */
 import { useMemo } from "react"
 import { useTheme } from "styled-components"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -113,6 +114,8 @@ const Root = styled.div<BaseMixinProps>`
   ${BaseMixin};
   display: flex;
   align-items: flex-start;
-`
+`/** @public */
+/** @public */
+
 
 export default HelperText

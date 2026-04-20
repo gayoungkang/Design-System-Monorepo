@@ -1,3 +1,4 @@
+/** @public */
 import { Suspense, useEffect, useId, useRef } from "react"
 import type { ReactNode } from "react"
 import { css, useTheme } from "styled-components"
@@ -253,6 +254,8 @@ const AnimatedBox = styled(Box)`
   animation: ${css`
     ${fadeInUp} 0.2s ease forwards
   `};
-`
+`/** @public */
+/** @public */
+
 
 export default Modal

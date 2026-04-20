@@ -1,3 +1,4 @@
+/** @public */
 import { createGlobalStyle } from "styled-components"
 import { theme } from "./theme"
 
@@ -136,6 +137,8 @@ export const GlobalStyle = createGlobalStyle`
     display: none;
     -webkit-appearance: none;
   }
-`
+`/** @public */
+/** @public */
+
 
 export default GlobalStyle

@@ -1,3 +1,4 @@
+/** @public */
 import type { ReactNode } from "react"
 import { useMemo } from "react"
 import { useTheme } from "styled-components"
@@ -159,6 +160,8 @@ const Separator = styled.span`
 const CurrentPage = styled.span`
   display: inline-flex;
   align-items: center;
-`
+`/** @public */
+/** @public */
+
 
 export default Breadcrumbs

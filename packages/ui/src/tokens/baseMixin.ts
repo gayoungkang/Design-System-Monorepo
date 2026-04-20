@@ -1,3 +1,4 @@
+/** @public */
 import { css } from "styled-components"
 import type { CSSObject } from "styled-components"
 import { toCssValue } from "../utils/string"

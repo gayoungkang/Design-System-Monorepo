@@ -1,3 +1,4 @@
+/** @public */
 import { useCallback, useMemo } from "react"
 import type { HTMLAttributes, ReactNode } from "react"
 import { BaseMixin } from "../../tokens/baseMixin"
@@ -445,5 +446,7 @@ const ConnectorWrap = styled.div<{
       : ""}
 `
 
-Stepper.displayName = "Stepper"
+Stepper.displayName = "Stepper"/** @public */
+/** @public */
+
 export default Stepper

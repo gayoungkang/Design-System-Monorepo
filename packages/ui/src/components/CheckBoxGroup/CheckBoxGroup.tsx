@@ -1,3 +1,4 @@
+/** @public */
 import type { ChangeEvent, FocusEventHandler } from "react"
 import { forwardRef, useCallback, useEffect, useId, useMemo, useRef } from "react"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -13,9 +14,8 @@ import type { AxisPlacement, DirectionType, SizeUiType } from "../../public"
 type DataType<Value extends string | number = string> = {
   text: string
   value: Value
-}/** @public */
+} /** @public */
 /** @public */
-
 
 export type CheckBoxProps<Value extends string | number = string> = BaseMixinProps & {
   value?: Value[]
@@ -34,9 +34,8 @@ export type CheckBoxProps<Value extends string | number = string> = BaseMixinPro
   onBlur?: FocusEventHandler<HTMLInputElement>
   labelPlacement?: AxisPlacement
   size?: SizeUiType
-}/** @public */
+} /** @public */
 /** @public */
-
 
 export type CheckBoxSingleProps = BaseMixinProps & {
   checked?: boolean
@@ -102,10 +101,17 @@ const mergeRefs =
       if (typeof ref === "function") ref(value)
       else (ref as React.MutableRefObject<T | null>).current = value
     })
-  }/** @public */
+  } /** @public */
 /** @public */
 /** @public */
-
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
+/** @public */
 
 /**---------------------------------------------------------------------------/
 
@@ -131,7 +137,7 @@ const mergeRefs =
 * @module CheckBoxGroup
 
 /---------------------------------------------------------------------------**/
-
+/** @public */
 export const CheckBox = forwardRef<HTMLInputElement, CheckBoxSingleProps>(
   (
     {
@@ -338,7 +344,8 @@ const CheckBoxGroup = <Value extends string | number>({
   )
 }
 
-CheckBoxGroup.displayName = "CheckBoxGroup"
+CheckBoxGroup.displayName = "CheckBoxGroup" /** @public */
+/** @public */
 
 export default CheckBoxGroup
 

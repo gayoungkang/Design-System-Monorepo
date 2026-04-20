@@ -1,3 +1,4 @@
+/** @public */
 import { useTheme } from "styled-components"
 import type { AnchorHTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -141,6 +142,8 @@ const StyledLink = styled.a<
       $disabled ? theme.colors.text.disabled : $hoverColor};
     text-decoration: ${({ $underline }) => ($underline === "hover" ? "underline" : "none")};
   }
-`
+`/** @public */
+/** @public */
+
 
 export default Link

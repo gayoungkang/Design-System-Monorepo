@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef } from "react"
 import type { MouseEventHandler } from "react"
 import { useTheme } from "styled-components"
@@ -200,6 +201,8 @@ const StyledMenu = styled.button<
     outline: 2px solid ${({ theme }) => theme.colors.primary[200]};
     outline-offset: 2px;
   }
-`
+`/** @public */
+/** @public */
+
 
 export default Menu

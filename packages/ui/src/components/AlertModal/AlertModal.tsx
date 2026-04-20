@@ -1,3 +1,4 @@
+/** @public */
 import { useEffect, useMemo, useRef } from "react"
 import { useTheme } from "styled-components"
 import { useAlertStore } from "../../stores/useAlertStore"
@@ -189,6 +190,8 @@ const AlertModal = () => {
       </Flex>
     </Modal>
   )
-}
+}/** @public */
+/** @public */
+
 
 export default AlertModal

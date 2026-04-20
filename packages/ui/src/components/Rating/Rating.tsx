@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef, useId, useMemo, useState } from "react"
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react"
 import { BaseMixin } from "../../tokens/baseMixin"
@@ -404,6 +405,8 @@ const IconFill = styled.span<{ $color: string; $width: string }>`
   color: ${({ $color }) => $color};
   display: inline-flex;
 `
-Rating.displayName = "Rating"
+Rating.displayName = "Rating"/** @public */
+/** @public */
+
 
 export default Rating

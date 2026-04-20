@@ -1,3 +1,4 @@
+/** @public */
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTheme, type DefaultTheme } from "styled-components"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -398,6 +399,8 @@ const MainFab = styled.button<{
     box-shadow: none;
     cursor: not-allowed;
   }
-`
+`/** @public */
+/** @public */
+
 
 export default FloatingButton

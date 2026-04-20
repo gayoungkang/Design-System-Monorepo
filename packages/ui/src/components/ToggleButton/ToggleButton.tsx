@@ -1,3 +1,4 @@
+/** @public */
 import { BaseMixin } from "../../tokens/baseMixin"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Label from "../Label/Label"
@@ -256,6 +257,8 @@ const ToggleItemContent = styled(Flex)`
     min-width: 0;
     white-space: nowrap;
   }
-`
+`/** @public */
+/** @public */
+
 
 export default ToggleButton

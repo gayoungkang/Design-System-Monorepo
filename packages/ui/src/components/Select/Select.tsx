@@ -1,3 +1,4 @@
+/** @public */
 import { useId, useMemo, useRef, useState } from "react"
 import type { FocusEventHandler, KeyboardEvent, ReactNode } from "react"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
@@ -789,6 +790,8 @@ const SelectBox = styled.div<SelectWrapperStyleProps>`
   }
 `
 
-Select.displayName = "Select"
+Select.displayName = "Select"/** @public */
+/** @public */
+
 
 export default Select

@@ -1,3 +1,4 @@
+/** @public */
 import type { ButtonHTMLAttributes, ForwardedRef, MouseEvent } from "react"
 import { forwardRef } from "react"
 import { useTheme, type DefaultTheme } from "styled-components"
@@ -413,5 +414,7 @@ const getButtonVariantStyles = (
   `
 }
 
-Button.displayName = "Button"
+Button.displayName = "Button"/** @public */
+/** @public */
+
 export default Button

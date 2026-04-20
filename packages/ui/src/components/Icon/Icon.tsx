@@ -1,3 +1,4 @@
+/** @public */
 import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import type { IconName } from "./icon-types"
@@ -110,6 +111,8 @@ const StyledIcon = styled.svg<{ $color?: string }>`
   ${BaseMixin}
 `
 
-Icon.displayName = "Icon"
+Icon.displayName = "Icon"/** @public */
+/** @public */
+
 
 export default Icon

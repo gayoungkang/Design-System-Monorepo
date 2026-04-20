@@ -1,3 +1,4 @@
+/** @public */
 import type {
   ReactNode,
   JSX,
@@ -682,6 +683,8 @@ const InfiniteTable = <T extends Record<string, unknown>>({
       </Flex>
     </>
   )
-}
+}/** @public */
+/** @public */
+
 
 export default InfiniteTable

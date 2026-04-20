@@ -1,3 +1,4 @@
+/** @public */
 import type React from "react"
 import type { JSX, ReactNode } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"

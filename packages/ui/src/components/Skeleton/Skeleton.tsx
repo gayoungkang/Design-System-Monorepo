@@ -1,3 +1,4 @@
+/** @public */
 import type { ReactNode } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
@@ -181,6 +182,8 @@ const SkeletonItem = styled.div<SkeletonItemStyleProps & BaseMixinProps>`
   ${BaseMixin}
 `
 
-Skeleton.displayName = "Skeleton"
+Skeleton.displayName = "Skeleton"/** @public */
+/** @public */
+
 
 export default Skeleton

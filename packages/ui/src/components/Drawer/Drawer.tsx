@@ -1,3 +1,4 @@
+/** @public */
 import type { ReactNode } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { createPortal } from "react-dom"
@@ -262,6 +263,8 @@ const DrawerContainer = styled(Box)<{
         return `transform: translateY(100%); opacity:0;`
     }
   }}
-`
+`/** @public */
+/** @public */
+
 
 export default Drawer

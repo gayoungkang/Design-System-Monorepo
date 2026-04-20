@@ -1,3 +1,4 @@
+/** @public */
 import type { CSSProperties, ReactNode } from "react"
 import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
@@ -127,6 +128,8 @@ const Container = styled.div<StyledProps>`
   overflow-y: ${({ $overflowY, $overflow }) => $overflowY ?? $overflow ?? "auto"};
 `
 
-ScrollBox.displayName = "ScrollBox"
+ScrollBox.displayName = "ScrollBox"/** @public */
+/** @public */
+
 
 export default ScrollBox
