@@ -51,7 +51,8 @@ export const omittedBaseProps = [
   "bgColor",
 ] as const
 
-type OmittedBaseProp = (typeof omittedBaseProps)[number]
+/** @public */
+export type OmittedBaseProp = (typeof omittedBaseProps)[number]
 
 /** @public */
 export const shouldBlock = (prop: string): prop is OmittedBaseProp =>

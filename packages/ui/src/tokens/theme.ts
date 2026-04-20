@@ -1,7 +1,8 @@
 import { css } from "styled-components"
 import type { DefaultTheme } from "styled-components"
 
-const colors = {
+/** @public */
+export const colors = {
   grayscale: {
     "900": "#1C1D22",
     "800": "#32363E",
@@ -78,7 +79,8 @@ const colors = {
   },
 } as const
 
-const shadows = {
+/** @public */
+export const shadows = {
   elevation: [
     "none",
     "0px 1px 3px rgba(0,0,0,0.2), 0px 1px 1px rgba(0,0,0,0.14), 0px 2px 1px rgba(0,0,0,0.12)",
@@ -186,7 +188,8 @@ export const fonts = {
   },
 }
 
-const borderRadius = {
+/** @public */
+export const borderRadius = {
   0: "0",
   1: "2px",
   4: "4px",
@@ -213,16 +216,22 @@ export const typographyVariants = {
 
 /** @public */
 export type TypographyVariant = keyof typeof typographyVariants
+
 /** @public */
 export type ThemeVariantType = "WHITE" | "BLUE" | "BLACK"
+
 /** @public */
 export type ColorsType = typeof colors
+
 /** @public */
 export type ZindexType = typeof zIndex
+
 /** @public */
 export type FontsType = typeof fonts
+
 /** @public */
 export type ShadowsType = typeof shadows
+
 /** @public */
 export type BorderRadiusType = typeof borderRadius
 
