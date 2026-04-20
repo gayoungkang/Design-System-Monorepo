@@ -3,33 +3,57 @@
  * @public
  *
  * Stable public API surface for @acme/ui.
- * Components, tokens, and shared design-system types are exported here.
+ * Only supported consumer-facing contracts are exported here.
  * App-specific stores and internal utilities are intentionally excluded.
  * --------------------------------------------------------------------------- */
 
 /** @public */
-export * from "./tokens/baseMixin"
+export { BaseMixin, addImportantToSx } from "./tokens/baseMixin"
 /** @public */
-export * from "./tokens/customStyled"
-/** @public */
-export * from "./tokens/globalStyle"
-/** @public */
-export * from "./tokens/keyframes"
-/** @public */
-export * from "./tokens/theme"
+export type { BaseMixinProps, SxProps } from "./tokens/baseMixin"
 
 /** @public */
-export * from "./types/form"
+export { styled } from "./tokens/customStyled"
+
 /** @public */
-export * from "./types/layout"
+export { GlobalStyle } from "./tokens/globalStyle"
+
 /** @public */
-export * from "./types/placement"
+export {
+  spin,
+  indeterminateAnimation,
+  wave,
+  circularIndeterminate,
+  fadeInUp,
+  popover,
+} from "./tokens/keyframes"
+
 /** @public */
-export * from "./types/status"
+export { theme, zIndex, typographyVariants } from "./tokens/theme"
 /** @public */
-export * from "./types/ui"
+export type { ThemeVariantType, TypographyVariant } from "./tokens/theme"
+
 /** @public */
-export * from "./types/zindex"
+export type { VariantFormType, HelperTextUiType } from "./types/form"
+/** @public */
+export type { DirectionType } from "./types/layout"
+/** @public */
+export type { DirectionalPlacement, AxisPlacement, CornerPlacement } from "./types/placement"
+/** @public */
+export type { StatusUiType } from "./types/status"
+/** @public */
+export type { SizeUiType, ColorUiType, VariantUiType } from "./types/ui"
+/** @public */
+export {
+  COMMON_PARENTS_ELEMENT_ZINDEX,
+  COMMON_CHILD_ELEMENT_ZINDEX,
+  LOADING_ZINDEX,
+  SNACKBAR_ZINDEX,
+  POPOVER_ZINDEX,
+  MODAL_ZINDEX,
+  RESIZABLEPANEL,
+  TABLE_HEADER_ZINDEX,
+} from "./types/zindex"
 
 /** @public */
 export * from "./components/Accordion/Accordion"
@@ -63,6 +87,8 @@ export * from "./components/Grid/Grid"
 export * from "./components/HelperText/HelperText"
 /** @public */
 export * from "./components/Icon/Icon"
+/** @public */
+export * from "./components/Icon/IconSpriteProvider"
 /** @public */
 export * from "./components/IconButton/IconButton"
 /** @public */
@@ -119,5 +145,3 @@ export * from "./components/Tooltip/Tooltip"
 export * from "./components/TreeView/TreeView"
 /** @public */
 export * from "./components/Typography/Typography"
-/** @public */
-export * from "./components/Icon/IconSpriteProvider"
