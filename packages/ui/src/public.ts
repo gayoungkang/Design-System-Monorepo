@@ -54,7 +54,8 @@ export {
   RESIZABLEPANEL,
   TABLE_HEADER_ZINDEX,
 } from "./types/zindex"
-
+/** @public */
+export * from "./components/DatePicker/DatePicker"
 /** @public */
 export * from "./components/Accordion/Accordion"
 /** @public */
