@@ -127,6 +127,7 @@ const normalizePlacement = (p: AxisPlacement): "left" | "right" | "top" | "botto
  * <Drawer open={open} placement="left" variant="fixed" closeBehavior="collapsed" collapsedSize={56} />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 
 const Drawer = ({
   open,

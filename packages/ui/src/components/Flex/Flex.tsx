@@ -65,6 +65,7 @@ export type FlexProps = HTMLAttributes<HTMLDivElement> &
  * </Flex>
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 
 const Flex = forwardRef<HTMLDivElement, FlexProps>(
   (

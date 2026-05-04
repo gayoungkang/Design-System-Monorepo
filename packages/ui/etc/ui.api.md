@@ -143,6 +143,12 @@ export type BasicPaginationProps = PaginationBaseProps & {
 export type BorderRadiusKey = keyof DefaultTheme["borderRadius"];
 
 // @public (undocumented)
+export const Box: ForwardRefExoticComponent<BaseMixinProps & Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
+children?: ReactNode;
+as?: keyof JSX_2.IntrinsicElements;
+} & RefAttributes<HTMLDivElement>>;
+
+// @public (undocumented)
 export type BoxProps = BaseMixinProps & Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
     children?: ReactNode;
     as?: keyof JSX_2.IntrinsicElements;
@@ -161,6 +167,26 @@ export type BreadcrumbsProps = BaseMixinProps & {
     separator?: ReactNode;
     maxItems?: number;
 };
+
+// @public (undocumented)
+export const Button: ForwardRefExoticComponent<BaseMixinProps & {
+text: string;
+onClick?: (e: MouseEvent_2<HTMLButtonElement>) => void;
+color?: ColorUiType;
+variant?: VariantUiType;
+size?: SizeUiType;
+type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+disabled?: boolean;
+startIcon?: IconName;
+endIcon?: IconName;
+fileUrl?: string;
+fileName?: string;
+loading?: boolean;
+onDownload?: () => void | Promise<void>;
+progressProps?: ProgressProps;
+iconProps?: Partial<Omit<IconProps, "name">>;
+typographyProps?: Partial<TypographyProps>;
+} & RefAttributes<HTMLButtonElement>>;
 
 // @public (undocumented)
 export type ButtonProps = BaseMixinProps & {
@@ -381,6 +407,9 @@ export type DividerProps = BaseMixinProps & {
 };
 
 // @public (undocumented)
+export const Drawer: (input: DrawerProps) => JSX_3.Element | null;
+
+// @public (undocumented)
 export type DrawerCloseBehavior = "hidden" | "collapsed";
 
 // @public (undocumented)
@@ -421,6 +450,19 @@ export type ExtraHTMLProps = HTMLAttributes<HTMLDivElement> & {
 
 // @public (undocumented)
 export const fadeInUp: default_2;
+
+// @public (undocumented)
+export const Flex: ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & BaseMixinProps & {
+as?: keyof JSX_2.IntrinsicElements;
+children?: ReactNode;
+direction?: CSSProperties["flexDirection"];
+justify?: CSSProperties["justifyContent"];
+align?: CSSProperties["alignItems"];
+wrap?: CSSProperties["flexWrap"];
+gap?: string | number;
+extraProps?: ExtraHTMLProps;
+isActive?: boolean;
+} & RefAttributes<HTMLDivElement>>;
 
 // @public
 export type FlexProps = HTMLAttributes<HTMLDivElement> & BaseMixinProps & {
@@ -518,10 +560,10 @@ export type IconItem = {
     };
 };
 
-// @public
+// @public (undocumented)
 export type IconName = typeof IconNames[number];
 
-// @public
+// @public (undocumented)
 export const IconNames: readonly ["Add", "AlertTriangle", "ArrowDown", "ArrowLeft", "ArrowLeftCircleLine", "ArrowRight", "ArrowUp", "BookmarkFill", "BookmarkLine", "CheckLine", "ClipboardLine", "CloseCircleFill", "CloseLine", "Date", "DateTime", "Download", "Eye", "EyeOff", "File", "Filter", "FirstPageArrow", "Folder", "LastPageArrow", "SearchLine", "StarGlyph", "StarOutLine", "StatusDefault", "StatusError", "StatusInfo", "StatusSuccess", "StatusWarning", "Time", "ViewColumn", "VolumeDown", "VolumeUp", "reset"];
 
 // @public (undocumented)
@@ -548,6 +590,9 @@ export type IconSpriteProviderProps = {
 
 // @public (undocumented)
 export const indeterminateAnimation: default_2;
+
+// @public (undocumented)
+export const InfiniteTable: <T extends Record<string, unknown>>(input: InfiniteTableProps<T>) => JSX_2.Element;
 
 // @public (undocumented)
 export type InfiniteTableExportContext = Record<string, unknown>;
@@ -722,6 +767,9 @@ export type PopperProps = {
 };
 
 // @public (undocumented)
+export const Progress: (input: ProgressProps) => JSX_3.Element;
+
+// @public (undocumented)
 export type ProgressProps = BaseMixinProps & {
     type?: "bar" | "circular";
     variant?: "determinate" | "indeterminate";
@@ -797,6 +845,12 @@ export type ScrollBoxProps = BaseMixinProps & {
     overflowY?: CSSProperties["overflowY"];
 };
 
+// @public (undocumented)
+export const Select: {
+    <TValue extends string | number = string>(input: SelectProps<TValue>): JSX_3.Element;
+    displayName: string;
+};
+
 // @public
 export type SelectCommonProps<TValue extends string | number> = BaseMixinProps & {
     variant?: VariantFormType;
@@ -870,6 +924,12 @@ export type SingleValue<TValue extends string | number> = TValue | undefined;
 
 // @public (undocumented)
 export type SizeUiType = "S" | "M" | "L";
+
+// @public (undocumented)
+export const Skeleton: {
+    (input: SkeletonProps): JSX_3.Element;
+    displayName: string;
+};
 
 // @public (undocumented)
 export type SkeletonProps = BaseMixinProps & {
@@ -1145,6 +1205,9 @@ export type SxProps = CSSObject & {
 };
 
 // @public (undocumented)
+export const Table: <T extends Record<string, unknown>, TExtraExportType extends string = never>(props: TableProps<T, TExtraExportType>) => JSX_2.Element;
+
+// @public (undocumented)
 export const TABLE_HEADER_ZINDEX = 700;
 
 // @public (undocumented)
@@ -1385,6 +1448,44 @@ export const Tabs: {
     (input: TabProps): JSX_3.Element;
     displayName: string;
 };
+
+// @public (undocumented)
+export const TextField: ForwardRefExoticComponent<BaseMixinProps & {
+variant?: VariantFormType;
+size?: SizeUiType;
+type?: HTMLInputTypeAttribute;
+name?: string;
+label?: string;
+placeholder?: string;
+value?: string;
+onlyNumber?: boolean;
+maxLength?: number;
+onClear?: () => void;
+onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+onBlur?: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+onFocus?: () => void;
+onSearch?: (value: string, isEnter?: boolean) => void;
+onKeyDown?: (event: KeyboardEvent_2<HTMLInputElement | HTMLTextAreaElement>) => void;
+onKeyUp?: (event: KeyboardEvent_2<HTMLInputElement | HTMLTextAreaElement>) => void;
+onClick?: (event: MouseEvent_2<HTMLDivElement>) => void;
+onMouseDown?: (event: MouseEvent_2<HTMLDivElement>) => void;
+onMouseUp?: (event: MouseEvent_2<HTMLDivElement>) => void;
+disabled?: boolean;
+error?: boolean;
+helperText?: string;
+startIcon?: IconName;
+endIcon?: IconName;
+required?: boolean;
+readOnly?: boolean;
+labelPlacement?: AxisPlacement;
+labelProps?: Partial<Omit<LabelProps, "text">>;
+iconProps?: Partial<Omit<IconProps, "name">>;
+multiline?: boolean;
+rows?: number;
+clearable?: boolean;
+autoFocus?: boolean;
+onSearchEnter?: (value: string, isEnter: boolean) => void;
+} & RefAttributes<HTMLTextAreaElement | HTMLInputElement>>;
 
 // @public (undocumented)
 export type TextFieldProps = BaseMixinProps & {

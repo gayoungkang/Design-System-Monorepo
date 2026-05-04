@@ -160,6 +160,7 @@ export type InfiniteTableProps<T extends Record<string, unknown>> = {
  * />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 
 const InfiniteTable = <T extends Record<string, unknown>>({
   tableKey,

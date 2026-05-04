@@ -68,6 +68,7 @@ export type ProgressProps = BaseMixinProps & {
  * />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 const Progress = ({
   type = "bar",
   variant = "indeterminate",

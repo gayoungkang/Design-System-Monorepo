@@ -242,6 +242,7 @@ const getPlacementAlign = (placement?: AxisPlacement): AlignCss => {
  * />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 const Select = <TValue extends string | number = string>({
   variant = "outlined",
   multipleType = "default",

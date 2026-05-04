@@ -56,6 +56,8 @@ type CustomerRow = {
   seats: number
 }
 
+type CustomerExportType = "csv" | "excel"
+
 const customerRows: CustomerRow[] = [
   { id: 1001, company: "Northwind Studio", owner: "Mina", status: "Active", seats: 42 },
   { id: 1002, company: "Apex Logistics", owner: "Joon", status: "Trial", seats: 18 },
@@ -88,6 +90,20 @@ const sortRows = (rows: CustomerRow[], query: ServerTableQuery) => {
     return aValue > bValue ? direction : -direction
   })
 }
+
+const customerColumns: ColumnProps<CustomerRow>[] = [
+  { key: "id", title: "ID", width: 100, sort: true },
+  { key: "company", title: "Company", width: 220, sort: true },
+  { key: "owner", title: "Owner", width: 160 },
+  { key: "status", title: "Status", width: 140, sort: true },
+  { key: "seats", title: "Seats", width: 120, sort: true, textAlign: "right" },
+]
+
+const hasKeywordContext = (context: unknown): context is { keyword: string } =>
+  typeof context === "object" &&
+  context !== null &&
+  "keyword" in context &&
+  typeof context.keyword === "string"
 
 export const FormValidationScenario: Story = {
   render: () => {
@@ -306,13 +322,7 @@ export const DataTableScenario: Story = {
     const [exportMessage, setExportMessage] = useState("No export requested.")
 
     const columns = useMemo<ColumnProps<CustomerRow>[]>(() => {
-      return [
-        { key: "id", title: "ID", width: 100, sort: true },
-        { key: "company", title: "Company", width: 220, sort: true },
-        { key: "owner", title: "Owner", width: 160 },
-        { key: "status", title: "Status", width: 140, sort: true },
-        { key: "seats", title: "Seats", width: 120, sort: true, textAlign: "right" },
-      ].map((column) => ({
+      return customerColumns.map((column) => ({
         ...column,
         sortDirection: query.sort?.key === column.key ? query.sort.direction : undefined,
         onSortChange: (key, direction) => {
@@ -331,7 +341,7 @@ export const DataTableScenario: Story = {
     return (
       <Box p="24px" width="960px">
         <Typography variant="h3" text="Data table scenario" mb="16px" />
-        <Table<CustomerRow>
+        <Table<CustomerRow, CustomerExportType>
           tableKey="customer-operations"
           columnConfig={columns}
           data={visible.rows}
@@ -357,9 +367,10 @@ export const DataTableScenario: Story = {
             { type: "csv", label: "CSV" },
             { type: "excel", label: "Excel" },
           ]}
-          onExport={(type, context) =>
-            setExportMessage(`Requested ${type} export for keyword "${String(context.keyword)}".`)
-          }
+          onExport={(type, context) => {
+            const keyword = hasKeywordContext(context) ? context.keyword : ""
+            setExportMessage(`Requested ${type} export for keyword "${keyword}".`)
+          }}
           onQueryChange={setQuery}
         />
         <Typography variant="b3Regular" text={exportMessage} color="text.secondary" mt="12px" />
@@ -409,7 +420,8 @@ export const WorkflowTabsAndAccordionScenario: Story = {
       <Box p="24px" width="760px">
         <Tabs
           value={tab}
-          onSelect={setTab}
+          size="M"
+          onSelect={(value) => setTab(value)}
           options={[
             { label: "Request", value: "request" },
             { label: "Review", value: "review" },

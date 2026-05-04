@@ -141,6 +141,7 @@ type InputStyleProps = {
  * />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(
   (
     {

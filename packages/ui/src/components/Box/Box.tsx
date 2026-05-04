@@ -39,6 +39,7 @@ export type BoxProps = BaseMixinProps &
  * </Box>
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 const Box = forwardRef<HTMLDivElement, BoxProps>(({ as = "div", children, ...props }, ref) => {
   return (
     <StyledBox ref={ref} as={as} {...props}>

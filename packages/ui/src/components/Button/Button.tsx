@@ -84,6 +84,7 @@ export type ButtonProps = BaseMixinProps & {
  * <Button text="로딩" loading />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 
 const Button = forwardRef(
   (

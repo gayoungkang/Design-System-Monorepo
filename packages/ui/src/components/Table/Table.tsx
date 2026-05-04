@@ -25,6 +25,7 @@ import { theme } from "../../tokens/theme"
 import type { ExportType } from "./_internal/TableExport"
 import { clamp, clampRowsPerPage, parseWidthToPx } from "./@utils/table"
 import TableToolBar from "./_internal/TableToolbar"
+import type { TableToolBarProps as InternalTableToolBarProps } from "./_internal/TableToolbar"
 
 /**---------------------------------------------------------------------------/
  *
@@ -91,8 +92,11 @@ import TableToolBar from "./_internal/TableToolbar"
  * />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 
-const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Element => {
+const Table = <T extends Record<string, unknown>, TExtraExportType extends string = never>(
+  props: TableProps<T, TExtraExportType>,
+): JSX.Element => {
   const {
     tableKey,
     columnConfig,
@@ -132,10 +136,10 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
 
   type TableThAlign = ComponentProps<typeof TableTh>["align"]
   type PaginationType = ComponentProps<typeof Pagination>["type"]
-  type TableToolbarProps = ComponentProps<typeof TableToolBar>
+  type TableToolbarProps = InternalTableToolBarProps<TExtraExportType>
   type TableRowProps = ComponentProps<typeof TableRow>
   type TableSummaryRowProps = ComponentProps<typeof TableSummaryRow>
-  type ExportHandler = NonNullable<TableProps<T>["onExport"]>
+  type ExportHandler = NonNullable<TableProps<T, TExtraExportType>["onExport"]>
   type ExportContextArg = Parameters<ExportHandler>[1]
   type ExportTypeArg = Parameters<ExportHandler>[0]
 
@@ -372,7 +376,7 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     return colSortDirection ?? "ASC"
   }
 
-  const handleExport = (type: ExportType) => {
+  const handleExport = (type: ExportType<TExtraExportType>) => {
     if (!exportEnabled || disabled) return
     if (!onExport) return
 

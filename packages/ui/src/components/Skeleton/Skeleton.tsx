@@ -75,6 +75,7 @@ type SkeletonItemStyleProps = {
  * />
  *
 /---------------------------------------------------------------------------**/
+/** @public */
 const Skeleton = ({
   variant = "text",
   width,
