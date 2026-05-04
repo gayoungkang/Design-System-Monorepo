@@ -6,6 +6,7 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
+  minify: true,
   target: "esnext",
   tsconfig: "tsconfig.build.json",
   external: ["react", "react-dom", "styled-components"],

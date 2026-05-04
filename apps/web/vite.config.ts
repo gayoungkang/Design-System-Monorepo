@@ -16,6 +16,7 @@ export default defineConfig({
 
   resolve: {
     alias: {
+      "@acme/ui": path.resolve(__dirname, "../../packages/ui/src/index.ts"),
       "@": path.resolve(__dirname, "./src"),
     },
   },
@@ -27,5 +28,14 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom", "@tanstack/react-query"],
+          "style-vendor": ["styled-components"],
+          "ui-vendor": ["@acme/ui"],
+        },
+      },
+    },
   },
 })
