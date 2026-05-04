@@ -6,9 +6,11 @@ import { BaseMixin } from "../../tokens/baseMixin"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 
-type BorderRadiusKey = keyof DefaultTheme["borderRadius"]
-/** @public */
-type PaperProps = BaseMixinProps & {
+/** Theme border radius token key accepted by Paper. @public */
+export type BorderRadiusKey = keyof DefaultTheme["borderRadius"]
+
+/** Props for Paper. @public */
+export type PaperProps = BaseMixinProps & {
   children?: ReactNode
   elevation?: number
   radius?: BorderRadiusKey | number | string
@@ -111,4 +113,3 @@ const StyledPaper = styled.div<
 /** @public */
 
 export default Paper
-export type { PaperProps }

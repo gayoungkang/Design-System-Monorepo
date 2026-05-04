@@ -6,17 +6,21 @@ import { Typography } from "../../Typography/Typography"
 import Button from "../../Button/Button"
 import { theme } from "../../../tokens/theme"
 
+/** Built-in table export formats. @public */
 export type DefaultExportType = "excel" | "csv" | "pdf" | "print"
+/** Table export type, including optional consumer-defined formats. @public */
 export type ExportType<TExtraExportType extends string = never> =
   | DefaultExportType
   | TExtraExportType
 
+/** Export item rendered by table export controls. @public */
 export type ExportItem<T extends string> = {
   type: T
   label: string
   icon?: string
 }
 
+/** Internal props for the table export control. @public */
 export type TableExportProps<TExtraExportType extends string = never> = {
   disabled?: boolean
   exportEnabled?: boolean
@@ -82,7 +86,7 @@ const TableExport = <TExtraExportType extends string = never>({
     const items = exportItems ?? []
     if (!excludeExportTypes?.length) return items
     const ex = new Set(excludeExportTypes)
-    return items.filter((it) => !ex.has(it.type as any))
+    return items.filter((it) => !ex.has(it.type))
   }, [exportItems, excludeExportTypes])
 
   // * 내보내기 자체가 비활성/핸들러 없음/노출 항목 없음이면 렌더링하지 않음
@@ -107,7 +111,7 @@ const TableExport = <TExtraExportType extends string = never>({
   return (
     <Flex align="center" gap={6}>
       <IconButton
-        ref={anchorRef as any}
+        ref={anchorRef}
         icon="Download"
         disabled={disabled}
         disableInteraction={false}
@@ -142,4 +146,5 @@ const TableExport = <TExtraExportType extends string = never>({
   )
 }
 
+/** @public */
 export default TableExport

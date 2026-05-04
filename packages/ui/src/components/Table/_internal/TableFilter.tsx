@@ -9,9 +9,9 @@ import ScrollBox from "../../ScrollBox/ScrollBox"
 import Skeleton from "../../Skeleton/Skeleton"
 import Badge from "../../Badge/Badge"
 import { toCssValue } from "../../../utils/string"
+import type { AxisPlacement } from "../../../types/placement"
 
-type AxisPlacement = "top" | "bottom" | "left" | "right"
-
+/** Props for the table filter drawer configuration. @public */
 export type TableFilterProps = {
   disabled?: boolean
 
@@ -301,4 +301,5 @@ const FilterInner = styled.div<{ $open: boolean }>`
   will-change: transform, opacity;
 `
 
+/** @public */
 export default TableFilter

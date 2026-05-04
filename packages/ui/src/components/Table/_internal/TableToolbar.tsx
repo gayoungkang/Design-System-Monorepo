@@ -3,13 +3,15 @@ import Flex from "../../Flex/Flex"
 import IconButton from "../../IconButton/IconButton"
 import Divider from "../../Divider/Divider"
 import TableSearch from "./TableSearch"
-import TableColumnVisible from "./TableColumnVisible"
+import TableColumnVisible, { type ColumnVisibilityItem } from "./TableColumnVisible"
 import TableFilter from "./TableFilter"
+import type { TableFilterProps } from "./TableFilter"
 import Badge from "../../Badge/Badge"
 import { Typography } from "../../Typography/Typography"
 import { theme } from "../../../tokens/theme"
 import TableExport, { type ExportType } from "./TableExport"
 
+/** Props for the Table toolbar configuration. @public */
 export type TableToolBarProps<TExtraExportType extends string = never> = {
   title?: string
   disabled?: boolean
@@ -32,7 +34,7 @@ export type TableToolBarProps<TExtraExportType extends string = never> = {
   visibleColumnKeys?: string[]
   defaultVisibleColumnKeys?: string[]
   onVisibleColumnKeysChange?: (keys: string[]) => void
-  onHiddenColumnKeysChange?: (hiddenKeys: string[], hiddenColumns: any[]) => void
+  onHiddenColumnKeysChange?: (hiddenKeys: string[], hiddenColumns: ColumnVisibilityItem[]) => void
   columnsSkeletonEnabled?: boolean
   columnsSkeletonCount?: number
 
@@ -41,8 +43,8 @@ export type TableToolBarProps<TExtraExportType extends string = never> = {
   filterActiveCount?: number
   filterOpen?: boolean
   onFilterOpenChange?: (open: boolean) => void
-  filterDrawerVariant?: any
-  filterDrawerPlacement?: any
+  filterDrawerVariant?: TableFilterProps["filterDrawerVariant"]
+  filterDrawerPlacement?: TableFilterProps["filterDrawerPlacement"]
   filterDrawerWidth?: number | string
   filterDrawerHeight?: number | string
   filterSkeletonEnabled?: boolean
@@ -278,4 +280,5 @@ const TableToolBar = <TExtraExportType extends string = never>({
   )
 }
 
+/** @public */
 export default TableToolBar

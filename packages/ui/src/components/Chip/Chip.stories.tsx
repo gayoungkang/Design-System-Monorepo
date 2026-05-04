@@ -5,6 +5,7 @@ import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
+import { theme } from "../../tokens/theme"
 
 const meta: Meta<typeof Chip> = {
   title: "Data Display/Chip",
@@ -100,8 +101,8 @@ export const AllCases: Story = {
           <Box>
             <Typography variant="b1Bold" text="Custom Color" mb="8px" />
             <Flex gap="12px">
-              <Chip label="Custom" color="rgb(34,197,94)" />
-              <Chip label="Outlined Custom" variant="outlined" color="rgb(59,130,246)" />
+              <Chip label="Success Token" color={theme.colors.success[400]} />
+              <Chip label="Outlined Info Token" variant="outlined" color={theme.colors.info[400]} />
             </Flex>
           </Box>
         </Flex>

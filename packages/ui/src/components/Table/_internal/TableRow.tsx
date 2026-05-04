@@ -90,7 +90,7 @@ const TableRowInner = <T extends Record<string, unknown>>({
       disabled={disabled}
       rowData={data}
       rowHeight={rowHeight}
-      onClick={onRowClick && !disabled ? (handleRowClick as any) : undefined}
+      onClick={onRowClick && !disabled ? handleRowClick : undefined}
     >
       {columnConfig.map((column, ci) => {
         // * 컬럼 단위 disabled 계산 (row + column 조건 병합)

@@ -6,12 +6,14 @@ import { normalizeAlign } from "../@utils/table"
 import { Typography } from "../../Typography/Typography"
 import { theme } from "../../../tokens/theme"
 
+/** Summary cell configuration used by the internal table summary row. @public */
 export type SummaryItem<T> = {
   key: keyof T
   label?: string
   formatter?: (value: number) => string
 }
 
+/** Summary line configuration used by the internal table summary row. @public */
 export type SummaryRowLine<T> = {
   items: SummaryItem<T>[]
   label?: string
@@ -19,6 +21,7 @@ export type SummaryRowLine<T> = {
   labelCell?: ReactNode
 }
 
+/** Summary row configuration used by table components. @public */
 export type SummaryRowProps<T> = {
   enabled?: boolean
   rows: SummaryRowLine<T>[]
@@ -202,4 +205,5 @@ const TableSummaryRow = <T extends Record<string, unknown>>({
   )
 }
 
+/** @public */
 export default TableSummaryRow

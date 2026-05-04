@@ -95,7 +95,7 @@ export const Decorations: Story = {
         <Typography text="Italic text" italic />
         <Typography text="Underline text" underline />
         <Typography text="Italic underline text" italic underline />
-        <Typography text="Colored text" color="#2563eb" />
+        <Typography text="Colored text" color="primary.400" />
       </Flex>
     )
   },

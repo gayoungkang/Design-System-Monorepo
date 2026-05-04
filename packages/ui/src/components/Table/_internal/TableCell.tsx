@@ -91,7 +91,7 @@ const OverflowTooltipText = ({ text, disabled }: OverflowTooltipTextProps): JSX.
 }
 
 // * disabled 셀 전용: 값이 비어있으면 "-"로 치환 후 overflow-tooltip 텍스트로 렌더
-export const renderDisabledCell = (value: any): JSX.Element => {
+export const renderDisabledCell = (value: unknown): JSX.Element => {
   const txt = value === undefined || value === null || value === "" ? "-" : String(value)
   return <OverflowTooltipText text={txt} disabled />
 }
@@ -112,7 +112,7 @@ export const renderCell = <T extends Record<string, unknown>>(
   }
 
   // * 기본 값 렌더: undefined/null/빈문자열은 "-"로 정규화
-  const raw = (data as any)?.[column.key as any]
+  const raw = data[column.key]
   const text = raw === undefined || raw === null || raw === "" ? "-" : String(raw)
 
   // * disabled 셀은 비활성 컬러로, 그 외는 기본 컬러로 overflow-tooltip 텍스트 렌더

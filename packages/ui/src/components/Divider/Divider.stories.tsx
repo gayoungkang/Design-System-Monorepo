@@ -3,6 +3,7 @@ import Divider from "./Divider"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
+import { theme } from "../../tokens/theme"
 
 const meta: Meta<typeof Divider> = {
   title: "Foundation/Divider",
@@ -75,8 +76,8 @@ export const AllCases: Story = {
             <Typography variant="b1Bold" text="Thickness / Color" mb="8px" />
             <Box width="480px">
               <Divider thickness="2px" mb="8px" />
-              <Divider thickness="4px" color="rgb(59, 130, 246)" mb="8px" />
-              <Divider thickness="6px" color="rgb(239, 68, 68)" />
+              <Divider thickness="4px" color={theme.colors.primary[400]} mb="8px" />
+              <Divider thickness="6px" color={theme.colors.error[400]} />
             </Box>
           </Box>
 

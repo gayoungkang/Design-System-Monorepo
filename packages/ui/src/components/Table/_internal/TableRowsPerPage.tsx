@@ -106,14 +106,14 @@ const TableRowsPerPage = ({
         label
       )}
 
-      <Select
+      <Select<string>
         size="S"
         width={60}
-        options={options as any}
+        options={options}
         value={String(safeRowsPerPage)}
         disabled={disabled}
         readOnly={disabled}
-        onChange={handleChange as any}
+        onChange={handleChange}
         typographyProps={{ sx: { lineHeight: "inherit" } }}
       />
     </Flex>

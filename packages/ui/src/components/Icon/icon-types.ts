@@ -1,4 +1,5 @@
 // AUTO-GENERATED FILE — DO NOT EDIT MANUALLY
+/** Available icon names bundled with \@acme/ui. @public */
 export const IconNames = [
   "Add",
   "AlertTriangle",
@@ -38,4 +39,5 @@ export const IconNames = [
   "reset"
 ] as const;
 
+/** Name of an icon bundled with \@acme/ui. @public */
 export type IconName = typeof IconNames[number];

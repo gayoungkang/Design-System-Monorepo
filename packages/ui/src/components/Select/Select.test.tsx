@@ -34,6 +34,41 @@ describe("Select", () => {
     fireEvent.keyDown(combobox, { key: "Enter" })
 
     expect(screen.getByRole("listbox")).toBeInTheDocument()
+    expect(screen.getAllByRole("option")).toHaveLength(fruitOptions.length)
+  })
+
+  it("keyboard 이동 시 aria-activedescendant를 현재 option에 연결한다", () => {
+    renderSelect(<Select<string> label="과일" options={fruitOptions} />)
+
+    const combobox = screen.getByRole("combobox")
+    fireEvent.keyDown(combobox, { key: "Enter" })
+    fireEvent.keyDown(combobox, { key: "ArrowDown" })
+
+    const activeOptionId = combobox.getAttribute("aria-activedescendant")
+
+    expect(activeOptionId).toBeTruthy()
+    expect(document.getElementById(activeOptionId ?? "")).toHaveTextContent("바나나")
+  })
+
+  it("keyboard로 active option을 선택하고 Escape로 listbox를 닫는다", () => {
+    const handleChange = vi.fn()
+
+    renderSelect(<Select<string> label="과일" options={fruitOptions} onChange={handleChange} />)
+
+    const combobox = screen.getByRole("combobox")
+    fireEvent.keyDown(combobox, { key: "Enter" })
+    fireEvent.keyDown(combobox, { key: "ArrowDown" })
+    fireEvent.keyDown(combobox, { key: "Enter" })
+
+    expect(handleChange).toHaveBeenCalledWith("banana")
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument()
+
+    fireEvent.keyDown(combobox, { key: "Enter" })
+    expect(screen.getByRole("listbox")).toBeInTheDocument()
+
+    fireEvent.keyDown(combobox, { key: "Escape" })
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument()
+    expect(combobox).toHaveAttribute("aria-expanded", "false")
   })
 
   it("selects single option", () => {
@@ -123,5 +158,18 @@ describe("Select", () => {
     )
 
     expect(screen.getByText("필수 항목입니다.")).toBeInTheDocument()
+  })
+
+  it("combobox에 label과 helperText 접근성 속성을 연결한다", () => {
+    renderSelect(
+      <Select<string> label="과일" options={fruitOptions} error helperText="필수 항목입니다." />,
+    )
+
+    const combobox = screen.getByRole("combobox", { name: "과일" })
+    const describedBy = combobox.getAttribute("aria-describedby")
+
+    expect(combobox).toHaveAttribute("aria-invalid", "true")
+    expect(describedBy).toBeTruthy()
+    expect(document.getElementById(describedBy ?? "")).toHaveTextContent("필수 항목입니다.")
   })
 })

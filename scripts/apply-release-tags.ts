@@ -50,7 +50,7 @@ const processFile = (filePath: string, tag: ReleaseTag) => {
     const text = source.slice(node.getFullStart(), node.getStart())
     if (hasReleaseTag(text)) return
 
-    insertions.push(node.getFullStart())
+    insertions.push(node.getStart(sourceFile))
   })
 
   insertions

@@ -1,6 +1,6 @@
 /** @public */
 import type { ReactNode } from "react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import { BaseMixin } from "../../tokens/baseMixin"
@@ -8,16 +8,15 @@ import { styled } from "../../tokens/customStyled"
 import Box from "../Box/Box"
 import { cssValue } from "../../utils/string"
 import { canUseDOM } from "../../utils/canUseDOM"
-import type { AxisPlacement } from "../../types/placement"/** @public */
+import { lockBodyScroll } from "../../utils/bodyScrollLock"
+import type { AxisPlacement } from "../../types/placement" /** @public */
 /** @public */
 
-
-export type DrawerVariant = "fixed" | "absolute" | "flex"/** @public */
+export type DrawerVariant = "fixed" | "absolute" | "flex" /** @public */
 /** @public */
 
-export type DrawerCloseBehavior = "hidden" | "collapsed"/** @public */
+export type DrawerCloseBehavior = "hidden" | "collapsed" /** @public */
 /** @public */
-
 
 export type DrawerProps = BaseMixinProps & {
   open: boolean
@@ -36,6 +35,16 @@ export type DrawerProps = BaseMixinProps & {
 }
 
 const DRAWER_TRANSITION_MS = 300
+
+const getFocusableElements = (element: HTMLElement | null) => {
+  if (!element) return []
+
+  return Array.from(
+    element.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((item) => !item.hasAttribute("disabled") && item.getAttribute("aria-hidden") !== "true")
+}
 
 // * AxisPlacement를 축 기준(left/right/top/bottom)으로 정규화
 const normalizePlacement = (p: AxisPlacement): "left" | "right" | "top" | "bottom" => {
@@ -142,6 +151,8 @@ const Drawer = ({
   const shouldUnmount = isOverlay && closeBehavior === "hidden"
 
   const [mounted, setMounted] = useState(open)
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const previousActiveElementRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     if (!shouldUnmount) return
@@ -155,6 +166,41 @@ const Drawer = ({
     return () => clearTimeout(timer)
   }, [open, shouldUnmount])
 
+  useEffect(() => {
+    if (!open || !onClose || !canUseDOM()) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose()
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [open, onClose])
+
+  useEffect(() => {
+    if (!open || !isOverlay || !canUseDOM()) return
+
+    const releaseBodyScrollLock = lockBodyScroll()
+
+    previousActiveElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
+
+    const raf = window.requestAnimationFrame(() => {
+      const focusableElements = getFocusableElements(drawerRef.current)
+      ;(focusableElements[0] ?? drawerRef.current)?.focus()
+    })
+
+    return () => {
+      window.cancelAnimationFrame(raf)
+      releaseBodyScrollLock()
+      const previousActiveElement = previousActiveElementRef.current
+      if (previousActiveElement && document.contains(previousActiveElement)) {
+        previousActiveElement.focus()
+      }
+      previousActiveElementRef.current = null
+    }
+  }, [open, isOverlay])
+
   if (shouldUnmount && !mounted) return null
 
   const content = (
@@ -162,6 +208,7 @@ const Drawer = ({
       {!disableBackdrop && isOverlay && open && <Backdrop onClick={onClose} />}
 
       <DrawerContainer
+        ref={drawerRef}
         $placement={resolvedPlacement}
         $variant={variant}
         $open={open}
@@ -170,6 +217,10 @@ const Drawer = ({
         $height={height}
         $collapsedSize={collapsedSize}
         $boxShadow={boxShadow}
+        role={isOverlay ? "dialog" : undefined}
+        aria-modal={isOverlay ? true : undefined}
+        aria-hidden={!open && closeBehavior === "hidden" ? true : undefined}
+        tabIndex={isOverlay ? -1 : undefined}
         onClickCapture={(e) => e.stopPropagation()}
         {...others}
       >
@@ -263,8 +314,7 @@ const DrawerContainer = styled(Box)<{
         return `transform: translateY(100%); opacity:0;`
     }
   }}
-`/** @public */
+` /** @public */
 /** @public */
-
 
 export default Drawer

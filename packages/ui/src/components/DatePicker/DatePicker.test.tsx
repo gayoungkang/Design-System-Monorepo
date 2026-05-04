@@ -35,6 +35,44 @@ describe("DatePicker", () => {
     expect(screen.getByRole("textbox")).toBeInTheDocument()
   })
 
+  test("input 클릭 시 date-picker dialog가 열린다", async () => {
+    const user = userEvent.setup()
+
+    renderDatePicker(<DatePicker />)
+
+    await user.click(screen.getByRole("textbox"))
+
+    expect(screen.getByRole("dialog", { name: "date-picker" })).toBeInTheDocument()
+    expect(screen.getByRole("grid", { name: "day-grid" })).toBeInTheDocument()
+  })
+
+  test("Escape 키로 date-picker dialog를 닫는다", async () => {
+    const user = userEvent.setup()
+
+    renderDatePicker(<DatePicker />)
+
+    const input = screen.getByRole("textbox")
+    await user.click(input)
+    expect(screen.getByRole("dialog", { name: "date-picker" })).toBeInTheDocument()
+
+    await user.keyboard("{Escape}")
+
+    expect(screen.queryByRole("dialog", { name: "date-picker" })).not.toBeInTheDocument()
+  })
+
+  test("outside click으로 date-picker dialog를 닫는다", async () => {
+    const user = userEvent.setup()
+
+    renderDatePicker(<DatePicker />)
+
+    await user.click(screen.getByRole("textbox"))
+    expect(screen.getByRole("dialog", { name: "date-picker" })).toBeInTheDocument()
+
+    await user.pointer({ keys: "[MouseLeft]", target: document.body })
+
+    expect(screen.queryByRole("dialog", { name: "date-picker" })).not.toBeInTheDocument()
+  })
+
   test("disabled면 입력창이 비활성화된다", async () => {
     const user = userEvent.setup()
 

@@ -33,13 +33,14 @@ import useIntersect from "./@hooks/useIntersect"/** @public */
 /** @public */
 
 
-export type TableRowAction<T extends Record<string, unknown>> = {
+/** Row action configuration for InfiniteTable. @public */
+export type InfiniteTableRowAction<T extends Record<string, unknown>> = {
   key: string
   render: (row: T, index: number) => ReactNode
-}/** @public */
+}
+
+
 /** @public */
-
-
 export type InfiniteTableExportItem = {
   type: ExportType
   label: string
@@ -69,7 +70,7 @@ export type InfiniteTableProps<T extends Record<string, unknown>> = {
 
   // * view-only
   onRowClick?: (row: T, index: number) => void
-  rowActions?: TableRowAction<T>[]
+  rowActions?: InfiniteTableRowAction<T>[]
 
   // * layout
   sticky?: boolean

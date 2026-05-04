@@ -25,6 +25,18 @@ export type PopperProps = {
   strategy?: "absolute" | "fixed"
   onClose?: () => void
 }
+
+type PlacementSide = "top" | "bottom" | "left" | "right"
+type PlacementAlign = "start" | "center" | "end"
+
+const parsePlacement = (placement: DirectionalPlacement): [PlacementSide, PlacementAlign] => {
+  const [side, align] = placement.split("-")
+  const placementSide =
+    side === "top" || side === "bottom" || side === "left" || side === "right" ? side : "bottom"
+  const placementAlign = align === "start" || align === "end" ? align : "center"
+
+  return [placementSide, placementAlign]
+}
 /**---------------------------------------------------------------------------/
  *
  * ! Popper
@@ -94,6 +106,7 @@ const Popper = forwardRef<HTMLDivElement, PopperProps>(
       maxWidth,
       strategy = "absolute",
       onClose,
+      ...rootProps
     },
     ref,
   ) => {
@@ -134,32 +147,43 @@ const Popper = forwardRef<HTMLDivElement, PopperProps>(
       const anchorRect = anchor.getBoundingClientRect()
       const popperRect = popper.getBoundingClientRect()
 
+      const [placementSide, placementAlign] = parsePlacement(placement)
+
       const base = (() => {
-        switch (placement) {
+        const horizontalLeft =
+          placementAlign === "start"
+            ? anchorRect.left
+            : placementAlign === "end"
+              ? anchorRect.right - popperRect.width
+              : anchorRect.left + anchorRect.width / 2 - popperRect.width / 2
+
+        const verticalTop =
+          placementAlign === "start"
+            ? anchorRect.top
+            : placementAlign === "end"
+              ? anchorRect.bottom - popperRect.height
+              : anchorRect.top + anchorRect.height / 2 - popperRect.height / 2
+
+        switch (placementSide) {
           case "top":
             return {
-              left: anchorRect.left + anchorRect.width / 2 - popperRect.width / 2,
+              left: horizontalLeft,
               top: anchorRect.top - popperRect.height,
             }
           case "bottom":
             return {
-              left: anchorRect.left + anchorRect.width / 2 - popperRect.width / 2,
+              left: horizontalLeft,
               top: anchorRect.bottom,
             }
           case "left":
             return {
               left: anchorRect.left - popperRect.width,
-              top: anchorRect.top + anchorRect.height / 2 - popperRect.height / 2,
+              top: verticalTop,
             }
           case "right":
             return {
               left: anchorRect.right,
-              top: anchorRect.top + anchorRect.height / 2 - popperRect.height / 2,
-            }
-          default:
-            return {
-              left: anchorRect.left,
-              top: anchorRect.bottom,
+              top: verticalTop,
             }
         }
       })()
@@ -209,8 +233,15 @@ const Popper = forwardRef<HTMLDivElement, PopperProps>(
     useLayoutEffect(() => {
       if (!open) return
 
+      const closeAndReturnFocus = () => {
+        onClose?.()
+        if (anchorRef.current instanceof HTMLElement) {
+          anchorRef.current.focus()
+        }
+      }
+
       const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") onClose?.()
+        if (e.key === "Escape") closeAndReturnFocus()
       }
 
       const onPointerDown = (e: PointerEvent) => {
@@ -220,7 +251,7 @@ const Popper = forwardRef<HTMLDivElement, PopperProps>(
 
         if (!popperEl || popperEl.contains(target)) return
         if (anchorEl && anchorEl.contains(target)) return
-        onClose?.()
+        closeAndReturnFocus()
       }
 
       document.addEventListener("keydown", onKeyDown)
@@ -238,12 +269,14 @@ const Popper = forwardRef<HTMLDivElement, PopperProps>(
       <StyledPopper
         ref={setMergedRef}
         role="dialog"
+        aria-label="popover"
         aria-hidden={!open}
-        placement={placement}
-        height={height}
+        $placement={placement}
+        $height={height}
         style={style}
+        {...rootProps}
       >
-        {showArrow && <Arrow placement={placement} />}
+        {showArrow && <Arrow $placement={placement} />}
         {children}
       </StyledPopper>,
       document.body,
@@ -251,17 +284,17 @@ const Popper = forwardRef<HTMLDivElement, PopperProps>(
   },
 )
 
-const StyledPopper = styled.div<{ placement: DirectionalPlacement; height: string }>`
+const StyledPopper = styled.div<{ $placement: DirectionalPlacement; $height: string }>`
   overflow-y: auto;
   background-color: ${({ theme }) => theme.colors.grayscale.white};
   box-shadow: ${({ theme }) => theme.shadows.elevation["8"]};
   border-radius: ${({ theme }) => theme.borderRadius[4]};
   padding: 4px;
-  max-height: ${({ height }) => height};
+  max-height: ${({ $height }) => $height};
   animation: ${popover} 0.2s cubic-bezier(0.25, 2, 0.5, 1) forwards;
 `
 
-const Arrow = styled.div<{ placement: DirectionalPlacement }>`
+const Arrow = styled.div<{ $placement: DirectionalPlacement }>`
   width: 10px;
   height: 10px;
   background-color: ${({ theme }) => theme.colors.grayscale.white};

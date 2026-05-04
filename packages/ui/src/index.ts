@@ -2,7 +2,7 @@
  * @packageDocumentation
  * @public
  *
- * Stable public entry for @acme/ui.
+ * Stable public entry for \@acme/ui.
  * Only exports the supported public API surface.
  * --------------------------------------------------------------------------- */
 

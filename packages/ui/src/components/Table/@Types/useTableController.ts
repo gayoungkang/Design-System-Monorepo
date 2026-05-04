@@ -29,7 +29,7 @@ type TableConfig = {
   rowsPerPage?: number
   rowsPerPageOptions?: number[]
   totalCount?: number
-  handleOnRowsPerPageChange?: (e: any) => void
+  handleOnRowsPerPageChange?: (e: { target: { value: number } }) => void
 }
 
 // * useTableController 훅 입력 파라미터(제어/이벤트/검색/정렬/필터/쿼리 통지) 타입
@@ -231,7 +231,7 @@ export const useTableController = ({
 
     const nextRp = clamp(Math.max(1, nextRowsPerPage), 1, Math.max(1, maxRowsPerPageLimit))
 
-    tableConfig?.handleOnRowsPerPageChange?.({ target: { value: nextRp } as any } as any)
+    tableConfig?.handleOnRowsPerPageChange?.({ target: { value: nextRp } })
     onRowsPerPageChange?.(nextRp)
 
     if (!isControlledRowsPerPage) setInternalRowsPerPage(nextRp)

@@ -19,10 +19,10 @@ import HelperText from "../HelperText/HelperText"
 import { styled } from "../../tokens/customStyled"
 import type { VariantFormType } from "../../types/form"
 import type { SizeUiType } from "../../types/ui"
-import type { AxisPlacement } from "../../types/placement"/** @public */
+import type { AxisPlacement } from "../../types/placement" /** @public */
 /** @public */
 
-
+/** Option item used by Select. @public */
 export type SelectOptionType<
   TValue extends string | number = string | number,
   TPayload extends Record<string, unknown> = Record<string, unknown>,
@@ -36,10 +36,13 @@ export type SelectOptionType<
   isAllOption?: boolean
 }
 
-type SingleValue<TValue extends string | number> = TValue | undefined
-type MultipleValue<TValue extends string | number> = TValue[]
+/** Value type for single Select mode. @public */
+export type SingleValue<TValue extends string | number> = TValue | undefined
+/** Value type for multiple Select mode. @public */
+export type MultipleValue<TValue extends string | number> = TValue[]
 
-type SelectCommonProps<TValue extends string | number> = BaseMixinProps & {
+/** Shared props used by single and multiple Select modes. @public */
+export type SelectCommonProps<TValue extends string | number> = BaseMixinProps & {
   variant?: VariantFormType
   multipleType?: "default" | "chip" | "multiple"
   label?: string
@@ -63,28 +66,25 @@ type SelectCommonProps<TValue extends string | number> = BaseMixinProps & {
     Partial<PopperProps>,
     "anchorRef" | "open" | "children" | "placement" | "width" | "onClose"
   >
-}/** @public */
-/** @public */
+}
 
-
+/** Props for single Select mode. @public */
 export type SingleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
   multiple?: false
   value?: SingleValue<TValue>
   defaultValue?: SingleValue<TValue>
   onChange?: (value: SingleValue<TValue>) => void
-}/** @public */
-/** @public */
+}
 
-
+/** Props for multiple Select mode. @public */
 export type MultipleSelectProps<TValue extends string | number> = SelectCommonProps<TValue> & {
   multiple: true
   value?: MultipleValue<TValue>
   defaultValue?: MultipleValue<TValue>
   onChange?: (value: MultipleValue<TValue>) => void
-}/** @public */
-/** @public */
+}
 
-
+/** Props for Select. @public */
 export type SelectProps<TValue extends string | number = string> =
   | SingleSelectProps<TValue>
   | MultipleSelectProps<TValue>
@@ -271,7 +271,6 @@ const Select = <TValue extends string | number = string>({
 }: SelectProps<TValue>) => {
   const reactId = useId()
   const listboxId = `select-listbox-${reactId}`
-  const labelId = `select-label-${reactId}`
   const helperTextId = `select-helper-${reactId}`
 
   const [open, setOpen] = useState(autoFocus && !disabled && !readOnly)
@@ -509,10 +508,17 @@ const Select = <TValue extends string | number = string>({
     return options.map((item, index) => {
       const itemKey = String(item.value)
       const isSelected = item.isAllOption ? isAllSelected : selectedValueKeys.includes(itemKey)
+      const optionId = `${listboxId}-option-${index}`
+      const optionA11yProps = {
+        id: optionId,
+        role: "option",
+        "aria-selected": isSelected,
+      }
 
       return (
         <Menu
           key={itemKey}
+          {...optionA11yProps}
           text={item.label}
           selected={isSelected}
           width="100%"
@@ -617,6 +623,7 @@ const Select = <TValue extends string | number = string>({
 
   const iconSize = getSizePx(size)
   const describedBy = error ? helperTextId : undefined
+  const activeOptionId = open && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
 
   return (
     <Box
@@ -640,7 +647,8 @@ const Select = <TValue extends string | number = string>({
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-controls={open ? listboxId : undefined}
-          aria-labelledby={label ? labelId : undefined}
+          aria-activedescendant={activeOptionId}
+          aria-label={label}
           aria-describedby={describedBy}
           aria-invalid={error || undefined}
           aria-disabled={disabled || undefined}
@@ -718,7 +726,11 @@ const Select = <TValue extends string | number = string>({
         </Flex>
       )}
 
-      {error && <HelperText status="error" text={helperText ?? ""} mt={6} />}
+      {error && (
+        <Box id={helperTextId}>
+          <HelperText status="error" text={helperText ?? ""} mt={6} />
+        </Box>
+      )}
     </Box>
   )
 }
@@ -790,8 +802,7 @@ const SelectBox = styled.div<SelectWrapperStyleProps>`
   }
 `
 
-Select.displayName = "Select"/** @public */
+Select.displayName = "Select" /** @public */
 /** @public */
-
 
 export default Select

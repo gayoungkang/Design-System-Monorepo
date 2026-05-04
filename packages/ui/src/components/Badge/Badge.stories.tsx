@@ -7,6 +7,7 @@ import Button from "../Button/Button"
 import Avatar from "../Avatar/Avatar"
 import Icon from "../Icon/Icon"
 import { Typography } from "../Typography/Typography"
+import { theme } from "../../tokens/theme"
 
 const meta: Meta<typeof Badge> = {
   title: "Data Display/Badge",
@@ -156,7 +157,10 @@ export const AllCases: Story = {
             <Typography variant="b1Bold" text="With Icon" mb="8px" />
             <Flex gap="20px" align="center" wrap="wrap">
               <Badge content={5} overlap="circular">
-                <Box p="8px" sx={{ border: "1px solid #d9d9d9", borderRadius: "8px" }}>
+                <Box
+                  p="8px"
+                  sx={{ border: `1px solid ${theme.colors.border.default}`, borderRadius: "8px" }}
+                >
                   <Icon name="BookmarkFill" size={20} />
                 </Box>
               </Badge>

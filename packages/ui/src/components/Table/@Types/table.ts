@@ -1,23 +1,28 @@
 import type { ReactNode } from "react"
 import type { BaseMixinProps } from "../../../tokens/baseMixin"
-import type { AxisPlacement } from "packages/ui/src/types/placement"
+import type { AxisPlacement } from "../../../types/placement"
 
 // * 테이블 정렬 방향(오름차순/내림차순) 타입
+/** @public */
 export type SortDirection = "ASC" | "DESC"
 
 // * 테이블 셀의 수평 정렬(left/center/right) 타입
+/** @public */
 export type TableCellAlign = "left" | "center" | "right"
 
 // * 테이블 동작 모드(이 프로젝트는 server 모드만 사용)
+/** @public */
 export type TableMode = "server"
 
 // * 서버 정렬 조건(정렬 기준 컬럼 key + 정렬 방향) 타입
+/** @public */
 export type ServerTableSort = {
   key: string
   direction: SortDirection
 }
 
 // * 서버 필터 조건(필터 대상 key + 연산자 + 값) 타입
+/** @public */
 export type ServerTableFilter = {
   key: string
   operator?: string
@@ -25,6 +30,7 @@ export type ServerTableFilter = {
 }
 
 // * 서버 제어형 테이블 쿼리(페이지/사이즈/검색/정렬/필터) 타입
+/** @public */
 export type ServerTableQuery = {
   page: number // 1-based
   rowsPerPage: number
@@ -34,6 +40,7 @@ export type ServerTableQuery = {
 }
 
 // * 가상 스크롤(virtualization) 옵션(고정 rowHeight 전제) 타입
+/** @public */
 export type VirtualizedOptions = {
   enabled?: boolean
   rowHeight: number
@@ -41,6 +48,7 @@ export type VirtualizedOptions = {
 }
 
 // * 요약 행 셀 아이템 타입
+/** @public */
 export type SummaryRowItem<T extends Record<string, unknown>> = {
   key: keyof T | string
   value?: ReactNode
@@ -49,12 +57,14 @@ export type SummaryRowItem<T extends Record<string, unknown>> = {
 }
 
 // * 요약 행 한 줄(line) 구성 타입
+/** @public */
 export type SummaryRowLine<T extends Record<string, unknown>> = {
   key?: string
   items: SummaryRowItem<T>[]
 }
 
 // * 테이블 컬럼 정의(표시/렌더/정렬 트리거/비활성) 타입
+/** @public */
 export type ColumnProps<T extends Record<string, unknown>> = {
   key: keyof T
   title: ReactNode
@@ -73,6 +83,7 @@ export type ColumnProps<T extends Record<string, unknown>> = {
 }
 
 // * 행 단위 액션(버튼/링크 등) 정의(렌더/비활성/클릭) 타입
+/** @public */
 export type TableRowAction<T extends Record<string, unknown>> = {
   key: string
   render: (row: T, index: number) => ReactNode
@@ -81,6 +92,7 @@ export type TableRowAction<T extends Record<string, unknown>> = {
 }
 
 // * 요약 행(summary row) 표시 옵션 및 서버 집계 데이터 타입
+/** @public */
 export type SummaryRowProps<T extends Record<string, unknown>> = {
   enabled?: boolean
   sticky?: boolean
@@ -89,6 +101,7 @@ export type SummaryRowProps<T extends Record<string, unknown>> = {
 }
 
 // * 테이블 툴바(검색/내보내기/컬럼 표시/필터) 구성 타입
+/** @public */
 export type TableToolbarProps<_TExtraExportType extends string = never> = {
   title?: string
 
@@ -131,6 +144,7 @@ export type TableToolbarProps<_TExtraExportType extends string = never> = {
 }
 
 // * 테이블 컴포넌트 최상위 Props(서버 제어형 query + UI 옵션 + 확장 기능) 타입
+/** @public */
 export type TableProps<
   T extends Record<string, unknown>,
   TExtraExportType extends string = never,

@@ -14,20 +14,23 @@ import type { IconName } from "../Icon/icon-types"/** @public */
 
 export type PaginationType = "Table" | "Basic"
 
-type PaginationIcons = Partial<{
+/** Icon override map for Pagination controls. @public */
+export type PaginationIcons = Partial<{
   prev: IconName
   next: IconName
   first: IconName
   last: IconName
 }>
 
-type PaginationBaseProps = BaseMixinProps &
+/** Shared Pagination props. @public */
+export type PaginationBaseProps = BaseMixinProps &
   Omit<HTMLAttributes<HTMLDivElement>, keyof BaseMixinProps> & {
     disabled?: boolean
     icons?: PaginationIcons
   }
 
-type TablePaginationProps = PaginationBaseProps & {
+/** Props for table-style Pagination. @public */
+export type TablePaginationProps = PaginationBaseProps & {
   type: "Table"
   count?: number
   page?: number
@@ -35,7 +38,8 @@ type TablePaginationProps = PaginationBaseProps & {
   labelDisplayedRows?: (from: number, to: number, count: number) => ReactNode
 }
 
-type BasicPaginationProps = PaginationBaseProps & {
+/** Props for basic page-number Pagination. @public */
+export type BasicPaginationProps = PaginationBaseProps & {
   type: "Basic"
   count?: number
   page?: number
@@ -47,10 +51,11 @@ type BasicPaginationProps = PaginationBaseProps & {
   hideFirstLastButtons?: boolean
   showFirstLastButtons?: boolean
   showPrevNextButtons?: boolean
-}/** @public */
+} /** @public */
 /** @public */
 
 
+/** Props for Pagination. @public */
 export type PaginationProps = TablePaginationProps | BasicPaginationProps
 
 type BasicItem = number | "start-ellipsis" | "end-ellipsis"
@@ -178,6 +183,35 @@ const getBasicItems = (
 const Pagination = (props: PaginationProps) => {
   const theme = useTheme()
   const { type, disabled = false, icons, ...baseProps } = props
+  const rootProps = useMemo(() => {
+    if (type === "Table") {
+      const {
+        count: _count,
+        page: _page,
+        onPageChange: _onPageChange,
+        labelDisplayedRows: _labelDisplayedRows,
+        ...rest
+      } =
+        baseProps as Omit<TablePaginationProps, "type" | "disabled" | "icons">
+      return rest
+    }
+
+    const {
+      count: _count,
+      page: _page,
+      onPageChange: _onPageChange,
+      pageCount: _pageCount,
+      siblingCount: _siblingCount,
+      boundaryCount: _boundaryCount,
+      hidePrevNextButtons: _hidePrevNextButtons,
+      hideFirstLastButtons: _hideFirstLastButtons,
+      showFirstLastButtons: _showFirstLastButtons,
+      showPrevNextButtons: _showPrevNextButtons,
+      ...rest
+    } = baseProps as Omit<BasicPaginationProps, "type" | "disabled" | "icons">
+
+    return rest
+  }, [baseProps, type])
 
   // * 기본 아이콘 fallback 구성
   const iconPrev = icons?.prev ?? "ArrowLeft"
@@ -341,7 +375,7 @@ const Pagination = (props: PaginationProps) => {
   }
 
   return (
-    <Flex {...baseProps}>
+    <Flex {...rootProps}>
       {type === "Table" ? renderTable() : null}
       {type === "Basic" ? renderBasic() : null}
     </Flex>

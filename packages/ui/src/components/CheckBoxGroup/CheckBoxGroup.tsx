@@ -11,16 +11,17 @@ import { styled } from "../../tokens/customStyled"
 import { useTheme } from "styled-components"
 import type { AxisPlacement, DirectionType, SizeUiType } from "../../public"
 
-type DataType<Value extends string | number = string> = {
+/** Option item used by CheckBoxGroup. @public */
+export type CheckBoxDataType<Value extends string | number = string> = {
   text: string
   value: Value
-} /** @public */
-/** @public */
+}
 
+/** Props for CheckBoxGroup. @public */
 export type CheckBoxProps<Value extends string | number = string> = BaseMixinProps & {
   value?: Value[]
   onChange?: (checkedValues: Value[]) => void
-  data: DataType<Value>[]
+  data: CheckBoxDataType<Value>[]
   direction?: DirectionType
   disabled?: boolean
   name?: string
@@ -34,9 +35,9 @@ export type CheckBoxProps<Value extends string | number = string> = BaseMixinPro
   onBlur?: FocusEventHandler<HTMLInputElement>
   labelPlacement?: AxisPlacement
   size?: SizeUiType
-} /** @public */
-/** @public */
+}
 
+/** Props for the single CheckBox export. @public */
 export type CheckBoxSingleProps = BaseMixinProps & {
   checked?: boolean
   onChange?: (checked: boolean) => void
@@ -66,6 +67,7 @@ type CheckboxItemProps = {
   onBlur?: FocusEventHandler<HTMLInputElement>
   size?: SizeUiType
   idPrefix: string
+  ariaLabel?: string
 }
 
 // * size에 따라 라벨 폰트 크기를 결정
@@ -201,6 +203,7 @@ export const CheckBox = forwardRef<HTMLInputElement, CheckBoxSingleProps>(
             onBlur={onBlur}
             $error={error}
             size={size}
+            ariaLabel={label}
           />
 
           {label && axis === "right" && (
@@ -289,6 +292,8 @@ const CheckBoxGroup = <Value extends string | number>({
         direction={isHorizontal ? "row" : "column"}
         align={isHorizontal ? "center" : "flex-start"}
         wrap="wrap"
+        role="group"
+        aria-label={label}
       >
         {label && axis === "left" && (
           <Label text={label} required={required} mr={4} {...labelProps} />
@@ -364,6 +369,7 @@ const CheckboxItem = forwardRef<HTMLInputElement, CheckboxItemProps>(
       direction,
       size,
       idPrefix,
+      ariaLabel,
     },
     ref,
   ) => {
@@ -402,6 +408,7 @@ const CheckboxItem = forwardRef<HTMLInputElement, CheckboxItemProps>(
           $error={$error}
           $size={size}
           data-indeterminate={indeterminate ? "true" : undefined}
+          aria-label={ariaLabel}
         />
 
         {text ? (

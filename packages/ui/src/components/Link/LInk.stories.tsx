@@ -3,6 +3,7 @@ import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import Link from "./Link"
 import Icon from "../Icon/Icon"
+import { theme } from "../../tokens/theme"
 
 const meta: Meta<typeof Link> = {
   title: "Navigation/Link",
@@ -67,7 +68,7 @@ export const AllCases: Story = {
         </Box>
 
         <Box>
-          <Link href="/detail" color="#111827" hoverColor="#2563eb">
+          <Link href="/detail" color={theme.colors.text.primary} hoverColor={theme.colors.primary[400]}>
             커스텀 컬러 링크
           </Link>
         </Box>

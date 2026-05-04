@@ -1,10 +1,13 @@
+import type { CSSProperties } from "react"
 import type { SummaryItem } from "../_internal/TableSummaryRow"
 
 // * 주어진 값을 최소/최대 범위로 제한하는 숫자 보정 유틸
 export const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
 
 // * 테이블 정렬 값을 표준 정렬(left/center/right)로 정규화하는 유틸
-export const normalizeAlign = (a: any): "left" | "center" | "right" | undefined => {
+export const normalizeAlign = (
+  a: CSSProperties["textAlign"],
+): "left" | "center" | "right" | undefined => {
   if (a === "left" || a === "center" || a === "right") return a
   if (a === "start") return "left"
   if (a === "end") return "right"

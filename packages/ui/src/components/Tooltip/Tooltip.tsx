@@ -1,6 +1,6 @@
 /** @public */
-import { useCallback, useEffect, useRef, useState } from "react"
-import type { ReactNode } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 import { styled } from "../../tokens/customStyled"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import type { AxisPlacement } from "../../types/placement" /** @public */
@@ -77,6 +77,7 @@ export const Tooltip = ({
 }: TooltipProps) => {
   const triggerRef = useRef<HTMLDivElement | null>(null)
   const rafRef = useRef<number | null>(null)
+  const tooltipId = useId()
 
   const [isOpen, setIsOpen] = useState(false)
   const [coords, setCoords] = useState({ top: 0, left: 0 })
@@ -133,6 +134,13 @@ export const Tooltip = ({
     setIsOpen(false)
   }
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
+      event.stopPropagation()
+      close()
+    }
+  }
+
   useEffect(() => {
     if (!isOpen) return
 
@@ -164,12 +172,16 @@ export const Tooltip = ({
       onMouseLeave={close}
       onFocus={open}
       onBlur={close}
+      onKeyDown={handleKeyDown}
+      aria-describedby={isOpen && content ? tooltipId : undefined}
       tabIndex={0}
     >
       {children}
 
       {isOpen && !!content && (
         <FixedTooltipBubble
+          id={tooltipId}
+          role="tooltip"
           {...others}
           $placement={placement}
           $maxWidth={maxWidth}

@@ -5,6 +5,7 @@ import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import Button from "../Button/Button"
 import { Typography } from "../Typography/Typography"
+import { theme } from "../../tokens/theme"
 
 const meta: Meta<typeof Avatar> = {
   title: "Data Display/Avatar",
@@ -84,9 +85,9 @@ export const AllCases: Story = {
           <Box>
             <Typography variant="b1Bold" text="Custom Colors" mb="8px" />
             <Flex gap="12px" align="center">
-              <Avatar name="Primary" bgColor="#4f46e5" fgColor="#ffffff" />
-              <Avatar name="Dark" bgColor="#111827" fgColor="#f9fafb" />
-              <Avatar name="Mint" bgColor="#10b981" fgColor="#052e16" />
+              <Avatar name="Primary" bgColor={theme.colors.primary[400]} fgColor={theme.colors.grayscale.white} />
+              <Avatar name="Dark" bgColor={theme.colors.text.primary} fgColor={theme.colors.grayscale.white} />
+              <Avatar name="Mint" bgColor={theme.colors.success[400]} fgColor={theme.colors.grayscale.white} />
             </Flex>
           </Box>
 
@@ -124,8 +125,8 @@ export const InteractiveGallery: Story = {
           size={size}
           src={useImage ? imageSrc : undefined}
           alt={name}
-          bgColor="#334155"
-          fgColor="#ffffff"
+          bgColor={theme.colors.primary[500]}
+          fgColor={theme.colors.grayscale.white}
         />
 
         <Flex gap="8px">

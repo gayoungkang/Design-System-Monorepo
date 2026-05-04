@@ -13,7 +13,7 @@ describe("CheckBox (Single)", () => {
   test("checked 상태에 따라 체크된다", () => {
     renderCheckBox(<CheckBox checked label="Single" />)
 
-    const input = screen.getByRole("checkbox")
+    const input = screen.getByRole("checkbox", { name: "Single" })
 
     expect(input).toBeChecked()
   })
@@ -51,6 +51,12 @@ describe("CheckBox (Single)", () => {
 
     expect(onChange).not.toHaveBeenCalled()
   })
+
+  test("단일 체크박스는 label을 접근 가능한 이름으로 사용한다", () => {
+    renderCheckBox(<CheckBox label="Agree" />)
+
+    expect(screen.getByRole("checkbox", { name: "Agree" })).toBeInTheDocument()
+  })
 })
 
 describe("CheckBoxGroup", () => {
@@ -61,8 +67,9 @@ describe("CheckBoxGroup", () => {
   ]
 
   test("data 기반으로 체크박스를 렌더링한다", () => {
-    renderCheckBox(<CheckBoxGroup data={data} />)
+    renderCheckBox(<CheckBoxGroup label="Options" data={data} />)
 
+    expect(screen.getByRole("group", { name: "Options" })).toBeInTheDocument()
     expect(screen.getAllByRole("checkbox")).toHaveLength(3)
   })
 

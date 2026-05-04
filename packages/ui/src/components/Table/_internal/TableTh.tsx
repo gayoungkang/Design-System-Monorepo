@@ -18,6 +18,12 @@ export type TableThProps = BaseMixinProps & {
   onResizeStart?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
+const getFlexJustify = (align: CSSProperties["textAlign"]): CSSProperties["justifyContent"] => {
+  if (align === "right" || align === "end") return "flex-end"
+  if (align === "center") return "center"
+  return "flex-start"
+}
+
 // * 현재 sort 방향을 기준으로 다음 방향을 결정(ASC <-> DESC)
 const getNextSortDirection = (current?: SortDirection): SortDirection => {
   if (current === "ASC") return "DESC"
@@ -90,7 +96,7 @@ const TableTh = ({
       aria-sort={sort ? (sort === "ASC" ? "ascending" : "descending") : "none"}
       {...others}
     >
-      <Flex align="center" justify={align as any} gap={4} sx={{ minWidth: 0 }}>
+      <Flex align="center" justify={getFlexJustify(align)} gap={4} sx={{ minWidth: 0 }}>
         {/* * 문자열 헤더는 Typography로 ellipsis 처리 */}
         {typeof children === "string" ? (
           <Typography ellipsis text={children} sx={{ display: "inline-block", minWidth: 0 }} />

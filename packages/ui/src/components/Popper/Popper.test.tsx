@@ -19,6 +19,7 @@ describe("Popper", () => {
     )
 
     expect(screen.getByText("test")).toBeInTheDocument()
+    expect(screen.getByRole("dialog", { name: "popover" })).toBeInTheDocument()
   })
 
   it("closes on escape", () => {
@@ -49,5 +50,43 @@ describe("Popper", () => {
     fireEvent.pointerDown(document.body)
 
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it("does not close when anchor is clicked", () => {
+    const onClose = vi.fn()
+    const anchor = document.createElement("button")
+    anchor.type = "button"
+    anchor.textContent = "anchor"
+    document.body.appendChild(anchor)
+
+    renderPopper(
+      <Popper open anchorRef={{ current: anchor }} onClose={onClose}>
+        <div>test</div>
+      </Popper>,
+    )
+
+    fireEvent.pointerDown(anchor)
+
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it("returns focus to anchor when closed by Escape", () => {
+    const onClose = vi.fn()
+    const anchor = document.createElement("button")
+    anchor.type = "button"
+    anchor.textContent = "anchor"
+    document.body.appendChild(anchor)
+
+    renderPopper(
+      <Popper open anchorRef={{ current: anchor }} onClose={onClose}>
+        <button type="button">inside</button>
+      </Popper>,
+    )
+
+    screen.getByRole("button", { name: "inside" }).focus()
+    fireEvent.keyDown(document, { key: "Escape" })
+
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(anchor).toHaveFocus()
   })
 })

@@ -12,10 +12,11 @@ import { theme } from "../../tokens/theme"
 import type { AxisPlacement } from "../../types/placement"
 import type { IconName } from "../Icon/icon-types"
 
-type RatingValue = number | null/** @public */
-/** @public */
+/** Value emitted by Rating. @public */
+export type RatingValue = number | null
 
 
+/** Props for Rating. @public */
 export type RatingProps = BaseMixinProps & {
   value?: RatingValue
   defaultValue?: number

@@ -48,6 +48,18 @@ describe("TextField", () => {
     expect(input.value).toBe("123")
   })
 
+  it("onlyNumber 정규화 값을 onChange 이벤트에서도 전달한다", () => {
+    let changedValue = ""
+
+    renderTextField(
+      <TextField onlyNumber onChange={(event) => (changedValue = event.target.value)} />,
+    )
+
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "a1b2" } })
+
+    expect(changedValue).toBe("12")
+  })
+
   it("maxLength를 초과하면 잘라낸다", () => {
     renderTextField(<TextField maxLength={5} />)
 
@@ -125,6 +137,17 @@ describe("TextField", () => {
     renderTextField(<TextField error helperText="error message" />)
 
     expect(screen.getByText("error message")).toBeInTheDocument()
+  })
+
+  it("label과 helperText를 접근성 속성으로 연결한다", () => {
+    renderTextField(<TextField label="Name" error helperText="error message" />)
+
+    const input = screen.getByRole("textbox", { name: "Name" })
+    const describedBy = input.getAttribute("aria-describedby")
+
+    expect(input).toHaveAttribute("aria-invalid", "true")
+    expect(describedBy).toBeTruthy()
+    expect(document.getElementById(describedBy ?? "")).toHaveTextContent("error message")
   })
 
   it("readOnly이면 clear 버튼이 노출되지 않는다", () => {

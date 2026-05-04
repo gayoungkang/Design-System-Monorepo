@@ -61,7 +61,7 @@ const TableSearch = ({
   useEffect(() => {
     if (!searchOpen || disabled) return
     const id = requestAnimationFrame(() => {
-      ;(searchInputRef.current as any)?.focus?.()
+      searchInputRef.current?.focus()
     })
     return () => cancelAnimationFrame(id)
   }, [searchOpen, disabled])
@@ -87,7 +87,7 @@ const TableSearch = ({
       <SearchSlot $open={searchOpen}>
         <SearchInner $open={searchOpen}>
           <TextField
-            ref={searchInputRef as any}
+            ref={searchInputRef}
             autoFocus={searchOpen}
             disabled={disabled}
             value={searchValue ?? ""}

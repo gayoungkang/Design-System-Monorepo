@@ -44,10 +44,6 @@ export const GlobalStyle = createGlobalStyle`
   }
   
   body {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    min-width: 1000px;
     position: relative;
     margin: 0;
     -webkit-font-smoothing: antialiased;
@@ -55,9 +51,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   
   #root {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
   }
 
   button,

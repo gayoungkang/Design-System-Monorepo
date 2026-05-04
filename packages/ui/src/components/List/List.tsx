@@ -18,7 +18,8 @@ import SwitchButton from "../SwitchButton/SwitchButton"
 import Label from "../Label/Label"
 import type { IconName } from "../Icon/icon-types"
 
-type IconItem = {
+/** Icon adornment configuration for ListItem. @public */
+export type IconItem = {
   type: "Icon"
   props: {
     name: IconName
@@ -27,7 +28,8 @@ type IconItem = {
   }
 }
 
-type AvatarItem = {
+/** Avatar adornment configuration for ListItem. @public */
+export type AvatarItem = {
   type: "Avatar"
   props: AvatarProps
 }
@@ -39,17 +41,20 @@ type SimpleCheckBoxConfig = {
   disabled?: boolean
 }
 
-type CheckBoxItem = {
+/** Checkbox adornment configuration for ListItem. @public */
+export type CheckBoxItem = {
   type: "CheckBox"
   props: CheckBoxProps | SimpleCheckBoxConfig
 }
 
-type IconButtonItem = {
+/** IconButton adornment configuration for ListItem. @public */
+export type IconButtonItem = {
   type: "IconButton"
   props: IconButtonProps
 }
 
-type SwitchItem = {
+/** Switch adornment configuration for ListItem. @public */
+export type SwitchItem = {
   type: "Switch"
   props: {
     checked: boolean
@@ -59,14 +64,15 @@ type SwitchItem = {
   }
 }
 
-type ListItemRenderConfig =
+/** Render configuration for ListItem start/end adornments. @public */
+export type ListItemRenderConfig =
   | IconItem
   | AvatarItem
   | CheckBoxItem
   | IconButtonItem
-  | SwitchItem /** @public */
-/** @public */
+  | SwitchItem
 
+/** Props for ListItem. @public */
 export type ListItemProps = BaseMixinProps & {
   label: string
   startItem?: ListItemRenderConfig[]
@@ -257,6 +263,7 @@ export const ListItem = ({
   selected = false,
   disabled = false,
   onClick,
+  separator: _separator,
   ...others
 }: ListItemProps) => {
   const theme = useTheme()

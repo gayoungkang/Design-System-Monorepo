@@ -8,12 +8,14 @@ import CheckBoxGroup from "../../CheckBoxGroup/CheckBoxGroup"
 import Skeleton from "../../Skeleton/Skeleton"
 import { theme } from "../../../tokens/theme"
 
+/** Column visibility item used by table toolbar configuration. @public */
 export type ColumnVisibilityItem = {
   key: string
   title: string
   hideable?: boolean
 }
 
+/** @public */
 export type TableColumnVisibleProps = {
   disabled?: boolean
   columnVisibilityEnabled?: boolean
@@ -148,7 +150,7 @@ const TableColumnVisible = ({
         placement="top-right"
       >
         <IconButton
-          ref={anchorRef as any}
+          ref={anchorRef}
           icon="ViewColumn"
           disabled={disabled}
           disableInteraction={false}
@@ -195,4 +197,5 @@ const TableColumnVisible = ({
   )
 }
 
+/** @public */
 export default TableColumnVisible

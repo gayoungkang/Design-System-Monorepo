@@ -108,7 +108,7 @@ export const Colors: Story = {
           onSelect={setSecondary}
         />
         <Tabs options={baseOptions} value={normal} size="M" color="normal" onSelect={setNormal} />
-        <Tabs options={baseOptions} value={custom} size="M" color="#7c3aed" onSelect={setCustom} />
+        <Tabs options={baseOptions} value={custom} size="M" color="secondary" onSelect={setCustom} />
       </Flex>
     )
   },
@@ -180,7 +180,7 @@ export const AllCases: Story = {
             options={manyOptions}
             value={valueC}
             size="L"
-            color="#2563eb"
+            color="primary"
             scrollbarVisible={false}
             scrollButtonsVisible
             onSelect={setValueC}

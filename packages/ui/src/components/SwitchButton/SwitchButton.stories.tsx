@@ -94,7 +94,7 @@ export const Colors: Story = {
           label="Secondary"
         />
         <SwitchButton checked={normal} onChange={setNormal} color="normal" label="Normal" />
-        <SwitchButton checked={custom} onChange={setCustom} color="#7c3aed" label="Custom" />
+        <SwitchButton checked={custom} onChange={setCustom} color="secondary" label="Secondary" />
       </Flex>
     )
   },
@@ -160,7 +160,7 @@ export const AllCases: Story = {
             checked={case3}
             onChange={setCase3}
             size="L"
-            color="#0ea5e9"
+            color="primary"
             label="L / top"
             labelPlacement="top"
           />

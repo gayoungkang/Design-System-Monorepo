@@ -17,10 +17,13 @@ import Divider from "../Divider/Divider"
 import type { LabelProps } from "../Label/Label"
 import type { IconName } from "../Icon/icon-types"
 
+/** @public */
 export type DateType = "Date" | "Time" | "Month" | "DateTime" | "Year"
+/** @public */
 export type DatePickerMode = "Single" | "Range"
 
-type DatePickerPresetApi = {
+/** API object passed to DatePicker preset render functions. @public */
+export type DatePickerPresetApi = {
   mode: DatePickerMode
   dateType: DateType
 
@@ -39,6 +42,7 @@ type DatePickerPresetApi = {
   ) => void
 }
 
+/** @public */
 export type DatePickerProps = BaseMixinProps & {
   size?: SizeUiType
   mode?: DatePickerMode
@@ -719,6 +723,11 @@ const DatePicker = (props: DatePickerProps) => {
     // * 숫자 외 입력 차단 + 최대 자리수 초과 입력 방지
     if (isInteractionBlocked) {
       e.preventDefault()
+      return
+    }
+
+    if (e.key === "Escape") {
+      closePopover()
       return
     }
 
@@ -1661,25 +1670,27 @@ const DatePicker = (props: DatePickerProps) => {
             <Divider />
             <ActionBar>
               <Flex width="100%" gap={8}>
-                <ActionNodeButton
-                  type="button"
-                  disabled={isInteractionBlocked}
-                  onClick={commitRangeCancel}
-                  data-testid="datepicker-range-cancel"
-                >
-                  {cancelNode ?? (
-                    <Button width="100%" variant="text" color="normal" text="cancel" />
-                  )}
-                </ActionNodeButton>
+                {cancelNode ?? (
+                  <Button
+                    width="100%"
+                    variant="text"
+                    color="normal"
+                    text="cancel"
+                    disabled={isInteractionBlocked}
+                    onClick={commitRangeCancel}
+                    {...({ "data-testid": "datepicker-range-cancel" } as Record<string, string>)}
+                  />
+                )}
 
-                <ActionNodeButton
-                  type="button"
-                  disabled={isInteractionBlocked}
-                  onClick={commitRangeConfirm}
-                  data-testid="datepicker-range-confirm"
-                >
-                  {confirmNode ?? <Button width="100%" text="ok" />}
-                </ActionNodeButton>
+                {confirmNode ?? (
+                  <Button
+                    width="100%"
+                    text="ok"
+                    disabled={isInteractionBlocked}
+                    onClick={commitRangeConfirm}
+                    {...({ "data-testid": "datepicker-range-confirm" } as Record<string, string>)}
+                  />
+                )}
               </Flex>
             </ActionBar>
           </>
@@ -1692,7 +1703,7 @@ const DatePicker = (props: DatePickerProps) => {
 
   return (
     <Box {...others}>
-      <div ref={anchorRef}>
+      <div ref={anchorRef} tabIndex={-1}>
         <TextField
           size={size}
           variant="outlined"
@@ -2158,17 +2169,5 @@ const ActionBar = styled.div`
   padding: 12px;
 `
 
-const ActionNodeButton = styled.button`
-  width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-`
-
+/** @public */
 export default DatePicker

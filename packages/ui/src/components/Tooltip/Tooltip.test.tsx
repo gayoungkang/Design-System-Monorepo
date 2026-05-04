@@ -29,7 +29,7 @@ describe("Tooltip", () => {
 
     fireEvent.mouseEnter(trigger)
 
-    expect(screen.getByText("tooltip text")).toBeInTheDocument()
+    expect(screen.getByRole("tooltip")).toHaveTextContent("tooltip text")
   })
 
   it("mouse leave 시 tooltip이 닫힌다", () => {
@@ -59,7 +59,7 @@ describe("Tooltip", () => {
 
     fireEvent.focus(trigger)
 
-    expect(screen.getByText("tooltip text")).toBeInTheDocument()
+    expect(screen.getByRole("tooltip")).toHaveTextContent("tooltip text")
   })
 
   it("blur 시 tooltip이 닫힌다", () => {
@@ -88,6 +88,44 @@ describe("Tooltip", () => {
     const trigger = screen.getByText("trigger")
 
     fireEvent.mouseEnter(trigger)
+
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument()
+  })
+
+  it("열린 tooltip과 trigger를 aria-describedby로 연결한다", () => {
+    renderTooltip(
+      <Tooltip content="tooltip text">
+        <button>trigger</button>
+      </Tooltip>,
+    )
+
+    const triggerWrapper = screen.getByText("trigger").parentElement
+    expect(triggerWrapper).toBeInTheDocument()
+
+    if (!triggerWrapper) return
+
+    fireEvent.focus(triggerWrapper)
+
+    const tooltip = screen.getByRole("tooltip")
+    expect(triggerWrapper).toHaveAttribute("aria-describedby", tooltip.id)
+  })
+
+  it("Escape 키로 tooltip을 닫는다", () => {
+    renderTooltip(
+      <Tooltip content="tooltip text">
+        <button>trigger</button>
+      </Tooltip>,
+    )
+
+    const triggerWrapper = screen.getByText("trigger").parentElement
+    expect(triggerWrapper).toBeInTheDocument()
+
+    if (!triggerWrapper) return
+
+    fireEvent.focus(triggerWrapper)
+    expect(screen.getByRole("tooltip")).toBeInTheDocument()
+
+    fireEvent.keyDown(triggerWrapper, { key: "Escape" })
 
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument()
   })

@@ -3,6 +3,7 @@ import Icon from "./Icon"
 import Box from "../Box/Box"
 import Flex from "../Flex/Flex"
 import { Typography } from "../Typography/Typography"
+import { theme } from "../../tokens/theme"
 
 const meta: Meta<typeof Icon> = {
   title: "Inputs/Icon",
@@ -62,10 +63,10 @@ export const AllCases: Story = {
         <Box>
           <Typography text="Colors" sx={{ marginBottom: "8px" }} />
           <Flex gap={16} align="center">
-            <Icon name="StatusInfo" color="#111827" />
-            <Icon name="StatusSuccess" color="#16a34a" />
-            <Icon name="StatusError" color="#dc2626" />
-            <Icon name="StatusDefault" color="#6b7280" />
+            <Icon name="StatusInfo" color={theme.colors.text.primary} />
+            <Icon name="StatusSuccess" color={theme.colors.success[500]} />
+            <Icon name="StatusError" color={theme.colors.error[500]} />
+            <Icon name="StatusDefault" color={theme.colors.text.secondary} />
           </Flex>
         </Box>
 

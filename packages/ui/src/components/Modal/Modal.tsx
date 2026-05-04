@@ -17,7 +17,8 @@ import IconButton from "../IconButton/IconButton"
 import Divider from "../Divider/Divider"
 import Progress from "../Progress/Progress"
 import { styled } from "../../tokens/customStyled"
-import { canUseDOM } from "../../utils/canUseDOM"/** @public */
+import { canUseDOM } from "../../utils/canUseDOM" /** @public */
+import { lockBodyScroll } from "../../utils/bodyScrollLock"
 /** @public */
 
 
@@ -40,6 +41,16 @@ export type BasicModalProps = BaseMixinProps & {
 }
 
 const noop = () => undefined
+
+const getFocusableElements = (element: HTMLElement | null) => {
+  if (!element) return []
+
+  return Array.from(
+    element.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((item) => !item.hasAttribute("disabled") && item.getAttribute("aria-hidden") !== "true")
+}
 /**---------------------------------------------------------------------------/
  *
  * ! Modal
@@ -142,30 +153,69 @@ const Modal = ({
 }: BasicModalProps) => {
   const theme = useTheme()
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const previousActiveElementRef = useRef<HTMLElement | null>(null)
   const { isTop } = useModalStack(open)
   const titleId = useId()
+  const descriptionId = useId()
 
   // * open + 최상단 모달일 때만: ESC 닫기 + body 스크롤 잠금 + confirm 버튼 포커스
   useEffect(() => {
     if (!open || !isTop || !canUseDOM()) return
 
+    previousActiveElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose?.()
+      if (e.key === "Escape") {
+        onClose?.()
+        return
+      }
+
+      if (e.key !== "Tab") return
+
+      const focusableElements = getFocusableElements(dialogRef.current)
+      if (focusableElements.length === 0) {
+        e.preventDefault()
+        dialogRef.current?.focus()
+        return
+      }
+
+      const first = focusableElements[0]
+      const last = focusableElements[focusableElements.length - 1]
+      const active = document.activeElement
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault()
+        last.focus()
+        return
+      }
+
+      if (!e.shiftKey && active === last) {
+        e.preventDefault()
+        first.focus()
+      }
     }
 
     document.addEventListener("keydown", handleKeyDown)
 
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    const releaseBodyScrollLock = lockBodyScroll()
 
     const raf = window.requestAnimationFrame(() => {
-      buttonRef.current?.focus()
+      const focusableElements = getFocusableElements(dialogRef.current)
+      ;(buttonRef.current ?? focusableElements[0] ?? dialogRef.current)?.focus()
     })
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
       window.cancelAnimationFrame(raf)
-      document.body.style.overflow = prevOverflow
+      releaseBodyScrollLock()
+
+      const previousActiveElement = previousActiveElementRef.current
+      if (previousActiveElement && document.contains(previousActiveElement)) {
+        previousActiveElement.focus()
+      }
+      previousActiveElementRef.current = null
     }
   }, [open, isTop, onClose])
 
@@ -186,13 +236,16 @@ const Modal = ({
     >
       <AnimatedBox>
         <Flex
+          ref={dialogRef}
           direction="column"
           width={width}
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-labelledby={title ? titleId : undefined}
+          aria-describedby={children ? descriptionId : undefined}
           aria-label={title ? undefined : "modal"}
+          tabIndex={-1}
           sx={getDialogStyles(theme, width)}
           {...others}
         >
@@ -200,7 +253,7 @@ const Modal = ({
             ? headerComponent
             : title && (
                 <>
-                  <Flex justify="space-between" align="center" p="9px 20px">
+                  <Flex id={titleId} justify="space-between" align="center" p="9px 20px">
                     <Typography variant="h2" text={title} />
                     <IconButton
                       disableInteraction
@@ -214,7 +267,7 @@ const Modal = ({
                 </>
               )}
 
-          <Box p="20px" sx={{ flex: 1, overflowY: "auto" }} {...bodySx}>
+          <Box id={descriptionId} p="20px" sx={{ flex: 1, overflowY: "auto" }} {...bodySx}>
             <Suspense fallback={<Progress type="circular" variant="indeterminate" size="30px" />}>
               {children}
             </Suspense>

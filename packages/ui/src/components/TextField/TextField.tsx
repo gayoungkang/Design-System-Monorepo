@@ -1,5 +1,5 @@
 /** @public */
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from "react"
 import type {
   ChangeEvent,
   FocusEvent,
@@ -24,9 +24,8 @@ import { css } from "styled-components"
 import type { VariantFormType } from "../../types/form"
 import type { SizeUiType } from "../../types/ui"
 import type { IconName } from "../Icon/icon-types"
-import type { AxisPlacement } from "../../types/placement"/** @public */
+import type { AxisPlacement } from "../../types/placement" /** @public */
 /** @public */
-
 
 export type TextFieldProps = BaseMixinProps & {
   variant?: VariantFormType
@@ -186,6 +185,8 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
     const [inputValue, setInputValue] = useState(value ?? "")
     const [isActive, setIsActive] = useState(false)
     const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+    const generatedId = useId()
+    const helperTextId = `${generatedId}-helper`
 
     const inputRef = useRef<HTMLInputElement | null>(null)
     const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -237,6 +238,7 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const nextValue = normalizeValue(e.target.value)
+      if (e.target.value !== nextValue) e.target.value = nextValue
       setInputValue(nextValue)
       onChange?.(e)
     }
@@ -328,6 +330,9 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
                 $readOnly={readOnly}
                 placeholder={placeholder}
                 value={inputValue}
+                aria-label={label}
+                aria-invalid={error || undefined}
+                aria-describedby={error && helperText ? helperTextId : undefined}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
@@ -346,6 +351,9 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
                 type={inputType}
                 placeholder={placeholder}
                 value={inputValue}
+                aria-label={label}
+                aria-invalid={error || undefined}
+                aria-describedby={error && helperText ? helperTextId : undefined}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
@@ -403,7 +411,11 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
 
         {renderTopBottomLabel("bottom")}
 
-        {error && <HelperText status="error" text={helperText ?? ""} mt={3} />}
+        {error && (
+          <Box id={helperTextId}>
+            <HelperText status="error" text={helperText ?? ""} mt={3} />
+          </Box>
+        )}
       </Box>
     )
   },
@@ -508,8 +520,7 @@ const StyledTextarea = styled.textarea<InputStyleProps>`
   ${commonInputStyle};
   resize: none;
   font-family: inherit;
-`/** @public */
+` /** @public */
 /** @public */
-
 
 export default TextField

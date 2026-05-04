@@ -97,6 +97,7 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
     tableKey,
     columnConfig,
     data = [],
+    getRowKey,
 
     query,
     totalCount,
@@ -433,12 +434,13 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
             <TableTr columns={gridColumns} disabled={disabled}>
               {columnConfig.map((col, idx) => {
                 const sortValue = getSortValue(col.sort, col.sortDirection)
-                const sortEnabled = !disabled && col.sort && col.onSortChange
+                const sortEnabled = Boolean(!disabled && col.sort && col.onSortChange)
 
                 return (
                   <TableTh
                     key={`${tableKey}_th_${String(col.title)}_${idx}`}
                     align={col.textAlign as TableThAlign}
+                    sortable={sortEnabled}
                     sort={sortEnabled ? sortValue : undefined}
                     onSortChange={
                       sortEnabled
@@ -502,13 +504,14 @@ const Table = <T extends Record<string, unknown>>(props: TableProps<T>): JSX.Ele
           const keyCandidate = rowRecord.id ?? rowRecord.key ?? rowRecord._id ?? rowRecord.rowId
 
           const rowKey =
-            keyCandidate !== undefined && keyCandidate !== null
+            getRowKey?.(row, realIndex) ??
+            (keyCandidate !== undefined && keyCandidate !== null
               ? String(keyCandidate)
-              : `${tableKey}_${realIndex}`
+              : `${tableKey}_row_index_${realIndex}`)
 
           return (
             <TableRow
-              key={`${tableKey}_row_${rowKey}`}
+              key={`${tableKey}_row_${String(rowKey)}`}
               columnConfig={columnConfig as TableRowProps["columnConfig"]}
               data={row as TableRowProps["data"]}
               index={realIndex}

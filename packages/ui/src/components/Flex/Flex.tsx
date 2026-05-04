@@ -4,13 +4,14 @@ import { forwardRef } from "react"
 import { BaseMixin, type BaseMixinProps } from "../../tokens/baseMixin"
 import { styled } from "../../tokens/customStyled"
 
-type ExtraHTMLProps = HTMLAttributes<HTMLDivElement> & {
+/** Additional data/aria attributes accepted through Flex.extraProps. @public */
+export type ExtraHTMLProps = HTMLAttributes<HTMLDivElement> & {
   [key: `data-${string}`]: string | number | undefined
   [key: `aria-${string}`]: string | number | undefined
-}/** @public */
-/** @public */
+}
 
 
+/** Props for Flex. @public */
 export type FlexProps = HTMLAttributes<HTMLDivElement> &
   BaseMixinProps & {
     as?: keyof JSX.IntrinsicElements

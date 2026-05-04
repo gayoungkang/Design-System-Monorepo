@@ -32,9 +32,7 @@ const TableTotalRows = ({ totalRows, ...others }: TableTotalRows) => {
   return (
     <Typography
       variant="b1Medium"
-      text={`전체 데이터 수: ${
-        totalRows ? (formatWithComma(totalRows) as unknown as string) : "0"
-      }개`}
+      text={`전체 데이터 수: ${totalRows ? formatWithComma(totalRows) : "0"}개`}
       {...others}
     />
   )

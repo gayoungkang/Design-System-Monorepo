@@ -9,16 +9,17 @@ import type { IconName } from "../Icon/icon-types"
 import type { ColorUiType, SizeUiType } from "../../types/ui"
 import type { AxisPlacement } from "../../types/placement"
 
-type OptionType = {
+/** Secondary action item rendered by FloatingButton. @public */
+export type FloatingButtonOption = {
   icon: IconName
   label?: string
   onClick?: () => void
-}/** @public */
-/** @public */
+}
 
 
+/** Props for FloatingButton. @public */
 export type FloatingButtonProps = BaseMixinProps & {
-  item?: OptionType[]
+  item?: FloatingButtonOption[]
   icon: IconName
   iconProps?: Partial<Omit<IconProps, "name">>
   TypographyProps?: Partial<Omit<TypographyProps, "text">>
