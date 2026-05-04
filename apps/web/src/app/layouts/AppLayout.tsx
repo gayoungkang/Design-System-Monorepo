@@ -1,13 +1,36 @@
+import type { CSSProperties } from "react"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { Box, Button, Flex, Typography, theme } from "@acme/ui"
-import styled from "styled-components"
+
+const navLinkStyle = ({ isActive }: { isActive: boolean }): CSSProperties => ({
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: "30px",
+  padding: "0 10px",
+  borderRadius: theme.borderRadius[4],
+  color: isActive ? theme.colors.primary[400] : theme.colors.text.secondary,
+  background: isActive ? theme.colors.primary[50] : "transparent",
+  textDecoration: "none",
+  fontSize: "14px",
+  fontWeight: 500,
+  lineHeight: "20px",
+})
 
 const AppLayout = () => {
   const navigate = useNavigate()
 
   return (
-    <Shell>
-      <Header>
+    <Box sx={{ minHeight: "100vh", background: theme.colors.background.default }}>
+      <Box
+        as="header"
+        sx={{
+          position: "sticky",
+          top: 0,
+          zIndex: theme.zIndex.sticky,
+          borderBottom: `1px solid ${theme.colors.border.default}`,
+          background: theme.colors.grayscale.white,
+        }}
+      >
         <Flex align="center" justify="space-between" gap="16px" wrap="wrap">
           <Box>
             <Typography as="h1" variant="h2" text="ACME Demo" color={theme.colors.text.primary} />
@@ -19,67 +42,42 @@ const AppLayout = () => {
             />
           </Box>
 
-          <Nav aria-label="Primary navigation">
-            <StyledNavLink to="/">Home</StyledNavLink>
-            <StyledNavLink to="/demo">Demo</StyledNavLink>
-            <StyledNavLink to="/demo/products">Products</StyledNavLink>
+          <Box
+            as="nav"
+            aria-label="Primary navigation"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+            }}
+          >
+            <NavLink to="/" style={navLinkStyle}>
+              Home
+            </NavLink>
+            <NavLink to="/demo" style={navLinkStyle}>
+              Demo
+            </NavLink>
+            <NavLink to="/demo/products" style={navLinkStyle}>
+              Products
+            </NavLink>
             <Button text="Browse" size="S" onClick={() => navigate("/demo/products")} />
-          </Nav>
+          </Box>
         </Flex>
-      </Header>
+      </Box>
 
-      <Main>
+      <Box
+        as="main"
+        sx={{
+          width: "min(1120px, calc(100% - 32px))",
+          margin: "0 auto",
+          padding: "32px 0 56px",
+        }}
+      >
         <Outlet />
-      </Main>
-    </Shell>
+      </Box>
+    </Box>
   )
 }
-
-const Shell = styled.div`
-  min-height: 100vh;
-  background: ${({ theme }) => theme.colors.background.default};
-`
-
-const Header = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: ${({ theme }) => theme.zIndex.sticky};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border.default};
-  background: ${({ theme }) => theme.colors.grayscale.white};
-`
-
-const Main = styled.main`
-  width: min(1120px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 32px 0 56px;
-`
-
-const Nav = styled.nav`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-`
-
-const StyledNavLink = styled(NavLink)`
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: ${({ theme }) => theme.borderRadius[4]};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  text-decoration: none;
-  ${({ theme }) => theme.fonts.body.b2.Medium};
-
-  &.active {
-    background: ${({ theme }) => theme.colors.primary[50]};
-    color: ${({ theme }) => theme.colors.primary[400]};
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.primary[200]};
-    outline-offset: 2px;
-  }
-`
 
 export default AppLayout

@@ -16,9 +16,10 @@ import {
   TextField,
   Typography,
   theme,
+  styled,
 } from "@acme/ui"
 import type { ColumnProps, ServerTableQuery, SortDirection } from "@acme/ui"
-import styled from "styled-components"
+
 import { productQueries } from "../../entities/product/queries/productQueries"
 import type { ProductSortValue, ProductTableRow } from "../../entities/product/model/product.types"
 import {
@@ -101,7 +102,9 @@ const ProductListPage = () => {
   const isLoading = catalogQuery.isLoading || productsQuery.isLoading
   const isError = catalogQuery.isError || productsQuery.isError
   const errorMessage =
-    catalogQuery.error?.message ?? productsQuery.error?.message ?? "상품 데이터를 불러오지 못했습니다."
+    catalogQuery.error?.message ??
+    productsQuery.error?.message ??
+    "상품 데이터를 불러오지 못했습니다."
   const isEmpty = !isLoading && !isError && sortedProducts.length === 0
   const hasMore = infiniteRows.length < sortedProducts.length
 
@@ -211,7 +214,12 @@ const ProductListPage = () => {
         <HeaderPanel>
           <Flex justify="space-between" align="center" gap="16px" wrap="wrap">
             <Box>
-              <Typography as="h2" variant="h1" text="Market Explorer" color={theme.colors.text.primary} />
+              <Typography
+                as="h2"
+                variant="h1"
+                text="Market Explorer"
+                color={theme.colors.text.primary}
+              />
               <Typography
                 as="p"
                 variant="b2Regular"
@@ -220,7 +228,11 @@ const ProductListPage = () => {
               />
             </Box>
             <MarketBadge>
-              <Typography variant="b3Medium" text="Products API" color={theme.colors.primary[400]} />
+              <Typography
+                variant="b3Medium"
+                text="Products API"
+                color={theme.colors.primary[400]}
+              />
             </MarketBadge>
           </Flex>
 
@@ -301,15 +313,30 @@ const ProductListPage = () => {
 
         {isError ? (
           <StatePanel role="alert">
-            <Typography variant="h3" text="마켓 데이터를 불러오지 못했습니다." color={theme.colors.error[500]} />
-            <Typography variant="b2Regular" text={errorMessage} color={theme.colors.text.secondary} />
-            <Button text="다시 시도" onClick={() => void Promise.all([catalogQuery.refetch(), productsQuery.refetch()])} />
+            <Typography
+              variant="h3"
+              text="마켓 데이터를 불러오지 못했습니다."
+              color={theme.colors.error[500]}
+            />
+            <Typography
+              variant="b2Regular"
+              text={errorMessage}
+              color={theme.colors.text.secondary}
+            />
+            <Button
+              text="다시 시도"
+              onClick={() => void Promise.all([catalogQuery.refetch(), productsQuery.refetch()])}
+            />
           </StatePanel>
         ) : null}
 
         {isEmpty ? (
           <StatePanel>
-            <Typography variant="h3" text="조건에 맞는 항목이 없습니다." color={theme.colors.text.primary} />
+            <Typography
+              variant="h3"
+              text="조건에 맞는 항목이 없습니다."
+              color={theme.colors.text.primary}
+            />
             <Typography
               variant="b2Regular"
               text="검색어를 줄이거나 전체 초기화로 마켓 전체를 다시 확인해보세요."
@@ -362,7 +389,11 @@ const ProductListPage = () => {
                 onQueryChange={handleQueryChange}
                 hasMore={hasMore}
                 loading={false}
-                loadMore={() => setInfiniteLimit((prev) => Math.min(prev + INFINITE_BATCH_SIZE, sortedProducts.length))}
+                loadMore={() =>
+                  setInfiniteLimit((prev) =>
+                    Math.min(prev + INFINITE_BATCH_SIZE, sortedProducts.length),
+                  )
+                }
                 emptyRowText="No market items"
                 height={520}
               />
@@ -384,8 +415,17 @@ const ProductListPage = () => {
           <DrawerContent>
             <Flex justify="space-between" align="start" gap="12px">
               <Box>
-                <Typography as="h3" variant="h2" text={previewProduct.title} color={theme.colors.text.primary} />
-                <Typography variant="b2Regular" text={previewProduct.category} color={theme.colors.text.secondary} />
+                <Typography
+                  as="h3"
+                  variant="h2"
+                  text={previewProduct.title}
+                  color={theme.colors.text.primary}
+                />
+                <Typography
+                  variant="b2Regular"
+                  text={previewProduct.category}
+                  color={theme.colors.text.secondary}
+                />
               </Box>
               <Button
                 ref={triggerRef}
@@ -397,7 +437,11 @@ const ProductListPage = () => {
               />
             </Flex>
             <PreviewImage src={previewProduct.thumbnail} alt={`${previewProduct.title} preview`} />
-            <Typography variant="b2Regular" text={previewProduct.description} color={theme.colors.text.secondary} />
+            <Typography
+              variant="b2Regular"
+              text={previewProduct.description}
+              color={theme.colors.text.secondary}
+            />
             <InfoList>
               <dt>현재가</dt>
               <dd>{formatCurrency(previewProduct.price)}</dd>
@@ -408,7 +452,11 @@ const ProductListPage = () => {
             </InfoList>
             <SignalCard>
               <Flex justify="space-between" align="center" mb="8px">
-                <Typography variant="b2Medium" text="거래 가능 수량 지표" color={theme.colors.text.primary} />
+                <Typography
+                  variant="b2Medium"
+                  text="거래 가능 수량 지표"
+                  color={theme.colors.text.primary}
+                />
                 <Typography
                   variant="b3Medium"
                   text={`${toStockScore(previewProduct.stock)}%`}
@@ -430,7 +478,11 @@ const ProductListPage = () => {
             </SignalCard>
             <SignalCard>
               <Flex justify="space-between" align="center" mb="8px">
-                <Typography variant="b2Medium" text="평점 기반 관심도" color={theme.colors.text.primary} />
+                <Typography
+                  variant="b2Medium"
+                  text="평점 기반 관심도"
+                  color={theme.colors.text.primary}
+                />
                 <Typography
                   variant="b3Medium"
                   text={`${toRatingScore(previewProduct.rating)}%`}
@@ -445,8 +497,16 @@ const ProductListPage = () => {
               />
             </SignalCard>
             <Flex gap="8px" wrap="wrap">
-              <Button text="상세 보기" onClick={() => navigate(`/demo/products/${previewProduct.id}`)} />
-              <Button text="닫기" variant="outlined" color="normal" onClick={() => setPreviewProduct(null)} />
+              <Button
+                text="상세 보기"
+                onClick={() => navigate(`/demo/products/${previewProduct.id}`)}
+              />
+              <Button
+                text="닫기"
+                variant="outlined"
+                color="normal"
+                onClick={() => setPreviewProduct(null)}
+              />
             </Flex>
           </DrawerContent>
         ) : null}
@@ -473,7 +533,11 @@ const createColumns = (
         <ProductThumb src={row.thumbnail} alt={`${row.title} thumbnail`} />
         <Box>
           <Typography variant="b2Medium" text={row.title} color={theme.colors.text.primary} />
-          <Typography variant="b3Regular" text={row.brandLabel} color={theme.colors.text.tertiary} />
+          <Typography
+            variant="b3Regular"
+            text={row.brandLabel}
+            color={theme.colors.text.tertiary}
+          />
         </Box>
       </ProductCell>
     ),
@@ -484,7 +548,8 @@ const createColumns = (
     title: "현재가",
     width: 130,
     sort: true,
-    sortDirection: querySort === "price-asc" ? "ASC" : querySort === "price-desc" ? "DESC" : undefined,
+    sortDirection:
+      querySort === "price-asc" ? "ASC" : querySort === "price-desc" ? "DESC" : undefined,
     onSortChange,
     textAlign: "right",
     render: (row) => formatCurrency(row.price),
@@ -535,11 +600,13 @@ const normalizePositiveInt = (value: string | null, fallback: number) => {
 }
 
 const normalizeSortValue = (value: string | null): ProductSortValue => {
-  if (PRODUCT_SORT_OPTIONS.some((option) => option.value === value)) return value as ProductSortValue
+  if (PRODUCT_SORT_OPTIONS.some((option) => option.value === value))
+    return value as ProductSortValue
   return "relevance"
 }
 
-const normalizeViewMode = (value: string | null): ViewMode => (value === "infinite" ? "infinite" : "table")
+const normalizeViewMode = (value: string | null): ViewMode =>
+  value === "infinite" ? "infinite" : "table"
 
 const toServerSort = (sort: ProductSortValue): ServerTableQuery["sort"] => {
   switch (sort) {
@@ -570,7 +637,10 @@ const fromServerSort = (
   return fallback
 }
 
-const toProductSortValue = (key: keyof ProductTableRow, direction: SortDirection): ProductSortValue => {
+const toProductSortValue = (
+  key: keyof ProductTableRow,
+  direction: SortDirection,
+): ProductSortValue => {
   if (key === "title") return "title-asc"
   if (key === "price") return direction === "ASC" ? "price-asc" : "price-desc"
   if (key === "rating") return "rating-desc"

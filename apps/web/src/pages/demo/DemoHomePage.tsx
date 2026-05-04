@@ -1,13 +1,29 @@
 import { useNavigate } from "react-router-dom"
 import { Box, Button, Flex, Progress, Typography, theme } from "@acme/ui"
-import styled from "styled-components"
 
 const DemoHomePage = () => {
   const navigate = useNavigate()
 
   return (
-    <DemoGrid>
-      <Panel>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "minmax(0, 1.4fr) minmax(280px, 0.6fr)",
+        gap: "16px",
+        "@media (max-width: 840px)": {
+          gridTemplateColumns: "1fr",
+        },
+      }}
+    >
+      <Box
+        as="section"
+        p="24px"
+        sx={{
+          border: `1px solid ${theme.colors.border.default}`,
+          borderRadius: theme.borderRadius[8],
+          background: theme.colors.grayscale.white,
+        }}
+      >
         <Typography as="h2" variant="h1" text="Products demo" color={theme.colors.text.primary} />
         <Typography
           as="p"
@@ -20,9 +36,17 @@ const DemoHomePage = () => {
           <Button text="상품 목록 열기" onClick={() => navigate("/demo/products")} />
           <Button text="홈으로" variant="outlined" color="normal" onClick={() => navigate("/")} />
         </Flex>
-      </Panel>
+      </Box>
 
-      <Panel>
+      <Box
+        as="section"
+        p="24px"
+        sx={{
+          border: `1px solid ${theme.colors.border.default}`,
+          borderRadius: theme.borderRadius[8],
+          background: theme.colors.grayscale.white,
+        }}
+      >
         <Typography variant="h3" text="API readiness" color={theme.colors.text.primary} />
         <Box mt="12px">
           <Progress type="bar" variant="determinate" value={70} label="API coverage" />
@@ -33,26 +57,9 @@ const DemoHomePage = () => {
           color={theme.colors.text.secondary}
           mt="12px"
         />
-      </Panel>
-    </DemoGrid>
+      </Box>
+    </Box>
   )
 }
-
-const DemoGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
-  gap: 16px;
-
-  @media (max-width: 840px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const Panel = styled.section`
-  padding: 24px;
-  border: 1px solid ${({ theme }) => theme.colors.border.default};
-  border-radius: ${({ theme }) => theme.borderRadius[8]};
-  background: ${({ theme }) => theme.colors.grayscale.white};
-`
 
 export default DemoHomePage

@@ -1,13 +1,22 @@
 import { useNavigate } from "react-router-dom"
 import { Box, Button, Flex, Typography, theme } from "@acme/ui"
-import styled from "styled-components"
 
 const HomePage = () => {
   const navigate = useNavigate()
 
   return (
-    <PageStack>
-      <Hero>
+    <Box sx={{ display: "grid", gap: "20px" }}>
+      <Box
+        as="section"
+        p="28px"
+        sx={{
+          display: "grid",
+          gap: "20px",
+          border: `1px solid ${theme.colors.border.default}`,
+          borderRadius: theme.borderRadius[8],
+          background: theme.colors.grayscale.white,
+        }}
+      >
         <Box>
           <Typography
             as="h2"
@@ -33,69 +42,57 @@ const HomePage = () => {
             onClick={() => navigate("/demo/products")}
           />
         </Flex>
-      </Hero>
+      </Box>
 
-      <FeatureGrid>
-        <FeatureCard>
-          <Typography variant="b1Bold" text="Server state" color={theme.colors.text.primary} />
-          <Typography
-            variant="b2Regular"
-            text="React Query query key factory로 목록과 상세 API 캐시를 분리합니다."
-            color={theme.colors.text.secondary}
-          />
-        </FeatureCard>
-        <FeatureCard>
-          <Typography variant="b1Bold" text="Operational states" color={theme.colors.text.primary} />
-          <Typography
-            variant="b2Regular"
-            text="로딩, 에러, 빈 결과, 상세 이동, Drawer preview 흐름을 포함합니다."
-            color={theme.colors.text.secondary}
-          />
-        </FeatureCard>
-        <FeatureCard>
-          <Typography variant="b1Bold" text="Design system use" color={theme.colors.text.primary} />
-          <Typography
-            variant="b2Regular"
-            text="Button, TextField, Select, Table, Drawer, Skeleton, Progress, Typography, Box, Flex를 실제 앱에서 소비합니다."
-            color={theme.colors.text.secondary}
-          />
-        </FeatureCard>
-      </FeatureGrid>
-    </PageStack>
+      <Box
+        as="section"
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          gap: "12px",
+          "@media (max-width: 760px)": {
+            gridTemplateColumns: "1fr",
+          },
+        }}
+      >
+        {[
+          {
+            title: "Server state",
+            description: "React Query query key factory로 목록과 상세 API 캐시를 분리합니다.",
+          },
+          {
+            title: "Operational states",
+            description: "로딩, 에러, 빈 결과, 상세 이동, Drawer preview 흐름을 포함합니다.",
+          },
+          {
+            title: "Design system use",
+            description:
+              "Button, TextField, Select, Table, Drawer, Skeleton, Progress, Typography, Box, Flex를 실제 앱에서 소비합니다.",
+          },
+        ].map((feature) => (
+          <Box
+            key={feature.title}
+            as="article"
+            p="18px"
+            sx={{
+              display: "grid",
+              gap: "8px",
+              border: `1px solid ${theme.colors.border.default}`,
+              borderRadius: theme.borderRadius[8],
+              background: theme.colors.grayscale.white,
+            }}
+          >
+            <Typography variant="b1Bold" text={feature.title} color={theme.colors.text.primary} />
+            <Typography
+              variant="b2Regular"
+              text={feature.description}
+              color={theme.colors.text.secondary}
+            />
+          </Box>
+        ))}
+      </Box>
+    </Box>
   )
 }
-
-const PageStack = styled.div`
-  display: grid;
-  gap: 20px;
-`
-
-const Hero = styled.section`
-  display: grid;
-  gap: 20px;
-  padding: 28px;
-  border: 1px solid ${({ theme }) => theme.colors.border.default};
-  border-radius: ${({ theme }) => theme.borderRadius[8]};
-  background: ${({ theme }) => theme.colors.grayscale.white};
-`
-
-const FeatureGrid = styled.section`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-
-  @media (max-width: 760px) {
-    grid-template-columns: 1fr;
-  }
-`
-
-const FeatureCard = styled.article`
-  display: grid;
-  gap: 8px;
-  padding: 18px;
-  border: 1px solid ${({ theme }) => theme.colors.border.default};
-  border-radius: ${({ theme }) => theme.borderRadius[8]};
-  background: ${({ theme }) => theme.colors.grayscale.white};
-`
 
 export default HomePage
