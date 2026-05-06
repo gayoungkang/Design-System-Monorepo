@@ -100,6 +100,9 @@ export * from "./components/AlertModal/AlertModal"
 export * from "./components/Avatar/Avatar"
 export * from "./components/Badge/Badge"
 /** @public */
+export { default as BottomNavigation } from "./components/BottomNavigation/BottomNavigation"
+export * from "./components/BottomNavigation/BottomNavigation"
+/** @public */
 export { default as Box } from "./components/Box/Box"
 export * from "./components/Box/Box"
 export * from "./components/Breadcrumbs/Breadcrumbs"
@@ -121,6 +124,12 @@ export * from "./components/HelperText/HelperText"
 export * from "./components/Icon/Icon"
 export * from "./components/Icon/IconSpriteProvider"
 export * from "./components/IconButton/IconButton"
+/** @public */
+export { default as ImageList } from "./components/ImageList/ImageList"
+export * from "./components/ImageList/ImageList"
+/** @public */
+export { default as ImageListItem } from "./components/ImageListItem/ImageListItem"
+export * from "./components/ImageListItem/ImageListItem"
 export * from "./components/Label/Label"
 export * from "./components/Link/Link"
 export * from "./components/List/List"
