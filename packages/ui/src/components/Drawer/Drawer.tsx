@@ -222,7 +222,7 @@ const Drawer = ({
         aria-modal={isOverlay ? true : undefined}
         aria-hidden={!open && closeBehavior === "hidden" ? true : undefined}
         tabIndex={isOverlay ? -1 : undefined}
-        onClickCapture={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         {...others}
       >
         {children}

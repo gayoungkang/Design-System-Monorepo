@@ -15,8 +15,10 @@ import Select from "./Select/Select"
 import type { SelectOptionType } from "./Select/Select"
 import Skeleton from "./Skeleton/Skeleton"
 import SwitchButton from "./SwitchButton/SwitchButton"
+import InfiniteTable from "./Table/InfiniteTable"
 import Table from "./Table/Table"
-import type { ColumnProps, ServerTableQuery } from "./Table/@Types/table"
+import type { ColumnProps, ServerTableQuery, SortDirection } from "./Table/@Types/table"
+import type { ExportType as TableExportType } from "./Table/_internal/TableExport"
 import Tabs from "./Tabs/Tabs"
 import TextField from "./TextField/TextField"
 import Tooltip from "./Tooltip/Tooltip"
@@ -56,7 +58,10 @@ type CustomerRow = {
   seats: number
 }
 
-type CustomerExportType = "csv" | "excel"
+type CustomerExportType = Extract<TableExportType, "csv" | "excel">
+type CustomerView = "table" | "infinite"
+type CustomerStatusFilter = "all" | CustomerRow["status"]
+type CustomerSeatFilter = "all" | "large"
 
 const customerRows: CustomerRow[] = [
   { id: 1001, company: "Northwind Studio", owner: "Mina", status: "Active", seats: 42 },
@@ -104,6 +109,53 @@ const hasKeywordContext = (context: unknown): context is { keyword: string } =>
   context !== null &&
   "keyword" in context &&
   typeof context.keyword === "string"
+
+const isCustomerExportContext = (
+  context: unknown,
+): context is { keyword: string; visibleRows: number; visibleColumns: string[] } =>
+  hasKeywordContext(context) &&
+  "visibleRows" in context &&
+  typeof context.visibleRows === "number" &&
+  "visibleColumns" in context &&
+  Array.isArray(context.visibleColumns) &&
+  context.visibleColumns.every((value) => typeof value === "string")
+
+const customerColumnItems = customerColumns.map((column) => ({
+  key: String(column.key),
+  title: String(column.title),
+  hideable: column.key !== "id",
+}))
+
+const customerStatusOptions: SelectOptionType<CustomerStatusFilter>[] = [
+  { value: "all", label: "All statuses" },
+  { value: "Active", label: "Active" },
+  { value: "Trial", label: "Trial" },
+  { value: "Paused", label: "Paused" },
+]
+
+const customerSeatOptions: SelectOptionType<CustomerSeatFilter>[] = [
+  { value: "all", label: "All accounts" },
+  { value: "large", label: "Large accounts only" },
+]
+
+const filterCustomerFacets = (
+  rows: CustomerRow[],
+  status: CustomerStatusFilter,
+  seatFilter: CustomerSeatFilter,
+) =>
+  rows.filter((row) => {
+    const statusMatched = status === "all" || row.status === status
+    const seatMatched = seatFilter === "all" || row.seats >= 40
+    return statusMatched && seatMatched
+  })
+
+const getNextSortDirection = (
+  current: ServerTableQuery["sort"],
+  key: keyof CustomerRow,
+): SortDirection => {
+  if (current?.key !== key) return "ASC"
+  return current.direction === "ASC" ? "DESC" : "ASC"
+}
 
 export const FormValidationScenario: Story = {
   render: () => {
@@ -306,6 +358,233 @@ export const DrawerNavigationScenario: Story = {
             </Flex>
           </Box>
         </Drawer>
+      </Box>
+    )
+  },
+}
+
+export const AdminTableScenario: Story = {
+  render: () => {
+    const [query, setQuery] = useState<ServerTableQuery>({
+      page: 1,
+      rowsPerPage: 3,
+      keyword: "",
+      sort: { key: "id", direction: "ASC" },
+    })
+    const [view, setView] = useState<CustomerView | null>("table")
+    const [filterOpen, setFilterOpen] = useState(false)
+    const [draftStatus, setDraftStatus] = useState<CustomerStatusFilter>("all")
+    const [appliedStatus, setAppliedStatus] = useState<CustomerStatusFilter>("all")
+    const [draftSeatFilter, setDraftSeatFilter] = useState<CustomerSeatFilter>("all")
+    const [appliedSeatFilter, setAppliedSeatFilter] = useState<CustomerSeatFilter>("all")
+    const [visibleColumnKeys, setVisibleColumnKeys] = useState<string[]>(
+      customerColumnItems.map((column) => column.key),
+    )
+    const [visibleCount, setVisibleCount] = useState(3)
+    const [exportMessage, setExportMessage] = useState("No export requested.")
+
+    const columns = useMemo<ColumnProps<CustomerRow>[]>(() => {
+      return customerColumns
+        .filter((column) => visibleColumnKeys.includes(String(column.key)))
+        .map((column) => ({
+          ...column,
+          sortDirection: query.sort?.key === column.key ? query.sort.direction : undefined,
+          onSortChange: (key) => {
+            setQuery((prev) => ({
+              ...prev,
+              page: 1,
+              sort: { key: String(key), direction: getNextSortDirection(prev.sort, key) },
+            }))
+            setVisibleCount(query.rowsPerPage)
+          },
+        }))
+    }, [query.rowsPerPage, query.sort, visibleColumnKeys])
+
+    const filteredAndSorted = useMemo(() => {
+      const searched = filterRows(customerRows, query.keyword)
+      const faceted = filterCustomerFacets(searched, appliedStatus, appliedSeatFilter)
+      return sortRows(faceted, query)
+    }, [appliedSeatFilter, appliedStatus, query])
+
+    const tableData = useMemo(() => {
+      const start = (query.page - 1) * query.rowsPerPage
+      return {
+        total: filteredAndSorted.length,
+        rows: filteredAndSorted.slice(start, start + query.rowsPerPage),
+      }
+    }, [filteredAndSorted, query.page, query.rowsPerPage])
+
+    const infiniteRows = useMemo(
+      () => filteredAndSorted.slice(0, visibleCount),
+      [filteredAndSorted, visibleCount],
+    )
+
+    const filterActiveCount =
+      Number(appliedStatus !== "all") + Number(appliedSeatFilter !== "all")
+
+    const handleQueryChange = (next: ServerTableQuery) => {
+      setQuery(next)
+      if (
+        next.keyword !== query.keyword ||
+        next.sort?.key !== query.sort?.key ||
+        next.sort?.direction !== query.sort?.direction ||
+        next.rowsPerPage !== query.rowsPerPage
+      ) {
+        setVisibleCount(next.rowsPerPage)
+      }
+    }
+
+    const applyFilters = () => {
+      setAppliedStatus(draftStatus)
+      setAppliedSeatFilter(draftSeatFilter)
+      setQuery((prev) => ({ ...prev, page: 1 }))
+      setVisibleCount(query.rowsPerPage)
+    }
+
+    const resetFilters = () => {
+      setDraftStatus("all")
+      setAppliedStatus("all")
+      setDraftSeatFilter("all")
+      setAppliedSeatFilter("all")
+      setQuery((prev) => ({ ...prev, page: 1, keyword: "", filters: undefined }))
+      setVisibleCount(query.rowsPerPage)
+    }
+
+    const filterContent = (
+      <Flex direction="column" gap={12}>
+        <Select<CustomerStatusFilter>
+          multiple={false}
+          label="Account status"
+          value={draftStatus}
+          options={customerStatusOptions}
+          onChange={(next) => setDraftStatus(next ?? "all")}
+        />
+        <Select<CustomerSeatFilter>
+          multiple={false}
+          label="Seat segment"
+          value={draftSeatFilter}
+          options={customerSeatOptions}
+          onChange={(next) => setDraftSeatFilter(next ?? "all")}
+        />
+        <Typography
+          variant="b3Regular"
+          text="Search applies draft filters without closing the drawer, matching an operations screen review flow."
+          color="text.secondary"
+        />
+      </Flex>
+    )
+
+    const toolbar = {
+      title: "Admin customers",
+      searchEnabled: true,
+      searchPlaceholder: "Search company, owner, status, or ID",
+      columnVisibilityEnabled: true,
+      columns: customerColumnItems,
+      visibleColumnKeys,
+      onVisibleColumnKeysChange: setVisibleColumnKeys,
+      filterEnabled: true,
+      filterActiveCount,
+      filterOpen,
+      onFilterOpenChange: setFilterOpen,
+      filterDrawerVariant: "fixed" as const,
+      filterDrawerPlacement: "right",
+      filterDrawerWidth: 360,
+      filterContent,
+      onFilterSearch: applyFilters,
+      onFilterReset: resetFilters,
+    } satisfies NonNullable<Parameters<typeof Table<CustomerRow, CustomerExportType>>[0]["toolbar"]>
+
+    const exportContext = {
+      visibleRows: filteredAndSorted.length,
+      visibleColumns: visibleColumnKeys,
+    }
+
+    const exportItems = [
+      { type: "csv", label: "CSV" },
+      { type: "excel", label: "Excel" },
+    ] satisfies { type: CustomerExportType; label: string }[]
+
+    const handleExport = (type: TableExportType, context: unknown) => {
+      if (!isCustomerExportContext(context)) {
+        setExportMessage(`Requested ${type} export.`)
+        return
+      }
+
+      setExportMessage(
+        `Requested ${type} export for ${context.visibleRows} rows, ${context.visibleColumns.length} visible columns, keyword "${context.keyword}".`,
+      )
+    }
+
+    const statusText = `${filteredAndSorted.length} rows after search/filter. ${visibleColumnKeys.length} columns visible.`
+
+    return (
+      <Box p="24px" width="1040px">
+        <Flex justify="space-between" align="flex-start" gap={16} mb="16px">
+          <Box>
+            <Typography variant="h3" text="Admin table operations scenario" />
+            <Typography
+              variant="b2Regular"
+              text="A consumer-app style table flow: search, filter, export, column visibility, pagination, and infinite loading share one query contract."
+              color="text.secondary"
+              mt="4px"
+            />
+          </Box>
+          <Tabs
+            value={view}
+            size="M"
+            onSelect={(value) => setView(value as CustomerView)}
+            options={[
+              { label: "Table View", value: "table" },
+              { label: "Infinite View", value: "infinite" },
+            ]}
+          />
+        </Flex>
+
+        {view === "infinite" ? (
+          <InfiniteTable<CustomerRow>
+            tableKey="admin-customers-infinite"
+            columnConfig={columns}
+            data={infiniteRows}
+            query={query}
+            totalCount={filteredAndSorted.length}
+            hasMore={visibleCount < filteredAndSorted.length}
+            loadMore={() =>
+              setVisibleCount((prev) => Math.min(prev + query.rowsPerPage, filteredAndSorted.length))
+            }
+            toolbar={toolbar}
+            exportEnabled
+            exportItems={exportItems}
+            onExport={handleExport}
+            exportContext={exportContext}
+            emptyRowText="No customers match the current operations filters."
+            onQueryChange={handleQueryChange}
+          />
+        ) : (
+          <Table<CustomerRow, CustomerExportType>
+            tableKey="admin-customers"
+            columnConfig={columns}
+            data={tableData.rows}
+            getRowKey={(row) => row.id}
+            query={query}
+            totalCount={tableData.total}
+            rowsPerPageOptions={[3, 5, 10]}
+            pagination="Table"
+            totalRows
+            rowsPer
+            toolbar={toolbar}
+            exportEnabled
+            exportItems={exportItems}
+            onExport={handleExport}
+            exportContext={exportContext}
+            emptyRowText="No customers match the current operations filters."
+            onQueryChange={handleQueryChange}
+          />
+        )}
+
+        <Flex direction="column" gap={4} mt="12px">
+          <Typography variant="b3Regular" text={statusText} color="text.secondary" />
+          <Typography variant="b3Regular" text={exportMessage} color="text.secondary" />
+        </Flex>
       </Box>
     )
   },

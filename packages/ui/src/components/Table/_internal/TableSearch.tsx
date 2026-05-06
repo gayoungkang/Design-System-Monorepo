@@ -104,7 +104,7 @@ const TableSearch = ({
 const SearchSlot = styled.div<{ $open: boolean }>`
   width: ${({ $open }) => ($open ? "280px" : "0px")};
   overflow: hidden;
-  transition: width 200ms cubic-bezier(0.2, 0.9, 0.2, 1);
+  transition: width 280ms cubic-bezier(0.2, 0.9, 0.2, 1);
   will-change: width;
 `
 
@@ -113,8 +113,8 @@ const SearchInner = styled.div<{ $open: boolean }>`
   transform: ${({ $open }) => ($open ? "scaleX(1)" : "scaleX(0.92)")};
   opacity: ${({ $open }) => ($open ? 1 : 0)};
   transition:
-    transform 180ms cubic-bezier(0.2, 0.9, 0.2, 1),
-    opacity 140ms ease;
+    transform 240ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 180ms ease;
   will-change: transform, opacity;
 `
 

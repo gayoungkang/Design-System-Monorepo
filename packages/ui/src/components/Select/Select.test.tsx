@@ -1,4 +1,5 @@
 import type { ReactElement } from "react"
+import { useState } from "react"
 import { fireEvent, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
 import { describe, expect, it, vi } from "vitest"
@@ -81,6 +82,53 @@ describe("Select", () => {
     fireEvent.click(screen.getByText("바나나"))
 
     expect(handleChange).toHaveBeenCalledWith("banana")
+  })
+
+  it("option 선택 후 controlled selected label을 즉시 표시한다", () => {
+    const TestComponent = () => {
+      const [value, setValue] = useState<string | undefined>(undefined)
+
+      return (
+        <Select<string>
+          label="과일"
+          placeholder="선택해 주세요"
+          options={fruitOptions}
+          value={value}
+          onChange={setValue}
+        />
+      )
+    }
+
+    renderSelect(<TestComponent />)
+
+    const combobox = screen.getByRole("combobox", { name: "과일" })
+    expect(screen.getByText("선택해 주세요")).toBeInTheDocument()
+
+    fireEvent.mouseDown(combobox, { detail: 1 })
+    fireEvent.mouseDown(screen.getByRole("option", { name: "바나나" }))
+
+    expect(screen.getByText("바나나")).toBeInTheDocument()
+    expect(screen.queryByText("선택해 주세요")).not.toBeInTheDocument()
+  })
+
+  it("선택된 string/number value의 label을 표시한다", () => {
+    renderSelect(
+      <>
+        <Select<string> label="과일" options={fruitOptions} value="banana" />
+        <Select<number>
+          label="행 수"
+          options={[
+            { value: 10, label: "10" },
+            { value: 25, label: "25" },
+          ]}
+          value={25}
+        />
+      </>,
+    )
+
+    expect(screen.getByText("바나나")).toBeInTheDocument()
+    expect(screen.getByText("25")).toBeInTheDocument()
+    expect(screen.queryByText("선택")).not.toBeInTheDocument()
   })
 
   it("selects multiple options", () => {

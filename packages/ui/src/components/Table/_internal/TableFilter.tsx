@@ -209,7 +209,8 @@ const TableFilter = ({
                       icon="SearchLine"
                       toolTip="검색"
                       disabled={disabled || !onFilterSearch}
-                      onClick={() => {
+                      onClick={(event) => {
+                        event.stopPropagation()
                         if (disabled) return
                         onFilterSearch?.()
                       }}
@@ -218,7 +219,8 @@ const TableFilter = ({
                       icon="reset"
                       toolTip="초기화"
                       disabled={disabled || !onFilterReset}
-                      onClick={() => {
+                      onClick={(event) => {
+                        event.stopPropagation()
                         if (disabled) return
                         onFilterReset?.()
                       }}
@@ -230,7 +232,10 @@ const TableFilter = ({
                     toolTip="닫기"
                     disableInteraction={false}
                     disabled={disabled}
-                    onClick={() => setFilterOpenSafe(false)}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setFilterOpenSafe(false)
+                    }}
                   />
                 </Flex>
 

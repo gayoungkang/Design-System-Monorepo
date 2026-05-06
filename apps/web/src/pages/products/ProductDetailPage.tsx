@@ -1,22 +1,25 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { Box, Button, Flex, Progress, Skeleton, Typography, theme } from "@acme/ui"
 import { productQueries } from "../../entities/product/queries/productQueries"
 import { formatCurrency } from "../../entities/product/model/productUtils"
 
 const ProductDetailPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const params = useParams()
   const productId = useMemo(() => Number(params.id), [params.id])
   const isValidId = Number.isFinite(productId) && productId > 0
   const productQuery = useQuery(productQueries.detail(productId))
+  const listUrl = getProductListUrl(location.state)
+  const navigateToList = () => navigate(listUrl)
 
   if (!isValidId) {
     return (
       <StatePanel role="alert">
         <Typography variant="h3" text="잘못된 상품 주소입니다." color={theme.colors.error[500]} />
-        <Button text="목록으로" onClick={() => navigate("/demo/products")} />
+        <Button text="목록으로" onClick={navigateToList} />
       </StatePanel>
     )
   }
@@ -54,7 +57,7 @@ const ProductDetailPage = () => {
             text="목록으로"
             variant="outlined"
             color="normal"
-            onClick={() => navigate("/demo/products")}
+            onClick={navigateToList}
           />
         </Flex>
       </StatePanel>
@@ -67,7 +70,7 @@ const ProductDetailPage = () => {
     return (
       <StatePanel>
         <Typography variant="h3" text="상품이 없습니다." color={theme.colors.text.primary} />
-        <Button text="목록으로" onClick={() => navigate("/demo/products")} />
+        <Button text="목록으로" onClick={navigateToList} />
       </StatePanel>
     )
   }
@@ -78,7 +81,7 @@ const ProductDetailPage = () => {
         text="목록으로"
         variant="outlined"
         color="normal"
-        onClick={() => navigate("/demo/products")}
+        onClick={navigateToList}
       />
 
       <DetailGrid>
@@ -145,17 +148,29 @@ const ProductDetailPage = () => {
           </MetricGrid>
 
           <Box mt="18px">
-            <Typography
-              variant="b2Medium"
-              text="Stock health"
-              color={theme.colors.text.primary}
-              mb="8px"
-            />
+            <Flex justify="space-between" align="center" gap="12px" mb="8px">
+              <Typography
+                variant="b2Medium"
+                text="Stock health"
+                color={theme.colors.text.primary}
+              />
+              <Typography
+                variant="b3Medium"
+                text={`${Math.min(100, product.stock)} / 100`}
+                color={theme.colors.text.secondary}
+              />
+            </Flex>
             <Progress
               type="bar"
               variant="determinate"
               value={Math.min(100, product.stock)}
-              label="Stock health"
+              aria-label={`Stock health ${Math.min(100, product.stock)} of 100`}
+            />
+            <Typography
+              variant="b3Regular"
+              text="재고 상태를 100 기준의 상품 탐색 지표로 표시합니다."
+              color={theme.colors.text.tertiary}
+              mt="8px"
             />
           </Box>
 
@@ -175,6 +190,20 @@ const ProductDetailPage = () => {
       </DetailGrid>
     </Box>
   )
+}
+
+const getProductListUrl = (state: unknown) => {
+  if (
+    typeof state === "object" &&
+    state !== null &&
+    "from" in state &&
+    typeof state.from === "string" &&
+    (state.from.startsWith("/demo/products") || state.from.startsWith("/admin"))
+  ) {
+    return state.from
+  }
+
+  return "/admin"
 }
 
 const DetailGrid = ({ children, ...props }: Parameters<typeof Box>[0]) => (

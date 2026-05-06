@@ -1,6 +1,6 @@
 /** @public */
 import { useId, useMemo, useRef, useState } from "react"
-import type { FocusEventHandler, KeyboardEvent, ReactNode } from "react"
+import type { FocusEventHandler, KeyboardEvent, MouseEvent, ReactNode } from "react"
 import type { BaseMixinProps } from "../../tokens/baseMixin"
 import Label from "../Label/Label"
 import type { LabelProps } from "../Label/Label"
@@ -14,7 +14,7 @@ import type { PopperProps } from "../Popper/Popper"
 import Flex from "../Flex/Flex"
 import Box from "../Box/Box"
 import Progress from "../Progress/Progress"
-import IconButton from "../IconButton/IconButton"
+import Icon from "../Icon/Icon"
 import HelperText from "../HelperText/HelperText"
 import { styled } from "../../tokens/customStyled"
 import type { VariantFormType } from "../../types/form"
@@ -280,6 +280,7 @@ const Select = <TValue extends string | number = string>({
 
   const popperRef = useRef<HTMLDivElement>(null)
   const selectBoxRef = useRef<HTMLDivElement>(null)
+  const pointerCommittedOptionRef = useRef<string | null>(null)
 
   const isControlled = value !== undefined
 
@@ -377,6 +378,23 @@ const Select = <TValue extends string | number = string>({
     closeMenu()
   }
 
+  const handleOptionCommit = (
+    event: MouseEvent<HTMLElement>,
+    option: SelectOptionType<TValue>,
+  ) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (disabled || readOnly || isLoading) return
+
+    if (multiple) {
+      handleMultipleSelect(option)
+      return
+    }
+
+    handleSingleSelect(option.value, option)
+  }
+
   const handleMultipleSelect = (option: SelectOptionType<TValue>) => {
     const optionKey = String(option.value)
 
@@ -416,6 +434,11 @@ const Select = <TValue extends string | number = string>({
 
   const selectedElement = () => {
     const fontSize = getSizePx(size)
+    const typographySx = {
+      ...(typographyProps?.sx ?? {}),
+      fontSize,
+      lineHeight: "inherit",
+    }
 
     if (selectedValueKeys.length === 0) {
       return (
@@ -424,8 +447,8 @@ const Select = <TValue extends string | number = string>({
           variant="b2Regular"
           color={theme.colors.grayscale[500]}
           ellipsis
-          sx={{ fontSize, lineHeight: "inherit" }}
           {...typographyProps}
+          sx={typographySx}
         />
       )
     }
@@ -454,8 +477,7 @@ const Select = <TValue extends string | number = string>({
       }
 
       const selectedLabels = normalizedValue
-        .map((item) => valueKeyMap.get(String(item))?.label)
-        .filter((labelItem): labelItem is string => Boolean(labelItem))
+        .map((item) => valueKeyMap.get(String(item))?.label ?? String(item))
 
       const text =
         selectedLabels.length === 1
@@ -470,8 +492,8 @@ const Select = <TValue extends string | number = string>({
           variant="b2Regular"
           color={disabled ? theme.colors.text.disabled : theme.colors.text.secondary}
           ellipsis
-          sx={{ fontSize, lineHeight: "inherit" }}
           {...typographyProps}
+          sx={typographySx}
         />
       )
     }
@@ -485,8 +507,8 @@ const Select = <TValue extends string | number = string>({
         variant="b2Regular"
         color={disabled ? theme.colors.text.disabled : theme.colors.text.secondary}
         ellipsis
-        sx={{ fontSize, lineHeight: "inherit" }}
         {...typographyProps}
+        sx={typographySx}
       />
     )
   }
@@ -517,31 +539,38 @@ const Select = <TValue extends string | number = string>({
       }
 
       return (
-        <Menu
+        <Box
           key={itemKey}
-          {...optionA11yProps}
-          text={item.label}
-          selected={isSelected}
-          width="100%"
-          size={size}
-          onClick={(event) => {
-            event.preventDefault()
-
-            if (multiple) {
-              handleMultipleSelect(item)
-              return
-            }
-
-            handleSingleSelect(item.value, item)
+          onMouseDown={(event) => {
+            pointerCommittedOptionRef.current = itemKey
+            handleOptionCommit(event, item)
           }}
-          sx={
-            activeIndex === index
-              ? {
-                  backgroundColor: "background.default",
-                }
-              : undefined
-          }
-        />
+        >
+          <Menu
+            {...optionA11yProps}
+            text={item.label}
+            selected={isSelected}
+            width="100%"
+            size={size}
+            onClick={(event) => {
+              if (pointerCommittedOptionRef.current === itemKey) {
+                pointerCommittedOptionRef.current = null
+                event.preventDefault()
+                event.stopPropagation()
+                return
+              }
+
+              handleOptionCommit(event, item)
+            }}
+            sx={
+              activeIndex === index
+                ? {
+                    backgroundColor: "background.default",
+                  }
+                : undefined
+            }
+          />
+        </Box>
       )
     })
   }
@@ -686,18 +715,16 @@ const Select = <TValue extends string | number = string>({
             )}
           </Flex>
 
-          <IconButton
-            disableInteraction
-            onClick={(event) => {
-              event.stopPropagation()
-              toggleMenu()
-            }}
-            icon={open ? "ArrowUp" : "ArrowDown"}
+          <Icon
+            name={open ? "ArrowUp" : "ArrowDown"}
             size={iconSize}
             mr={8}
-            disabled={readOnly || disabled || isLoading}
-            iconProps={{ color: theme.colors.grayscale[300] }}
-            sx={{ padding: 0, backgroundColor: "transparent" }}
+            color={
+              readOnly || disabled || isLoading
+                ? theme.colors.text.disabled
+                : theme.colors.grayscale[300]
+            }
+            sx={{ flexShrink: 0, pointerEvents: "none" }}
           />
 
           {open && selectBoxRef.current && (

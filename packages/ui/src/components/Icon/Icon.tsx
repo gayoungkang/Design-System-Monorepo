@@ -83,6 +83,7 @@ const Icon = forwardRef<SVGSVGElement, IconProps>(
     return (
       <StyledIcon
         ref={ref}
+        viewBox="0 0 24 24"
         width={resolvedSize}
         height={resolvedSize}
         $color={color}

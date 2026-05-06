@@ -30,9 +30,12 @@ export type ProductListResponse = {
 export type ProductSortValue =
   | "relevance"
   | "title-asc"
+  | "title-desc"
   | "price-asc"
   | "price-desc"
+  | "rating-asc"
   | "rating-desc"
+  | "stock-asc"
   | "stock-desc"
 
 export type ProductSortParams = {
@@ -44,6 +47,12 @@ export type ProductListParams = ProductSortParams & {
   q?: string
   page: number
   limit: number
+}
+
+export type ProductFilterState = {
+  category?: string
+  minRating?: number
+  inStockOnly?: boolean
 }
 
 export type ProductTableRow = Product &

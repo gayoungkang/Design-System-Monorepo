@@ -115,6 +115,29 @@ describe("TextField", () => {
     expect(cleared).toBe(true)
   })
 
+  it("controlled clear 클릭 시 빈 문자열을 onChange로 전달하고 focus를 유지한다", () => {
+    const TestComponent = () => {
+      const [value, setValue] = useState("abc")
+
+      return (
+        <TextField
+          label="Search"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        />
+      )
+    }
+
+    renderTextField(<TestComponent />)
+
+    const input = screen.getByRole("textbox", { name: "Search" }) as HTMLInputElement
+    fireEvent.focus(input)
+    fireEvent.click(screen.getByRole("button", { name: "입력값 지우기" }))
+
+    expect(input.value).toBe("")
+    expect(input).toHaveFocus()
+  })
+
   it("password 타입에서 토글 버튼 클릭 시 input type이 변경된다", () => {
     renderTextField(<TextField type="password" value="secret" />)
 

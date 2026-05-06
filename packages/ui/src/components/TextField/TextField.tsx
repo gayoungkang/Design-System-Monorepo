@@ -245,9 +245,17 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
     }
 
     const handleClear = () => {
-      setInputValue("")
-      onClear?.()
+      if (disabled || readOnly) return
       const el = multiline ? textareaRef.current : inputRef.current
+      setInputValue("")
+      if (el) {
+        el.value = ""
+        onChange?.({
+          target: el,
+          currentTarget: el,
+        } as ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)
+      }
+      onClear?.()
       el?.focus()
     }
 
@@ -367,15 +375,23 @@ const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldPr
             )}
 
             {inputValue !== "" && !multiline && clearable && !readOnly && isActive && (
-              <IconButton
-                onClick={handleClear}
-                icon="CloseLine"
-                size={iconSize}
-                disabled={disabled}
-                iconProps={{ color: theme.colors.grayscale[300] }}
-                mr={8}
-                sx={{ padding: 0, backgroundColor: "transparent" }}
-              />
+              <span
+                onMouseDown={(event) => {
+                  event.preventDefault()
+                }}
+                style={{ display: "inline-flex" }}
+              >
+                <IconButton
+                  onClick={handleClear}
+                  icon="CloseLine"
+                  size={iconSize}
+                  disabled={disabled}
+                  ariaLabel="입력값 지우기"
+                  iconProps={{ color: theme.colors.grayscale[300] }}
+                  mr={8}
+                  sx={{ padding: 0, backgroundColor: "transparent" }}
+                />
+              </span>
             )}
 
             {type === "search" && !multiline && (

@@ -58,6 +58,24 @@ const extractInner = (svg: string) => {
   return svg.slice(start + 1, end)
 }
 
+const preserveEmptyBackgroundPaths = (inner: string) => {
+  const defsIndex = inner.indexOf("<defs")
+  const body = defsIndex >= 0 ? inner.slice(0, defsIndex) : inner
+  const defs = defsIndex >= 0 ? inner.slice(defsIndex) : ""
+
+  return (
+    body
+      .replaceAll(
+        '<path d="M0 0h24v24H0z"/>',
+        '<path d="M0 0h24v24H0z" fill="none"/>',
+      )
+      .replaceAll(
+        '<path d="M24 24H0V0h24z"/>',
+        '<path d="M24 24H0V0h24z" fill="none"/>',
+      ) + defs
+  )
+}
+
 const main = () => {
   const files = readSvgFiles()
   if (!files.length) throw new Error(`No svg files found: ${svgDir}`)
@@ -77,7 +95,7 @@ const main = () => {
 
     const svg = typeof optimized.data === "string" ? optimized.data : raw
     const viewBox = extractViewBox(svg)
-    const inner = extractInner(svg)
+    const inner = preserveEmptyBackgroundPaths(extractInner(svg))
 
     return `<symbol id="icon-${name}" viewBox="${viewBox}">${inner}</symbol>`
   })

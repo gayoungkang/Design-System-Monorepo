@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react"
-import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { Box, Button, Flex, Typography, theme } from "@acme/ui"
+import { NavLink, Outlet } from "react-router-dom"
+import { Box, Flex, Typography, theme } from "@acme/ui"
 
 const navLinkStyle = ({ isActive }: { isActive: boolean }): CSSProperties => ({
   display: "inline-flex",
@@ -17,8 +17,6 @@ const navLinkStyle = ({ isActive }: { isActive: boolean }): CSSProperties => ({
 })
 
 const AppLayout = () => {
-  const navigate = useNavigate()
-
   return (
     <Box sx={{ minHeight: "100vh", background: theme.colors.background.default }}>
       <Box
@@ -33,12 +31,18 @@ const AppLayout = () => {
       >
         <Flex align="center" justify="space-between" gap="16px" wrap="wrap">
           <Box>
-            <Typography as="h1" variant="h2" text="ACME Demo" color={theme.colors.text.primary} />
+            <Typography
+              as="h1"
+              variant="h2"
+              text="ACME Design System"
+              color={theme.colors.text.primary}
+            />
             <Typography
               as="p"
               variant="b2Regular"
-              text="DummyJSON products API로 확인하는 디자인 시스템 소비 예제"
+              text="운영 가능한 UI 패키지와 실제 소비 앱을 함께 검증한 포트폴리오"
               color={theme.colors.text.secondary}
+              ml={5}
             />
           </Box>
 
@@ -53,15 +57,14 @@ const AppLayout = () => {
             }}
           >
             <NavLink to="/" style={navLinkStyle}>
-              Home
+              Overview
             </NavLink>
-            <NavLink to="/demo" style={navLinkStyle}>
-              Demo
+            <NavLink to="/admin" style={navLinkStyle}>
+              Admin
             </NavLink>
-            <NavLink to="/demo/products" style={navLinkStyle}>
-              Products
+            <NavLink to="/market" style={navLinkStyle}>
+              Market
             </NavLink>
-            <Button text="Browse" size="S" onClick={() => navigate("/demo/products")} />
           </Box>
         </Flex>
       </Box>

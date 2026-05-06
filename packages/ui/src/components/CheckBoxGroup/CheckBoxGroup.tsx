@@ -520,11 +520,11 @@ const StyledInput = styled.input<{ $error?: boolean; $size?: SizeUiType }>`
   &:checked::after {
     content: "";
     display: block;
-    width: 100%;
-    height: 100%;
-    background-image: url("/icons/CheckBox.svg");
-    background-repeat: no-repeat;
-    background-position: center;
+    width: ${({ $size }) => ($size === "L" ? "7px" : $size === "S" ? "5px" : "6px")};
+    height: ${({ $size }) => ($size === "L" ? "11px" : $size === "S" ? "8px" : "9px")};
+    border: solid ${({ theme }) => theme.colors.grayscale.white};
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
   }
 
   &:disabled {

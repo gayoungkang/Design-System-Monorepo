@@ -539,6 +539,15 @@ const Table = <T extends Record<string, unknown>, TExtraExportType extends strin
     Boolean(toolbar?.columnVisibilityEnabled) ||
     Boolean(exportEnabled && onExport && (exportItems?.length ?? 0) > 0)
 
+  const handleToolbarSearchChange = (value: string) => {
+    if (toolbar?.onSearchChange) {
+      toolbar.onSearchChange(value)
+      return
+    }
+
+    emitQuery({ keyword: value, page: 1 })
+  }
+
   return (
     <>
       {shouldRenderToolbar ? (
@@ -546,8 +555,8 @@ const Table = <T extends Record<string, unknown>, TExtraExportType extends strin
           {...((toolbar ?? {}) as Partial<TableToolbarProps>)}
           disabled={disabled}
           title={toolbar?.title}
-          searchValue={String(query.keyword ?? "")}
-          onSearchChange={(v) => emitQuery({ keyword: v, page: 1 })}
+          searchValue={toolbar?.searchValue ?? String(query.keyword ?? "")}
+          onSearchChange={handleToolbarSearchChange}
           exportEnabled={exportEnabled}
           exportItems={exportItems}
           excludeExportTypes={excludeExportTypes}

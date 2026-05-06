@@ -18,6 +18,12 @@ describe("CheckBox (Single)", () => {
     expect(input).toBeChecked()
   })
 
+  test("checked 아이콘은 외부 이미지 경로에 의존하지 않는다", () => {
+    renderCheckBox(<CheckBox checked label="Single" />)
+
+    expect(document.head.textContent).not.toContain("/icons/CheckBox.svg")
+  })
+
   test("onChange가 boolean으로 호출된다", async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

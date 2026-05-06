@@ -74,8 +74,11 @@ const TableRowsPerPage = ({
     const out = rowsPerPageOptions
       .filter((n) => Number.isFinite(n) && n > 0 && n <= safeLimit)
       .map((n) => Math.floor(n))
-    return out.length ? out : [Math.min(100, safeLimit)]
-  }, [rowsPerPageOptions, safeLimit])
+    const current = clamp(Math.max(1, Math.floor(rowsPerPage)), 1, safeLimit)
+    return Array.from(new Set(out.length ? [...out, current] : [Math.min(100, safeLimit), current])).sort(
+      (a, b) => a - b,
+    )
+  }, [rowsPerPage, rowsPerPageOptions, safeLimit])
 
   // * 현재 rowsPerPage 값을 limit 범위 내로 고정
   const safeRowsPerPage = clamp(Math.max(1, rowsPerPage), 1, safeLimit)
@@ -91,9 +94,10 @@ const TableRowsPerPage = ({
   )
 
   // * Select 변경값을 number로 변환 후 clamp 적용하여 콜백 전달
-  const handleChange = (v: string | undefined) => {
+  const handleChange = (v: string | number | undefined) => {
     if (disabled) return
-    const next = Number(v ?? safeRowsPerPage)
+    if (v === undefined) return
+    const next = Number(v)
     if (Number.isNaN(next)) return
     onRowsPerPageChange?.(clamp(Math.max(1, next), 1, safeLimit))
   }
