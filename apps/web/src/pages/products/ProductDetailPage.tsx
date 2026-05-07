@@ -197,8 +197,10 @@ const getProductListUrl = (state: unknown) => {
     typeof state === "object" &&
     state !== null &&
     "from" in state &&
-    typeof state.from === "string" &&
-    (state.from.startsWith("/demo/products") || state.from.startsWith("/admin"))
+      typeof state.from === "string" &&
+    (state.from.startsWith("/demo/products") ||
+      state.from.startsWith("/admin") ||
+      state.from.startsWith("/market"))
   ) {
     return state.from
   }

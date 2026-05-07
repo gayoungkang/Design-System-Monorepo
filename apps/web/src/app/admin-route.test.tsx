@@ -63,6 +63,9 @@ const spriteSvg = `
     <symbol id="icon-LastPageArrow" viewBox="0 0 24 24"><path d="M1 1h10v10H1z"/></symbol>
     <symbol id="icon-ArrowLeft" viewBox="0 0 24 24"><path d="M1 1h10v10H1z"/></symbol>
     <symbol id="icon-ArrowRight" viewBox="0 0 24 24"><path d="M1 1h10v10H1z"/></symbol>
+    <symbol id="icon-Folder" viewBox="0 0 24 24"><path d="M1 1h10v10H1z"/></symbol>
+    <symbol id="icon-BookmarkLine" viewBox="0 0 24 24"><path d="M1 1h10v10H1z"/></symbol>
+    <symbol id="icon-BookmarkFill" viewBox="0 0 24 24"><path d="M1 1h10v10H1z"/></symbol>
   </svg>
 `
 
@@ -142,7 +145,7 @@ describe("Admin route regression", () => {
   it("renders /admin with product table data", async () => {
     renderRoute("/admin")
 
-    expect(await screen.findByRole("heading", { name: "Market Explorer" })).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { name: "마켓 탐색기" })).toBeInTheDocument()
     expect(await screen.findByText("Laptop Pro")).toBeInTheDocument()
     expect(screen.getByText("Phone Basic")).toBeInTheDocument()
   })
@@ -179,10 +182,10 @@ describe("Admin route regression", () => {
 
     expect(await screen.findByText("Laptop Pro")).toBeInTheDocument()
 
-    await user.click(screen.getByRole("tab", { name: "Infinite View" }))
+    await user.click(screen.getByRole("tab", { name: "무한 스크롤 테이블 보기" }))
     expect(await screen.findByRole("button", { name: "모든 항목을 표시했습니다" })).toBeInTheDocument()
 
-    await user.click(screen.getByRole("tab", { name: "Table View" }))
+    await user.click(screen.getByRole("tab", { name: "테이블 보기" }))
     expect(await screen.findByText("1–3 of 3")).toBeInTheDocument()
   })
 
@@ -210,7 +213,7 @@ describe("Admin route regression", () => {
 
     expect(await screen.findByText("Laptop Pro")).toBeInTheDocument()
 
-    await user.click(screen.getAllByRole("button", { name: "Preview" })[0])
+    await user.click(screen.getAllByRole("button", { name: "미리보기" })[0])
     const drawerHeading = await screen.findByRole("heading", { name: "Laptop Pro" })
     expect(drawerHeading).toBeInTheDocument()
 
@@ -219,7 +222,7 @@ describe("Admin route regression", () => {
       expect(screen.queryByRole("heading", { name: "Laptop Pro" })).not.toBeInTheDocument(),
     )
 
-    await user.click(screen.getAllByRole("button", { name: "Detail" })[0])
+    await user.click(screen.getAllByRole("button", { name: "상세보기" })[0])
     expect(await screen.findByRole("button", { name: "목록으로" })).toBeInTheDocument()
     expect(window.location.pathname).toBe("/admin/1")
   })
@@ -230,5 +233,29 @@ describe("Admin route regression", () => {
     expect(await screen.findByText("Phone Basic")).toBeInTheDocument()
     expect(window.location.pathname).toBe("/admin")
     expect(window.location.search).toBe("?q=phone")
+  })
+
+  it("renders /market as a visual product discovery surface", async () => {
+    const user = userEvent.setup()
+    renderRoute("/market")
+
+    expect(await screen.findByRole("heading", { name: "Market" })).toBeInTheDocument()
+    expect(screen.getByRole("navigation", { name: "Market bottom navigation" })).toBeInTheDocument()
+    expect(await screen.findByRole("list", { name: "Market products" })).toBeInTheDocument()
+
+    await user.type(screen.getByRole("searchbox", { name: "Search products" }), "phone")
+
+    expect(await screen.findByRole("listitem", { name: "Open Phone Basic" })).toBeInTheDocument()
+    expect(screen.queryByRole("listitem", { name: "Open Laptop Pro" })).not.toBeInTheDocument()
+  })
+
+  it("opens market detail from a product card", async () => {
+    const user = userEvent.setup()
+    renderRoute("/market")
+
+    await user.click(await screen.findByRole("listitem", { name: "Open Laptop Pro" }))
+
+    expect(await screen.findByRole("button", { name: "목록으로" })).toBeInTheDocument()
+    expect(window.location.pathname).toBe("/market/1")
   })
 })
